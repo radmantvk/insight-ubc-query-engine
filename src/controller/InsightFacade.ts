@@ -38,7 +38,7 @@ export default class InsightFacade implements IInsightFacade {
 			.catch((err) => {
 				return err;
 			});
-		delete this.dataSets[this.dataSets.indexOf(id)];
+		this.removeData(id);
 		return Promise.resolve(id);
 	}
 
@@ -96,6 +96,14 @@ export default class InsightFacade implements IInsightFacade {
 					fs.writeFileSync(location, data);					// write to file at the designated location with designated course
 				});
 			});
+	}
+
+	private removeData(id: string) {
+		this.dataSets.forEach((value, index) => {
+			if(value === id) {
+				this.dataSets.splice(index,1);
+			}
+		});
 	}
 
 
