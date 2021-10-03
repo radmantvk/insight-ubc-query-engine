@@ -14,15 +14,11 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-		this.checkIDValidity(id)
+		this.checkIDAndKindValidity(id, kind)
 			.catch((err) => {
 				return err;
 			});
-		this.checkKindValidity(kind)
-			.catch((err) => {
-				return err;
-			});
-		// this.unzip(content);
+		this.unzip(content);
 		// check validity:1. there is at least 1 valid course section (non-empty file), a valid json format, and in valid directory (courses)
 		// data modelling
 		// storing into disk (not everything)
@@ -34,7 +30,7 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public removeDataset(id: string): Promise<string> {
-		this.checkIDValidity(id)
+		this.checkRemoveValidity(id)
 			.catch((err) => {
 				return err;
 			});
@@ -51,27 +47,35 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	/**
-	 * Checks the kind of dataset validity
-	 * @param kind  the kind of dataset (room or courses)
+	 * Checks the id and kind of dataset validity
+	 * @param id the id of the dataset
+	 * @param kind the kind of dataset (room or courses)
 	 * @return Promise <string[]>
 	 */
-	private checkKindValidity(kind: InsightDatasetKind): Promise<InsightDatasetKind> {
+	private checkIDAndKindValidity(id: string, kind: InsightDatasetKind) {
 		if (kind === InsightDatasetKind.Rooms) {
 			console.log("InsightDatasetKind is Rooms");
 			return Promise.reject(InsightError);
-		}
-		return Promise.resolve(kind);
-	}
-
-	/**
-	 * Checks ID's validity
-	 * @param id  The id of the dataset being added.
-	 * @return Promise <string[]>
-	 */
-	private checkIDValidity(id: string): Promise<string> {
-		if (this.dataSets.includes(id)) {
+		} else if (this.dataSets.includes(id)) {
 			console.log("id was already added");
 			return Promise.reject(InsightError);
+		} else if (this.dataSets.includes("_")) {
+			console.log("id includes underscore");
+			return Promise.reject(InsightError);
+		} else {
+			const trimmedID: string = id.replace(" ", "");
+			if (trimmedID.length === 0) {
+				return Promise.reject(InsightError);
+			}
+		}
+		return Promise.resolve(id);
+	}
+
+
+	private checkRemoveValidity(id: string): Promise<string> {
+		if (!this.dataSets.includes(id)) {
+			console.log("no such id exists");
+			return Promise.reject(NotFoundError);
 		} else if (this.dataSets.includes("_")) {
 			console.log("id includes underscore");
 			return Promise.reject(InsightError);
