@@ -1,0 +1,21 @@
+{
+  "title": "Invalid order type",
+
+  "input":{
+            "WHERE": {
+
+              "GT": {
+                "courses_avg": "2018"
+              }
+            },
+            "OPTIONS": {
+              "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+              ],
+              "ORDER": {}
+            }
+          },
+  "errorExpected": true,
+  "with": "InsightError"
+}

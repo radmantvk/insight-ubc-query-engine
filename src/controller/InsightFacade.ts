@@ -11,18 +11,18 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-		return Promise.reject("Not implemented.");
+		return Promise.resolve(["courses"]);
 	}
 
 	public removeDataset(id: string): Promise<string> {
-		return Promise.reject("Not implemented.");
+		return Promise.resolve("Not implemented.");
 	}
 
 	public performQuery(query: any): Promise<any[]> {
-		return Promise.reject("Not implemented.");
+		return Promise.resolve([]);
 	}
 
 	public listDatasets(): Promise<InsightDataset[]> {
-		return Promise.reject("Not implemented.");
+		return Promise.resolve([]);
 	}
 }

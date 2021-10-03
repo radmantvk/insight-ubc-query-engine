@@ -1,0 +1,21 @@
+{
+
+  "title": "Valid: GT upper boundary",
+
+  "input":{
+            "WHERE": {
+              "GT": {
+                "courses_avg": 100
+              }
+            },
+            "OPTIONS": {
+              "COLUMNS": [
+                "courses_avg",
+                "courses_dept"
+              ],
+              "ORDER": "courses_avg"
+            }
+          },
+  "errorExpected": false,
+  "with": []
+}
