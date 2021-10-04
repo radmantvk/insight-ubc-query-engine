@@ -22,6 +22,13 @@ describe("InsightFacade", function () {
 	// automatically be loaded in the 'before' hook.
 	const datasetsToLoad: {[key: string]: string} = {
 		courses: "./test/resources/archives/courses.zip",
+		oneValidSection: "./test/resources/archives/oneValidSection.zip",
+		mixOfValidAndInvalid: "test/resources/archives/mixOfValidAndInvalid.zip",
+		notJsonFiles: "test/resources/archives/notJsonFiles.zip",
+		notNamedCourses: "test/resources/archives/notNamedCourses.zip",
+		notZipFile: "test/resources/archives/notZipFile.jpg",
+		noValidSections: "test/resources/archives/noValidSections.zip",
+		unserialized: "test/resources/archives/unserialized.zip",
 	};
 
 	before(function () {
@@ -68,10 +75,9 @@ describe("InsightFacade", function () {
 		});
 
 		// TODO: reformat the following
-		let id: string;
-		let content: string = datasetContents.get("courses") ?? "";
 		it("should reject invalid ID: adding empty string", function () {
-			id = "";
+			let id: string = "";
+			let content: string = datasetContents.get("courses") ?? "";
 			return facade.addDataset(id, content, InsightDatasetKind.Courses)
 				.then((res) => expect.fail("Resolved with ${res}"))
 				.catch((error) => {
@@ -83,7 +89,8 @@ describe("InsightFacade", function () {
 				});
 		});
 		it('should reject invalid ID: string = " "', function () {
-			id = " ";
+			let id: string = " ";
+			let content: string = datasetContents.get("courses") ?? "";
 			return facade.addDataset(id, content, InsightDatasetKind.Courses)
 				.then((res) => expect.fail("Resolved with ${res}"))
 				.catch((error) => {
@@ -95,7 +102,8 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should reject invalid ID: string with only multiple spaces", function () {
-			id = "       ";
+			let id: string = "       ";
+			let content: string = datasetContents.get("courses") ?? "";
 			return facade.addDataset(id, content, InsightDatasetKind.Courses)
 				.then((res) => expect.fail("Resolved with ${res}"))
 				.catch((error) => {
@@ -104,7 +112,8 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should reject invalid ID: string containing underscore at front", function () {
-			id = "_1234";
+			let id: string = "_1234";
+			let content: string = datasetContents.get("courses") ?? "";
 			return facade.addDataset(id, content, InsightDatasetKind.Courses)
 				.then((res) => expect.fail("Resolved with: " + res))
 				.catch((error) => {
@@ -113,7 +122,8 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should reject invalid ID: string containing underscore at middle", function () {
-			id = "12_34";
+			let id: string = "12_34";
+			let content: string = datasetContents.get("courses") ?? "";
 			return facade.addDataset(id, content, InsightDatasetKind.Courses)
 				.then((res) => expect.fail("Resolved with: " + res))
 				.catch((error) => {
@@ -126,7 +136,8 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should reject invalid ID: string containing underscore at end", function () {
-			id = "1234_";
+			let id: string = "1234_";
+			let content: string = datasetContents.get("courses") ?? "";
 			return facade.addDataset(id, content, InsightDatasetKind.Courses)
 				.then((res) => expect.fail("Resolved with: " + res))
 				.catch((error) => {
@@ -135,20 +146,34 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should reject a new dataset with an existing id in the dataset", function () {
-			id = "courses";
+			let id: string = "courses";
+			let content: string = datasetContents.get("courses") ?? "";
+			const expected: string[] = ["courses"];
+			// return facade.addDataset(id, content, InsightDatasetKind.Courses)
+			// 	.then(() => {
+			// 		expect(expected).to.deep.include(id);
+			// 		return facade.addDataset(id, content, InsightDatasetKind.Courses)
+			// 			.then((res) => {
+			// 				expect.fail("adding the existing id resolved instead of catching error");
+			// 			})
+			// 			.catch((err) => {
+			// 				expect(err).is.instanceof(InsightError);
+			// 				// return facade.listDatasets().then((res) => expect(res).to.have.length(1)); // Why's this passing
+			// 			});
+			// 	})
+			// 	.catch((err) => {
+			// 		expect.fail("unexpected error caught");
+			// 	});
 			return facade.addDataset(id, content, InsightDatasetKind.Courses)
 				.then(() => {
-					return facade.addDataset(id, content, InsightDatasetKind.Courses)
+					facade.addDataset(id,content,InsightDatasetKind.Courses)
 						.then((res) => {
-							expect.fail("adding the existing id resolved instead of catching error");
+							expect.fail("shouldn't duplicate add");
 						})
 						.catch((err) => {
-							expect(err).is.instanceof(InsightError);
-							// return facade.listDatasets().then((res) => expect(res).to.have.length(1)); Why's this passing
+							expect(err).to.be.instanceOf(InsightError);
+							expect(expected).to.deep.include("courses");
 						});
-				})
-				.catch((err) => {
-					expect.fail("unexpected error caught");
 				});
 		});
 		it("should reject content that is not named courses", function () {
@@ -160,7 +185,7 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should reject content not Json files", function () {
-			const wrongContent = getFileContent("test/resources/archives/notJsonFiles.zip");
+			const wrongContent: string = datasetContents.get("notJsonFiles") ?? "";
 			return facade.addDataset("courses", wrongContent, InsightDatasetKind.Courses)
 				.then((res) => expect.fail("Resolved with: " + res))
 				.catch((error) => {
@@ -169,7 +194,8 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should reject content that is not a zip file", function () {
-			const wrongContent = getFileContent("test/resources/archives/notZipFile.jpg");
+			const wrongContent: string = datasetContents.get("notZipFile") ?? "";
+
 			return facade.addDataset("courses", wrongContent, InsightDatasetKind.Courses)
 				.then((res) => expect.fail("Resolved with: " + res))
 				.catch((error) => {
@@ -178,7 +204,7 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should reject content with only invalid json Files", function () {
-			const wrongContent = getFileContent("test/resources/archives/unserialized.zip");
+			const wrongContent: string = datasetContents.get("unserialized") ?? "";
 			return facade.addDataset("courses", wrongContent, InsightDatasetKind.Courses)
 				.then((res) => expect.fail("Resolved with: " + res))
 				.catch((error) => {
@@ -187,8 +213,10 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should accept content mix of valid and invalid json files", function () {
-			id = "ContainsMixOfValidAndInvalidCourses";
-			const wrongContent = getFileContent("test/resources/archives/mixOfValidAndInvalid.zip");
+			let id: string = "ContainsMixOfValidAndInvalidCourses";
+			let content: string = datasetContents.get("courses") ?? "";
+			const wrongContent: string = datasetContents.get("mixOfValidAndInvalid") ?? "";
+
 			return facade.addDataset(id, wrongContent, InsightDatasetKind.Courses)
 				.then((res) => {
 					expect(res).to.have.length(1);
@@ -200,10 +228,12 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should reject content of dataset not base64", function () {
+			let id: string = "courses";
+			let content: string = datasetContents.get("courses") ?? "";
 			let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
 			let notBase64Content = fs.readFileSync("test/resources/archives/courses.zip")
 				.toString("utf8") + "%";
-			return facade.addDataset("courses", content, InsightDatasetKind.Courses)
+			return facade.addDataset(id, content, InsightDatasetKind.Courses)
 				.catch((error) => {
 					expect(!base64regex.test(notBase64Content));
 					expect(error).to.be.instanceof(InsightError);
@@ -212,7 +242,9 @@ describe("InsightFacade", function () {
 		});
 
 		it("should reject InsightDataSetKind Rooms", function () {
-			return facade.addDataset("courses", content, InsightDatasetKind.Rooms)
+			let id: string = "courses";
+			let content: string = datasetContents.get("courses") ?? "";
+			return facade.addDataset(id, content, InsightDatasetKind.Rooms)
 				.then((res) => expect.fail("Resolved with: " + res))
 				.catch((error) => {
 					expect(error).to.be.instanceof(InsightError);
@@ -222,39 +254,12 @@ describe("InsightFacade", function () {
 
 		it("should add a proper id (new id), proper content, and proper InsightDatasetKind", function () {
 			// check id is unique or concat "1" to the id until it is unique
-			id = "courses";
-			const validContent = getFileContent("test/resources/archives/oneValidSection.zip");
-			return facade.addDataset(id, validContent, InsightDatasetKind.Courses)
-				.then((result) => {
-					expect(result).to.have.length(1);
-					expect(result).to.deep.equal([id]);
-					expect(facade.listDatasets().then((list) => list.toString().includes(id)));
-				})
-				.catch(() => {
-					expect.fail("valid add dataset failed");
-				});
-		});
-		it("should add a proper id (new id), proper content, and proper InsightDatasetKind v2", function () {
-			// check id is unique or concat "1" to the id until it is unique
-			id = "courses";
-			const validContent = getFileContent("test/resources/archives/oneValidSection.zip");
+			let id: string = "courses";
+			const validContent: string = datasetContents.get("oneValidSection") ?? "";
 			return facade.addDataset(id, validContent, InsightDatasetKind.Courses)
 				.then((result) => {
 					expect(result).to.deep.equal([id]);
 					expect(facade.listDatasets().then((list) => list.toString().includes(id)));
-				})
-				.catch(() => {
-					expect.fail("valid add dataset failed");
-				});
-		});
-		it("should add a proper id (new id), proper content, and proper InsightDatasetKind v3", function () {
-			// check id is unique or concat "1" to the id until it is unique
-			id = "courses";
-			const validContent = getFileContent("test/resources/archives/oneValidSection.zip");
-			return facade.addDataset(id, validContent, InsightDatasetKind.Courses)
-				.then((result) => {
-					expect(result).to.have.length(1);
-					expect(result).to.deep.equal([id]);
 				})
 				.catch(() => {
 					expect.fail("valid add dataset failed");
@@ -262,8 +267,9 @@ describe("InsightFacade", function () {
 		});
 
 		it("reject add: content with no valid course section", function () {
-			const invalidContent = getFileContent("test/resources/archives/noValidSections.zip");
-			return facade.addDataset("courses", invalidContent, InsightDatasetKind.Courses)
+			let id: string = "courses";
+			const validContent: string = datasetContents.get("oneValidSection") ?? "";
+			return facade.addDataset("courses", validContent, InsightDatasetKind.Courses)
 				.then((result) => {
 					expect.fail("error not caught");
 					expect(facade.listDatasets().then((list) => list.toString().includes(id))); // should be removed?
@@ -272,23 +278,11 @@ describe("InsightFacade", function () {
 					expect(error).to.be.instanceof(InsightError);
 				});
 		});
-		it("should add a proper id (new id), proper content, and proper InsightDatasetKind", function () {
-			// check id is unique or concat "1" to the id until it is unique
-			id = "courses";
-			return facade.addDataset(id, content, InsightDatasetKind.Courses)
-				.then((result) => {
-					expect(result).to.have.length(1);
-					expect(result).to.deep.equal([id]);
-					expect(facade.listDatasets().then((list) => list.toString().includes(id)));
-				})
-				.catch(() => {
-					expect.fail("valid add dataset failed");
-				});
-		});
 		it("should add multiple valid datasets", function () {
 			let id1 = "courses1";
 			let id2 = "courses2";
 			let id3 = "courses3";
+			const content: string = datasetContents.get("courses") ?? "";
 			return facade.addDataset(id1, content, InsightDatasetKind.Courses)
 				.then(() => {
 					return facade.addDataset(id2, content, InsightDatasetKind.Courses);
@@ -308,14 +302,15 @@ describe("InsightFacade", function () {
 		});
 
 		it("should reject if dataset was never added with NotFoundError", function () {
-			return facade.removeDataset("courses")
+			let id: string = "courses";
+			return facade.removeDataset(id)
 				.then((res) => expect.fail("Resolved with: " + res))
 				.catch((error) => {
 					expect(error).to.be.instanceof(NotFoundError);
 				});
 		});
 		it("should reject invalid ID: removing empty string", function () {
-			id = "";
+			let id: string = "";
 			return facade.removeDataset(id)
 				.then((removedID) => {
 					expect.fail("an invalid id was removed instead of rejecting: " + removedID);
@@ -325,7 +320,7 @@ describe("InsightFacade", function () {
 				});
 		});
 		it('should reject invalid ID: string = " "', function () {
-			id = " ";
+			let id: string = " ";
 			return facade.removeDataset(id)
 				.then((res) => expect.fail("Resolved with: " + res))
 				.catch((error) => {
@@ -333,7 +328,7 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should reject invalid ID: string with only multiple spaces", function () {
-			id = "       ";
+			let id: string = "        ";
 			return facade.removeDataset(id)
 				.then((res) => expect.fail("Resolved with: " + res))
 				.catch((error) => {
@@ -341,7 +336,7 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should reject invalid ID: string containing underscore at front", function () {
-			id = "_1234";
+			let id: string = "_1234";
 			return facade.removeDataset(id)
 				.then((res) => expect.fail("Resolved with: " + res))
 				.catch((error) => {
@@ -349,7 +344,7 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should reject invalid ID: string containing underscore at middle", function () {
-			id = "12_34";
+			let id: string = "12_34";
 			return facade.removeDataset(id)
 				.then((res) => expect.fail("Resolved with: " + res))
 				.catch((error) => {
@@ -357,7 +352,8 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should successfully remove valid dataset added", function () {
-			id = "courses";
+			let id: string = "courses";
+			let content: string = datasetContents.get("courses") ?? "";
 			return facade.addDataset(id, content, InsightDatasetKind.Courses)
 				.then(() => {
 					facade.listDatasets().then((datasets) => expect(datasets).to.have.length(1));
@@ -375,7 +371,8 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("Should remove a dataset from the internal model", function () { // todo, remove the above code if this passes
-			id = "courses";
+			let id: string = "courses";
+			let content: string = datasetContents.get("courses") ?? "";
 			return facade.addDataset(id, content, InsightDatasetKind.Courses)
 				.then(() => facade.removeDataset(id))
 				.then((removedId) => {
@@ -389,6 +386,7 @@ describe("InsightFacade", function () {
 
 
 		it("should remove the 1st id after adding 2 ids", function () {
+			let content: string = datasetContents.get("courses") ?? "";
 			let id1 = "courses";
 			let id2 = "courses2";
 			const expectedDatasets: InsightDataset[] = [
@@ -419,6 +417,7 @@ describe("InsightFacade", function () {
 		});
 
 		it("should remove the 2nd id after adding 2 ids", function () {
+			let content: string = datasetContents.get("courses") ?? "";
 			let id1 = "courses";
 			let id2 = "courses2";
 			const expectedDatasets: InsightDataset[] = [
@@ -458,6 +457,7 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should list an added dataset", function () {
+			let content: string = datasetContents.get("courses") ?? "";
 			return facade.addDataset("courses", content, InsightDatasetKind.Courses)
 				.then((addedIds) => {
 					return facade.listDatasets();
@@ -476,6 +476,7 @@ describe("InsightFacade", function () {
 				});
 		});
 		it("should list multiple added datasets", function () {
+			let content: string = datasetContents.get("courses") ?? "";
 			return facade.addDataset("courses", content, InsightDatasetKind.Courses)
 				.then(() => {
 					return facade.addDataset("courses2", content, InsightDatasetKind.Courses);
@@ -561,7 +562,7 @@ describe("InsightFacade", function () {
 	});
 });
 
-// TODO: to be removed
-function getFileContent(path: string): string {
-	return fs.readFileSync(path).toString("base64");
-}
+// // TODO: to be removed
+// function getFileContent(path: string): string {
+// 	return fs.readFileSync(path).toString("base64");
+// }
