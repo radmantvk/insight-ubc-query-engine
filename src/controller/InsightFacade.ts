@@ -1,4 +1,5 @@
 import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
+import * as fs from "fs-extra";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -7,16 +8,17 @@ import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFou
  */
 export default class InsightFacade implements IInsightFacade {
 	private dataSets: string[] = [];
+
 	constructor() {
 		console.trace("InsightFacadeImpl::init()");
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-		this.checkIDandKindValidity(id, kind)
+		this.checkIDAndKindValidity(id, kind)
 			.catch((err) => {
 				return err;
 			});
-		// this.unzip(content);
+		this.unzip(content);
 		// check validity:1. there is at least 1 valid course section (non-empty file), a valid json format, and in valid directory (courses)
 		// data modelling
 		// storing into disk (not everything)
@@ -28,7 +30,12 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public removeDataset(id: string): Promise<string> {
-		return Promise.resolve("Not implemented.");
+		this.checkRemoveValidity(id)
+			.catch((err) => {
+				return err;
+			});
+		this.removeData(id);
+		return Promise.resolve(id);
 	}
 
 	public performQuery(query: any): Promise<any[]> {
@@ -40,12 +47,13 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	/**
-	 * Checks ID's validity
-	 * @param id  The id of the dataset being added.
+	 * Checks the id and kind of dataset validity
+	 * @param id the id of the dataset
+	 * @param kind the kind of dataset (room or courses)
 	 * @return Promise <string[]>
 	 */
-	private checkIDandKindValidity(id: string, kind: InsightDatasetKind) {
-		if (kind === InsightDatasetKind.Rooms){
+	private checkIDAndKindValidity(id: string, kind: InsightDatasetKind) {
+		if (kind === InsightDatasetKind.Rooms) {
 			console.log("InsightDatasetKind is Rooms");
 			return Promise.reject(InsightError);
 		} else if (this.dataSets.includes(id)) {
@@ -63,6 +71,59 @@ export default class InsightFacade implements IInsightFacade {
 		return Promise.resolve(id);
 	}
 
+
+	private checkRemoveValidity(id: string): Promise<string> {
+		if (!this.dataSets.includes(id)) {
+			console.log("no such id exists");
+			return Promise.reject(NotFoundError);
+		} else if (this.dataSets.includes("_")) {
+			console.log("id includes underscore");
+			return Promise.reject(InsightError);
+		} else {
+			const trimmedID: string = id.replace(" ", "");
+			if (trimmedID.length === 0) {
+				return Promise.reject(InsightError);
+			}
+		}
+		return Promise.resolve(id);
+	}
+
+	private unzip(content: string) {
+		const JSZip = require("jszip");
+		const zip = new JSZip();
+		const path = "project_team147/data/courses/";
+		zip.loadAsync(content, {base64: true})
+			.then(function (contents: any) {
+				Object.keys(zip.files).forEach(function (name) {
+					let data = zip.files[name];							// each course file inside dataset stored here
+					let location = path + name;							// location that we want to store the course file
+					fs.writeFileSync(location, data);					// write to file at the designated location with designated course
+				});
+			});
+	}
+
+	private removeData(id: string) {
+		this.dataSets.forEach((value, index) => {
+			if(value === id) {
+				this.dataSets.splice(index,1);
+			}
+		});
+	}
+
+
+	/**
+	 * Parsing a string to json format and checking if it is valid
+	 */
+	// TODO: figure out how we would access the content inside a single json file
+	private isJsonString(str: string) {
+		try {
+			JSON.parse(str);
+		} catch (error) {
+			return false;
+		}
+		return true;
+	}
+}
 	// private unzip(content:string) {
 	//     // const JSZip = require("jszip");
 	//     // const fs = require("fs-extra");
@@ -91,4 +152,4 @@ export default class InsightFacade implements IInsightFacade {
 	//     //
 	//     // });
 	// }
-}
+

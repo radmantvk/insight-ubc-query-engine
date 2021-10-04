@@ -82,7 +82,6 @@ describe("InsightFacade", function () {
 						});
 				});
 		});
-
 		it('should reject invalid ID: string = " "', function () {
 			id = " ";
 			return facade.addDataset(id, content, InsightDatasetKind.Courses)
@@ -126,7 +125,6 @@ describe("InsightFacade", function () {
 						});
 				});
 		});
-
 		it("should reject invalid ID: string containing underscore at end", function () {
 			id = "1234_";
 			return facade.addDataset(id, content, InsightDatasetKind.Courses)
@@ -136,7 +134,6 @@ describe("InsightFacade", function () {
 					return facade.listDatasets().then((list) => expect(list).to.have.length(0));
 				});
 		});
-
 		it("should reject a new dataset with an existing id in the dataset", function () {
 			id = "courses";
 			return facade.addDataset(id, content, InsightDatasetKind.Courses)
@@ -180,7 +177,6 @@ describe("InsightFacade", function () {
 					return facade.listDatasets().then((res) => expect(res).to.have.length(0));
 				});
 		});
-
 		it("should reject content with only invalid json Files", function () {
 			const wrongContent = getFileContent("test/resources/archives/unserialized.zip");
 			return facade.addDataset("courses", wrongContent, InsightDatasetKind.Courses)
@@ -203,8 +199,6 @@ describe("InsightFacade", function () {
 					expect.fail("Unexpected error");
 				});
 		});
-
-
 		it("should reject content of dataset not base64", function () {
 			let base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
 			let notBase64Content = fs.readFileSync("test/resources/archives/courses.zip")
