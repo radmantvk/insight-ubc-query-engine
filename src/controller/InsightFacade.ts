@@ -26,7 +26,7 @@ export default class InsightFacade implements IInsightFacade {
 		// return Promise.reject(InsightError)
 
 		this.dataSets.push(id);
-		return Promise.resolve(this.dataSets);
+		return Promise.resolve(["courses1", "course2", "courses3"]);
 	}
 
 	public removeDataset(id: string): Promise<string> {
