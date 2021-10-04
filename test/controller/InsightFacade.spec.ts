@@ -31,7 +31,7 @@ describe("InsightFacade", function () {
 		unserialized: "test/resources/archives/unserialized.zip",
 	};
 
-	before(function () {
+	before (() => {
 		// This section runs once and loads all datasets specified in the datasetsToLoad object
 		for (const key of Object.keys(datasetsToLoad)) {
 			const content = fs.readFileSync(datasetsToLoad[key]).toString("base64");
@@ -39,6 +39,21 @@ describe("InsightFacade", function () {
 		}
 		// Just in case there is anything hanging around from a previous run
 		fs.removeSync(persistDir);
+	});
+	describe("test", function () {
+		const id: string = "courses";
+		const content: string = datasetContents.get("courses") ?? "";
+		facade = new InsightFacade();
+		it("Should test", function () {
+			return facade.addDataset(id, content, InsightDatasetKind.Courses)
+				.then((res) => {
+					console.log("Added successfully. ID names are: " + res);
+				})
+				.catch((err) => {
+					console.log("Add failed. Error type is: " + err.name);
+				});
+		});
+
 	});
 
 	describe("Add/Remove/List Dataset", function () {
@@ -268,7 +283,7 @@ describe("InsightFacade", function () {
 
 		it("reject add: content with no valid course section", function () {
 			let id: string = "courses";
-			const validContent: string = datasetContents.get("oneValidSection") ?? "";
+			const validContent: string = datasetContents.get("noValidSection") ?? "";
 			return facade.addDataset("courses", validContent, InsightDatasetKind.Courses)
 				.then((result) => {
 					expect.fail("error not caught");
@@ -354,13 +369,14 @@ describe("InsightFacade", function () {
 		it("should successfully remove valid dataset added", function () {
 			let id: string = "courses";
 			let content: string = datasetContents.get("courses") ?? "";
+			let expected: string[] = [];
 			return facade.addDataset(id, content, InsightDatasetKind.Courses)
 				.then(() => {
-					facade.listDatasets().then((datasets) => expect(datasets).to.have.length(1));
 					return facade.removeDataset(id)
 						.then((res) => {
 							expect(res).to.deep.equal(id);
 							facade.listDatasets().then((datasets) => expect(datasets).to.have.length(0));
+							expect(expected).to.not.include(res);
 						})
 						.catch((err) => {
 							expect.fail("caught an unexpected error interfering remove");
@@ -370,19 +386,19 @@ describe("InsightFacade", function () {
 					expect.fail("unexpected error caught " + error);
 				});
 		});
-		it("Should remove a dataset from the internal model", function () { // todo, remove the above code if this passes
-			let id: string = "courses";
-			let content: string = datasetContents.get("courses") ?? "";
-			return facade.addDataset(id, content, InsightDatasetKind.Courses)
-				.then(() => facade.removeDataset(id))
-				.then((removedId) => {
-					expect(removedId).to.deep.equal(id);
-					return facade.listDatasets();
-				})
-				.then((insightDatasets) =>
-					expect(insightDatasets).to.deep.equal([]))
-				.catch((error) => expect.fail("caught an error interfering remove"));
-		});
+		// it("Should remove a dataset from the internal model", function () { // todo, remove the above code if this passes
+		// 	let id: string = "courses";
+		// 	let content: string = datasetContents.get("courses") ?? "";
+		// 	return facade.addDataset(id, content, InsightDatasetKind.Courses)
+		// 		.then(() => facade.removeDataset(id))
+		// 		.then((removedId) => {
+		// 			expect(removedId).to.deep.equal(id);
+		// 			return facade.listDatasets();
+		// 		})
+		// 		.then((insightDatasets) =>
+		// 			expect(insightDatasets).to.deep.equal([]))
+		// 		.catch((error) => expect.fail("caught an error interfering remove"));
+		// });
 
 
 		it("should remove the 1st id after adding 2 ids", function () {
@@ -561,8 +577,3 @@ describe("InsightFacade", function () {
 		);
 	});
 });
-
-// // TODO: to be removed
-// function getFileContent(path: string): string {
-// 	return fs.readFileSync(path).toString("base64");
-// }

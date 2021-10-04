@@ -14,26 +14,32 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-		this.checkIDAndKindValidity(id, kind)
-			.catch((err) => {
-				return err;
-			});
+		if(!this.isIDAndKindValid(id, kind)) {
+			return Promise.reject(InsightError);
+		}
 		this.unzip(content);
+			// .then((unzipped: any) => {
+			// 	console.log("successfully unzipped")
+			// });
 		// check validity:1. there is at least 1 valid course section (non-empty file), a valid json format, and in valid directory (courses)
 		// data modelling
 		// storing into disk (not everything)
 		// if anything failed: return Promise.reject
 		// return Promise.reject(InsightError)
-
+		let sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+		sleep(10000);
+		console.log("unzip method finished successfully");
 		this.dataSets.push(id);
-		return Promise.resolve(["courses1", "course2", "courses3"]);
+		return Promise.resolve([id]);
 	}
 
 	public removeDataset(id: string): Promise<string> {
-		this.checkRemoveValidity(id)
-			.catch((err) => {
-				return err;
-			});
+		// check the id is valid
+		if (!this.dataSets.includes(id)) {
+			console.log("no such id exists");
+			return Promise.reject(NotFoundError);
+		}
+		// TODO processRemove() to remove dataset from the disk or any other fields
 		this.removeData(id);
 		return Promise.resolve(id);
 	}
@@ -45,60 +51,53 @@ export default class InsightFacade implements IInsightFacade {
 	public listDatasets(): Promise<InsightDataset[]> {
 		return Promise.resolve([]);
 	}
-
 	/**
 	 * Checks the id and kind of dataset validity
 	 * @param id the id of the dataset
 	 * @param kind the kind of dataset (room or courses)
 	 * @return Promise <string[]>
 	 */
-	private checkIDAndKindValidity(id: string, kind: InsightDatasetKind) {
+	private isIDAndKindValid(id: string, kind: InsightDatasetKind): boolean {
 		if (kind === InsightDatasetKind.Rooms) {
 			console.log("InsightDatasetKind is Rooms");
-			return Promise.reject(InsightError);
+			return false;
 		} else if (this.dataSets.includes(id)) {
 			console.log("id was already added");
-			return Promise.reject(InsightError);
+			return false;
 		} else if (this.dataSets.includes("_")) {
 			console.log("id includes underscore");
-			return Promise.reject(InsightError);
+			return false;
 		} else {
 			const trimmedID: string = id.replace(" ", "");
 			if (trimmedID.length === 0) {
-				return Promise.reject(InsightError);
+				console.log("id was an empty string or only spaces");
+				return false;
 			}
 		}
-		return Promise.resolve(id);
-	}
-
-
-	private checkRemoveValidity(id: string): Promise<string> {
-		if (!this.dataSets.includes(id)) {
-			console.log("no such id exists");
-			return Promise.reject(NotFoundError);
-		} else if (this.dataSets.includes("_")) {
-			console.log("id includes underscore");
-			return Promise.reject(InsightError);
-		} else {
-			const trimmedID: string = id.replace(" ", "");
-			if (trimmedID.length === 0) {
-				return Promise.reject(InsightError);
-			}
-		}
-		return Promise.resolve(id);
+		console.log("id is valid; resolving");
+		return true;
 	}
 
 	private unzip(content: string) {
-		const JSZip = require("jszip");
-		const zip = new JSZip();
+		let JSZip = require("jszip");
+		let zip = new JSZip();
 		const path = "project_team147/data/courses/";
-		zip.loadAsync(content, {base64: true})
-			.then(function (contents: any) {
-				Object.keys(zip.files).forEach(function (name) {
-					let data = zip.files[name];							// each course file inside dataset stored here
+		console.log("size of content is: " + content.length);
+		return zip.loadAsync(content, {base64: true})
+			.then(function (data: any) {
+
+				console.log("outside");
+				Object.keys(data.files).forEach(function (name) {
+					let data2 = data.files[name];							// each course file inside dataset stored here
+					// console.log(data.toString());
+					console.log("hello world");
 					let location = path + name;							// location that we want to store the course file
 					fs.writeFileSync(location, data);					// write to file at the designated location with designated course
 				});
+			})
+			.catch((err: any) => {
+				console.log("oops");
+				return Promise.reject(InsightError);
 			});
 	}
 
@@ -109,7 +108,6 @@ export default class InsightFacade implements IInsightFacade {
 			}
 		});
 	}
-
 
 	/**
 	 * Parsing a string to json format and checking if it is valid
@@ -124,32 +122,4 @@ export default class InsightFacade implements IInsightFacade {
 		return true;
 	}
 }
-	// private unzip(content:string) {
-	//     // const JSZip = require("jszip");
-	//     // const fs = require("fs-extra");
-	//     // const zip = new JSZip()
-	//     // fs.readFile("courses.zip", function (err:any, data:any) {
-	//     //     if (!err) {
-	//     //         zip.loadAsync(content, {base64:true})
-	//     //             .then(function( contents:any) {
-	//     //                 Object.keys(zip.files).forEach(function(name) {
-	//     //                     let data = zip.files[name];
-	//     //                     // path
-	//     //                     // fs.writeFileSync(path, data);
-	//     //                 })
-	//     //
-	//     //             })
-	//     //         console.log(zip.files);
-	//     //
-	//     //
-	//     //         // Object.keys(contents.files).forEach(function(filename) {
-	//     //         //     zip.file(filename).async('nodebuffer').then(function(content) {
-	//     //         //         var dest = path + filename;
-	//     //         //         fs.writeFileSync(dest, content);
-	//     //         //     });
-	//     //         // });
-	//     //     })
-	//     //
-	//     // });
-	// }
 
