@@ -566,7 +566,22 @@ describe("InsightFacade", function () {
 			{
 				errorValidator: (error): error is PQErrorKind =>
 					error === "ResultTooLargeError" || error === "InsightError",
-				assertOnError(expected, actual) {
+				assertOnResult(expected: any[], actual: any, input: any) {
+					// orderKey == "courses_avg"
+					const orderKey = input.OPTIONS.ORDER;
+					expect(actual).to.be.an.instanceof(Array);
+					expect(actual).to.have.length(expected.length);
+					expect(actual).to.have.deep.members(expected);
+					// TODO: check that actual is sorted using orderKey (might need another function)
+					// if (orderKey !== undefined) {
+					// 	// check the order of the actual array
+					// 	for (let i = 1; i < actual.length; i = i + 1) {
+					// 		// actual[0][orderKey] = 90.02
+					// 		actual[i - 1][orderKey] <= actual[i][orderKey];
+					// 	}
+					// }
+				},
+				assertOnError(expected, actual: any) {
 					if (expected === "ResultTooLargeError") {
 						expect(actual).to.be.instanceof(ResultTooLargeError);
 					} else {
