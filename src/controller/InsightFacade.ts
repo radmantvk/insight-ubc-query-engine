@@ -17,18 +17,18 @@ export default class InsightFacade implements IInsightFacade {
 		if(!this.isIDAndKindValid(id, kind)) {
 			return Promise.reject(InsightError);
 		}
-		this.unzip(content);
-			// .then((unzipped: any) => {
-			// 	console.log("successfully unzipped")
-			// });
-		// check validity:1. there is at least 1 valid course section (non-empty file), a valid json format, and in valid directory (courses)
-		// data modelling
-		// storing into disk (not everything)
-		// if anything failed: return Promise.reject
-		// return Promise.reject(InsightError)
-		let sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-		sleep(10000);
-		console.log("unzip method finished successfully");
+		let unzippedData = this.unzip(content)
+			.then(() => {
+				console.log("data has been unzipped and received");
+			})
+			.catch(() => {
+				console.log("data couldn't be unzipped");
+				return Promise.reject(InsightError);
+			});
+		// data modelling, checking validity of content
+
+		this.processData(unzippedData);
+		// console.log("unzip method finished successfully");
 		this.dataSets.push(id);
 		return Promise.resolve([id]);
 	}
@@ -78,25 +78,24 @@ export default class InsightFacade implements IInsightFacade {
 		return true;
 	}
 
-	private unzip(content: string) {
-		let JSZip = require("jszip");
-		let jsZip = new JSZip();
-		const path = "project_team147/data/courses/";
-		console.log("size of content is: " + content.length);
-		return jsZip.loadAsync(content, {base64: true})
-			.then(function (zip: any) {
-
-				console.log("outside");
-				Object.keys(zip.files).forEach(function (name) {
-					let data = zip.files[name];							// each course file inside dataset stored here
-					// console.log(zip.toString());
-					console.log("hello world");
-					let location = path + name;							// location that we want to store the course file
-					fs.writeFileSync(location, zip);					// write to file at the designated location with designated course
+	private unzip(content: string): Promise<any> {
+		const JSZip = require("jszip");
+		const zip = new JSZip();
+		return zip.loadAsync(content, {base64: true})
+			.then((unzippedData: any) => {
+				let counter = 0;
+				Object.keys(unzippedData.files).forEach(function (filename: any) {
+					// console.log("looping");
+					// const course = unzippedData.files[filename];
+					// JSON.parse("course", )
+					// console.log(c
+					counter++;
+					return Promise.resolve(unzippedData);
 				});
+				console.log("looped time: " + counter.toString());
 			})
 			.catch((err: any) => {
-				console.log("oops");
+				console.log("error unzipping");
 				return Promise.reject(InsightError);
 			});
 	}
@@ -109,25 +108,59 @@ export default class InsightFacade implements IInsightFacade {
 		});
 	}
 
-
-	private isEmpty(obj: object) {
-		return Object.keys(obj).length === 0;
-	}
-
 	/**
-	 * validates a JSON file by confirming it is of type object and by parsing the string using JSON.Parse
-	 * @param str
+	 * @param unzippedData
 	 * @private
 	 */
-	private isJSON(str: string) {
+	// skip invalid JSONs, need at least 1 json file to continue or FAIL
+	// skip invalid sections, if 1 is valid then ok; else, skip file
+	// If no valid sections have been added, don't add dataset
+
+	// check validity:1. there is at least 1 valid course section (non-empty file), a valid json format, and in valid directory (courses)
+
+	// const path = "project_team147/data/courses/";
+	// data modelling
+	// storing into disk (not everything)
+	// if anything failed: return Promise.reject
+	// return Promise.reject(InsightError)
+	private processData(unzippedData: any) {
+		console.log("uo");
+		let counter = 0;
+		Object.keys(unzippedData.files).forEach(function (filename: any) {
+			// console.log("looping");
+			// const course = unzippedData.files[filename];
+			// JSON.parse("course", )
+			// console.log(c
+			console.log("looped time: " + counter.toString());
+			counter++;
+			return;
+		});
+		console.log("looped time: " + counter.toString());
+		// Object.keys(unzippedData.files).forEach(function (name) {
+		// 	console.log("processing data");
+		// 	let data = unzippedData.files[name];
+		// 	console.log(data);
+		// 	const obj = JSON.parse(data, (key, value) => {
+		// 		console.log(obj.toString());
+		// 		console.log("processing data finished");
+		// 	});
+		// });
+
+	}
+	/**
+	 * Parsing a string to json format and checking if it is valid
+	 */
+// TODO: figure out how we would access the content inside a single json file
+	private parseJson(str: string) {
 		try {
 			let o = JSON.parse(str);
 			if (o && typeof o === "object") {
-				return o;
+				return Promise.resolve(o);
 			}
 		} catch (error) {
-			return false;
+			return Promise.reject(error);
 		}
 	}
+
 }
 
