@@ -80,19 +80,19 @@ export default class InsightFacade implements IInsightFacade {
 
 	private unzip(content: string) {
 		let JSZip = require("jszip");
-		let zip = new JSZip();
+		let jsZip = new JSZip();
 		const path = "project_team147/data/courses/";
 		console.log("size of content is: " + content.length);
-		return zip.loadAsync(content, {base64: true})
-			.then(function (data: any) {
+		return jsZip.loadAsync(content, {base64: true})
+			.then(function (zip: any) {
 
 				console.log("outside");
-				Object.keys(data.files).forEach(function (name) {
-					let data2 = data.files[name];							// each course file inside dataset stored here
-					// console.log(data.toString());
+				Object.keys(zip.files).forEach(function (name) {
+					let data = zip.files[name];							// each course file inside dataset stored here
+					// console.log(zip.toString());
 					console.log("hello world");
 					let location = path + name;							// location that we want to store the course file
-					fs.writeFileSync(location, data);					// write to file at the designated location with designated course
+					fs.writeFileSync(location, zip);					// write to file at the designated location with designated course
 				});
 			})
 			.catch((err: any) => {
@@ -109,17 +109,25 @@ export default class InsightFacade implements IInsightFacade {
 		});
 	}
 
+
+	private isEmpty(obj: object) {
+		return Object.keys(obj).length === 0;
+	}
+
 	/**
-	 * Parsing a string to json format and checking if it is valid
+	 * validates a JSON file by confirming it is of type object and by parsing the string using JSON.Parse
+	 * @param str
+	 * @private
 	 */
-	// TODO: figure out how we would access the content inside a single json file
-	private isJsonString(str: string) {
+	private isJSON(str: string) {
 		try {
-			JSON.parse(str);
+			let o = JSON.parse(str);
+			if (o && typeof o === "object") {
+				return o;
+			}
 		} catch (error) {
 			return false;
 		}
-		return true;
 	}
 }
 
