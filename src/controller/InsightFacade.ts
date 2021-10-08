@@ -1,5 +1,8 @@
 import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
 import * as fs from "fs-extra";
+import Course from "../model/Course";
+import Section from "../model/Section";
+
 
 /**
  * This is the main programmatic entry point for the project.
@@ -17,9 +20,10 @@ export default class InsightFacade implements IInsightFacade {
 		if(!this.isIDAndKindValid(id, kind)) {
 			return Promise.reject(InsightError);
 		}
-		let unzippedData = this.unzip(content)
-			.then(() => {
+		this.unzipAndProcess(content)
+			.then((unzippedData) => {
 				console.log("data has been unzipped and received");
+				return this.processData(unzippedData);
 			})
 			.catch(() => {
 				console.log("data couldn't be unzipped");
@@ -27,8 +31,8 @@ export default class InsightFacade implements IInsightFacade {
 			});
 		// data modelling, checking validity of content
 
-		this.processData(unzippedData);
-		// console.log("unzip method finished successfully");
+		// this.processData(unzippedData);
+		// console.log("unzipAndProcess method finished successfully");
 		this.dataSets.push(id);
 		return Promise.resolve([id]);
 	}
@@ -78,24 +82,15 @@ export default class InsightFacade implements IInsightFacade {
 		return true;
 	}
 
-	private unzip(content: string): Promise<any> {
+	private unzipAndProcess(content: string): Promise<any> {
 		const JSZip = require("jszip");
 		const zip = new JSZip();
 		return zip.loadAsync(content, {base64: true})
 			.then((unzippedData: any) => {
-				let counter = 0;
-				Object.keys(unzippedData.files).forEach(function (filename: any) {
-					// console.log("looping");
-					// const course = unzippedData.files[filename];
-					// JSON.parse("course", )
-					// console.log(c
-					counter++;
-					return Promise.resolve(unzippedData);
-				});
-				console.log("looped time: " + counter.toString());
+				return unzippedData;
 			})
 			.catch((err: any) => {
-				console.log("error unzipping");
+				console.log("unzipAndProcess: error unzipping");
 				return Promise.reject(InsightError);
 			});
 	}
@@ -124,43 +119,77 @@ export default class InsightFacade implements IInsightFacade {
 	// if anything failed: return Promise.reject
 	// return Promise.reject(InsightError)
 	private processData(unzippedData: any) {
-		console.log("uo");
-		let counter = 0;
-		Object.keys(unzippedData.files).forEach(function (filename: any) {
-			// console.log("looping");
-			// const course = unzippedData.files[filename];
-			// JSON.parse("course", )
-			// console.log(c
-			console.log("looped time: " + counter.toString());
-			counter++;
-			return;
+		// console.log("processData: unzippedData: " + unzippedData.files);							// when unzippedData comes here it is undefined
+		let containsValidJson;
+		let courses = unzippedData.folder("courses");
+		unzippedData.folder("courses").forEach(function (relativePath: any, file: any) {
+			const variable: Array<Promise<any>> = [];
+			variable.push(file.async("text"));
+			Promise.all(variable).then((data) => {
+				console.log(data);
+				data.forEach((eachData: string) => {
+					const json = JSON.parse(eachData);
+				});
+			});
 		});
-		console.log("looped time: " + counter.toString());
-		// Object.keys(unzippedData.files).forEach(function (name) {
-		// 	console.log("processing data");
-		// 	let data = unzippedData.files[name];
-		// 	console.log(data);
-		// 	const obj = JSON.parse(data, (key, value) => {
-		// 		console.log(obj.toString());
-		// 		console.log("processing data finished");
-		// 	});
+		// Object.keys(unzippedData.files).forEach(function (file: any) {
+		// 	// Course course;
+		// 	console.log(file);
+		// 	try {
+		// 		const obj = JSON.parse(file);
+		// 			// , function(key,value) {
+		// 			// if (key === "result") {
+		// 			// 	console.log(value);
+		// 			//
+		// 			// 	let sections: Section[] = this.createSections(value); // returns an array of type section
+		// 			// 	let course = new Course(sections);
+		// 			// 	// course.toString  write it into a json object
+		// 			// 	// store it into the data folder is the new id
+		// 			//
+		// 			// }
+		// 		// });
+		// 		containsValidJson = true;
+		// 	} catch (err) {
+		// 		console.log(err);
+		// 		console.log("invalid json file couldn't be parsed");
+		// 	}
 		// });
-
-	}
-	/**
-	 * Parsing a string to json format and checking if it is valid
-	 */
-// TODO: figure out how we would access the content inside a single json file
-	private parseJson(str: string) {
-		try {
-			let o = JSON.parse(str);
-			if (o && typeof o === "object") {
-				return Promise.resolve(o);
-			}
-		} catch (error) {
-			return Promise.reject(error);
+		if (!containsValidJson) {
+			return Promise.reject(InsightError);
 		}
 	}
+	// type Section = {
+	// 	avg: "",
+	// 	course: ""
+	// }
 
+	/**
+	 * let sections = list of Sections
+	 * inside each loop:
+	 * let Section section;
+	 * extract all fields (ex. dept) store on a local variable
+	 * instantiate section
+	 * add it to List of Section
+	 * return List after looping through all sections
+	 */
+	private createSections(arrayOfObj: JSON[]): Section[] {
+
+		let sections: Section[] = [];
+		for (const section of arrayOfObj) {
+			// let course: JSON = section["avg"];
+			// section.
+
+			// if ("Section" in section && "Course" in section &&
+			// 	"Avg" in section && "Professor" in section &&
+			// 	"Title" in section && "Pass" in section &&
+			// 	"Fail" in section && "Audit" in section &&
+			// 	"id" in section && "Year" in section) {
+			// 	if (section instanceof Section) {				// idk what this is but i got an error without it
+			// 		sections.push(section);
+			// 	}
+			// }
+		}
+		return sections;
+	}
 }
 

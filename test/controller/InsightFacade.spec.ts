@@ -41,7 +41,7 @@ describe("InsightFacade", function () {
 	// 	fs.removeSync(persistDir);
 	// });
 	describe("test", function () {
-		const content = fs.readFileSync(datasetsToLoad["courses"]).toString("base64");
+		const content = fs.readFileSync(datasetsToLoad["oneValidSection"]).toString("base64");
 		const id: string = "courses";
 		facade = new InsightFacade();
 		it("Should test", function () {
