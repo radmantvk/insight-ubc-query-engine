@@ -31,8 +31,6 @@ export default class InsightFacade implements IInsightFacade {
 			});
 		// data modelling, checking validity of content
 
-		// this.processData(unzippedData);
-		// console.log("unzipAndProcess method finished successfully");
 		this.dataSets.push(id);
 		return Promise.resolve([id]);
 	}
@@ -49,6 +47,9 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public performQuery(query: any): Promise<any[]> {
+		// check query validity
+		// load and instantiate all objects in the folder named by the query id
+		//
 		return Promise.resolve([]);
 	}
 
@@ -114,22 +115,20 @@ export default class InsightFacade implements IInsightFacade {
 	// check validity:1. there is at least 1 valid course section (non-empty file), a valid json format, and in valid directory (courses)
 
 	// const path = "project_team147/data/courses/";
-	// data modelling
 	// storing into disk (not everything)
 	// if anything failed: return Promise.reject
 	// return Promise.reject(InsightError)
 	private processData(unzippedData: any) {
-		// console.log("processData: unzippedData: " + unzippedData.files);							// when unzippedData comes here it is undefined
 		let containsValidJson;
 		let courses = unzippedData.folder("courses");
+		let variable: Array<Promise<any>> = [];
 		unzippedData.folder("courses").forEach(function (relativePath: any, file: any) {
-			const variable: Array<Promise<any>> = [];
 			variable.push(file.async("text"));
-			Promise.all(variable).then((data) => {
-				console.log(data);
-				data.forEach((eachData: string) => {
-					const json = JSON.parse(eachData);
-				});
+		});
+		Promise.all(variable).then((data) => {
+			console.log(data);
+			data.forEach((eachData: string) => {
+				const json = JSON.parse(eachData);
 			});
 		});
 		// Object.keys(unzippedData.files).forEach(function (file: any) {
