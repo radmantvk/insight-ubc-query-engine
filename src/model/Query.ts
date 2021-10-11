@@ -8,6 +8,10 @@ export interface QueryOBJ {
 	OPTIONS?: QueryOptions;
 }
 
+export interface QueryResult {
+	Result: [];
+}
+
 export interface QueryOptions {
 	COLUMNS?: QueryOptions;
 }
@@ -29,6 +33,7 @@ export default class Query {
 
 	/**
 	 * Responsible for the Where block in Query
+	 * rei
 	 * 1) check if the inside of the WHERE is empty, return entire dataset; otherwise continue
 	 * 2) check what type of filter is applied (Logic, M/S Comparator, Negation)
 	 * 3) if Logic: call applyLogic method
@@ -37,40 +42,57 @@ export default class Query {
 	 * @param where : value of the where key, Filter.
 	 */
 	public handleWhere(where: QueryFilter) {
+		let op: string = Object.keys(where)[0];				// operator		-> this will return either "AND", "OR", "GT", etc
+		let queryResult: QueryResult;						// result instantiated
 		if ("" in where) {
 			// empty
-		}else if ("OR" in where) {
+		}else if ("OR" === op) {
 			this.applyLogic("OR");
-		} else if ("AND" in where) {
+		} else if ("AND" === op) {
 			this.applyLogic("AND");
-		} else if ("LT" in where) {
-			this.applyComparator("LT");
-		} else if ("GT" in where) {
-			this.applyComparator("GT");
-		} else if ("EQ" in where) {
-			this.applyComparator("EQ");
-		} else if ("IS" in where) {
-			this.applyComparator("IS");
-		} else if ("NOT" in where) {
-			this.applyNegation("NOT");
+		} else if ("LT" === op || "GT" === op || "EQ" === op) {
+			let number: any = Object.values(op)[0];			// value of the op object at position 0 (this will return the value)
+			this.applyComparator(op,number);
+		} else if ("IS" === op) {
+			let inputString = Object.values(op)[0];
+			this.applyComparator("IS", inputString);
 		} else {
 			// fail
 		}
 	}
 
-	public handleOptions(opts: QueryOptions) {
-		return this;
+	/**
+	 * receive the appropriate values and apply the appropriate comparison.
+	 * @param operator: the type of comparator (GT/EQ/LQ/IS)
+	 * @param operand: the value of the key inside the object
+	 * FOR EXAMPLE: a query with the WHERE block such as :
+	 * WHERE: GT: { courses_avg: 97 },
+	 * 97 would be the operand
+	 */
+	public applyComparator(comparator: any, operand: any) {
+		let key = Object.keys(operand);
 	}
 
-	public applyComparator(comparator: any) {
-		return this;
-	}
-
+	/**
+	 * Logic comparison based on the EBNF
+	 * 1) must contain at least 1 filter
+	 * @param logic: "AND" / "OR"
+	 */
 	public applyLogic(logic: any) {
-		return this;
+
+		if(logic === "AND") {
+			//
+		} else if (logic === "OR") {
+			//
+		}
 	}
 
 	public applyNegation(negation: any) {
+		return this;
+	}
+
+
+	public handleOptions(opts: QueryOptions) {
 		return this;
 	}
 
@@ -80,8 +102,8 @@ export default class Query {
 	 * <id>_<key> is correct format, where id is the id of the dataset
 	 * @param queryKey
 	 */
-	public isValidQueryKey(queryKey: string): boolean {
-		return (queryKey.split("_")[0] === "courses");
+	public isValidQueryKey(queryKey: string, datasetID: string): boolean {
+		return (queryKey.split("_")[0] === datasetID);
 	}
 
 	public keyTranslate(datasetKey: string) {
