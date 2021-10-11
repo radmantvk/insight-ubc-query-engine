@@ -17,22 +17,20 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-		if(!this.isIDAndKindValid(id, kind)) {
-			return Promise.reject(InsightError);
-		}
-		this.unzipAndProcess(content)
-			.then((unzippedData) => {
-				console.log("data has been unzipped and received");
-				return this.processData(unzippedData);
-			})
-			.catch(() => {
-				console.log("data couldn't be unzipped");
+		const isValid = this.isIDAndKindValid(id, kind);
+		const isUnzipped = this.unzip(content);
+		return Promise.all([isValid, isUnzipped])
+			.then((validity) => {
+				console.log(validity[0]); // testing
+				return this.processData(validity[1]);
+			}).then((message) => {
+				console.log(message); // testing
+				this.dataSets.push(id);
+				return Promise.resolve(this.dataSets);
+			}).catch((err) => {
+				console.error(err); // testing
 				return Promise.reject(InsightError);
 			});
-		// data modelling, checking validity of content
-
-		this.dataSets.push(id);
-		return Promise.resolve([id]);
 	}
 
 	public removeDataset(id: string): Promise<string> {
@@ -62,36 +60,28 @@ export default class InsightFacade implements IInsightFacade {
 	 * @param kind the kind of dataset (room or courses)
 	 * @return Promise <string[]>
 	 */
-	private isIDAndKindValid(id: string, kind: InsightDatasetKind): boolean {
+	private isIDAndKindValid(id: string, kind: InsightDatasetKind): Promise<string> {
 		if (kind === InsightDatasetKind.Rooms) {
-			console.log("InsightDatasetKind is Rooms");
-			return false;
+			return Promise.reject("isIDAndKindValid: InsightDatasetKind is Rooms!");
 		} else if (this.dataSets.includes(id)) {
-			console.log("id was already added");
-			return false;
+			return Promise.reject("isIDAndKindValid: id was already added!");
 		} else if (this.dataSets.includes("_")) {
-			console.log("id includes underscore");
-			return false;
+			return Promise.reject("isIDAndKindValid: id includes underscore!");
 		} else {
 			const trimmedID: string = id.replace(" ", "");
 			if (trimmedID.length === 0) {
-				console.log("id was an empty string or only spaces");
-				return false;
+				return Promise.reject("isIDAndKindValid: id was an empty string or only spaces!");
 			}
 		}
-		console.log("id is valid; resolving");
-		return true;
+		return Promise.resolve("isIDAndKindValid: id and kind is valid");
 	}
 
-	private unzipAndProcess(content: string): Promise<any> {
+	private unzip(content: string): Promise<any> {
 		const JSZip = require("jszip");
 		const zip = new JSZip();
 		return zip.loadAsync(content, {base64: true})
-			.then((unzippedData: any) => {
-				return unzippedData;
-			})
 			.catch((err: any) => {
-				console.log("unzipAndProcess: error unzipping");
+				console.log("unzip: failed");
 				return Promise.reject(InsightError);
 			});
 	}
@@ -118,7 +108,10 @@ export default class InsightFacade implements IInsightFacade {
 	// storing into disk (not everything)
 	// if anything failed: return Promise.reject
 	// return Promise.reject(InsightError)
-	private processData(unzippedData: any) {
+	private processData(unzippedData: any): Promise<string> {
+		if (!unzippedData.folder("courses").exists) {
+			return Promise.reject("processData: folder courses doesn't exist!");
+		}
 		let containsValidJson;
 		let courses = unzippedData.folder("courses");
 		let variable: Array<Promise<any>> = [];
@@ -131,31 +124,7 @@ export default class InsightFacade implements IInsightFacade {
 				const json = JSON.parse(eachData);
 			});
 		});
-		// Object.keys(unzippedData.files).forEach(function (file: any) {
-		// 	// Course course;
-		// 	console.log(file);
-		// 	try {
-		// 		const obj = JSON.parse(file);
-		// 			// , function(key,value) {
-		// 			// if (key === "result") {
-		// 			// 	console.log(value);
-		// 			//
-		// 			// 	let sections: Section[] = this.createSections(value); // returns an array of type section
-		// 			// 	let course = new Course(sections);
-		// 			// 	// course.toString  write it into a json object
-		// 			// 	// store it into the data folder is the new id
-		// 			//
-		// 			// }
-		// 		// });
-		// 		containsValidJson = true;
-		// 	} catch (err) {
-		// 		console.log(err);
-		// 		console.log("invalid json file couldn't be parsed");
-		// 	}
-		// });
-		if (!containsValidJson) {
-			return Promise.reject(InsightError);
-		}
+		return Promise.resolve("processData: successfully finished");
 	}
 	// type Section = {
 	// 	avg: "",
