@@ -49,7 +49,7 @@ export default class InsightFacade implements IInsightFacade {
 	public performQuery(query: any): Promise<any[]> {
 		// check query validity
 		// load and instantiate all objects in the folder named by the query id
-		//
+
 		return Promise.resolve([]);
 	}
 
