@@ -59,18 +59,19 @@ export default class Query {
 	}
 
 	public handleOptions(opts: QueryOptions) {
-
+		return this;
 	}
 
 	public applyComparator(comparator: any) {
+		return this;
 	}
 
 	public applyLogic(logic: any) {
-
+		return this;
 	}
 
 	public applyNegation(negation: any) {
-
+		return this;
 	}
 
 
