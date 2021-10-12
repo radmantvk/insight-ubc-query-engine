@@ -31,15 +31,15 @@ describe("InsightFacade", function () {
 		unserialized: "test/resources/archives/unserialized.zip",
 	};
 
-	// before (() => {
-	// 	// This section runs once and loads all datasets specified in the datasetsToLoad object
-	// 	for (const key of Object.keys(datasetsToLoad)) {
-	// 		const content = fs.readFileSync(datasetsToLoad[key]).toString("base64");
-	// 		datasetContents.set(key, content);
-	// 	}
-	// 	// Just in case there is anything hanging around from a previous run
-	// 	fs.removeSync(persistDir);
-	// });
+	before (() => {
+		// This section runs once and loads all datasets specified in the datasetsToLoad object
+		for (const key of Object.keys(datasetsToLoad)) {
+			const content = fs.readFileSync(datasetsToLoad[key]).toString("base64");
+			datasetContents.set(key, content);
+		}
+		// Just in case there is anything hanging around from a previous run
+		fs.removeSync(persistDir);
+	});
 	describe("test", function () {
 		const content = fs.readFileSync(datasetsToLoad["notNamedCourses"]).toString("base64");
 		const id: string = "course";

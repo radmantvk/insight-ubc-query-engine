@@ -2,6 +2,7 @@ import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFou
 import * as fs from "fs-extra";
 import Course from "../model/Course";
 import Section from "../model/Section";
+import Query from "../model/Query";
 
 
 /**
@@ -45,9 +46,16 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public performQuery(query: any): Promise<any[]> {
-		// check query validity
-		// load and instantiate all objects in the folder named by the query id
+		const q1 = new Query();
+		if (!q1.isValidQuery(query)) {
+			// error and return
+		}
 
+		// q1.course = loadCourses(q1.datasetID); // returns an array of courses
+		// const where = ...
+		// const options = ...
+
+		// return q1.process(where, options , key);
 		return Promise.resolve([]);
 	}
 
