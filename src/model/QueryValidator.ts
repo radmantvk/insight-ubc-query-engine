@@ -1,9 +1,10 @@
 import {QueryOBJ} from "./Query";
 
+let datasetID: string;
 
 export default class QueryValidator {
 
-	public queryValidate(query: QueryOBJ): boolean {
+	public queryValidate(query: QueryOBJ) {
 		if (query === "undefined" || query == null || !("WHERE" in query) || !("OPTIONS" in query)) {
 			return false;
 		}
@@ -17,6 +18,10 @@ export default class QueryValidator {
 				OPTIONS = query[key];
 			}
 		});
+
+		if (!this.optionsValidate(OPTIONS)) {
+			return false;
+		}
 
 		let keysFILTER = Object.keys(WHERE);
 		// invalid number of keys in where and options
@@ -35,10 +40,6 @@ export default class QueryValidator {
 			return false;
 		}
 
-
-		if (!this.optionsValidate(OPTIONS)) {
-			return false;
-		}
 		return true;
 	}
 
@@ -172,6 +173,7 @@ export default class QueryValidator {
 		}
 
 		for (let key in columnVal) {
+			datasetID = key.split("_")[0];
 			if (!(this.isValidQueryKey(key, true)) && !(this.isValidQueryKey(key, false))) {
 				return false;
 			}
@@ -212,7 +214,7 @@ export default class QueryValidator {
 	public isValidQueryKey(queryKey: string, isMKey: boolean): boolean {
 		let idString = queryKey.split("_")[0];
 
-		if (idString !== "courses") {
+		if (idString !== datasetID) {
 			return false;
 		}
 

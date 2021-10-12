@@ -69,6 +69,10 @@ export default class InsightFacade implements IInsightFacade {
 		if (!q1.isValidQuery(query)) {
 			// error and return
 		}
+		let isValid = q1.isValidQuery(query);
+		if (isValid) {
+			// let datasetToLoad = q1.getID;
+		}
 
 		// q1.course = loadCourses(q1.datasetID); // returns an array of courses
 		// const where = ...
