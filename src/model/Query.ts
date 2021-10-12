@@ -20,8 +20,9 @@ export interface QueryResult {
 
 export default class Query {
 
-	public isValidQuery(query: QueryOBJ): boolean {
+	public isValidQuery(query: any): boolean {
 		let queryValidator: QueryValidator = new QueryValidator();
+		let hello = query.OPTIONS.COLUMNS;
 		return queryValidator.queryValidate(query);
 	}
 
@@ -85,5 +86,5 @@ export default class Query {
 	public handleOptions(opts: QueryOptions) {
 		return this;
 	}
-  
+
 }
