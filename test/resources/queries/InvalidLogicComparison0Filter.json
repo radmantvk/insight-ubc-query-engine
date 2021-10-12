@@ -1,0 +1,20 @@
+{
+  "title": "invalid Logic Comparison 0 Filter",
+  "input":{
+            "WHERE": {
+              "AND": [
+                {
+
+                }
+              ]
+            },
+            "OPTIONS": {
+              "COLUMNS": [
+                "courses_avg"
+              ],
+              "ORDER": "courses_avg"
+            }
+          },
+  "errorExpected": true,
+  "with": "InsightError"
+}

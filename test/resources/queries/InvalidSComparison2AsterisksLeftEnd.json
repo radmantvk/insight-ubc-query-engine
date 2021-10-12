@@ -1,0 +1,18 @@
+{
+  "title": "Invalid SComparison with 2 asterisks left end",
+  "input":{
+            "WHERE": {
+              "IS": {
+                "courses_dept": "**aanb"
+              }
+            },
+            "OPTIONS": {
+              "COLUMNS": [
+                "courses_avg"
+              ],
+              "ORDER": "courses_avg"
+            }
+          },
+  "errorExpected": true,
+  "with": "InsightError"
+}
