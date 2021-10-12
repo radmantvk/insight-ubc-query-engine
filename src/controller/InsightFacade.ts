@@ -41,9 +41,15 @@ export default class InsightFacade implements IInsightFacade {
 			console.log("no such id exists");
 			return Promise.reject(NotFoundError);
 		}
-		// TODO processRemove() to remove dataset from the disk or any other fields
 		this.removeData(id);
-		return Promise.resolve(id);
+		return fs.remove("./data/" + id)
+			.then(() => {
+				return Promise.resolve(id);
+			})
+			.catch((err) => {
+				console.log(err.toString());
+				return Promise.reject(err);
+			});
 	}
 
 	public performQuery(query: any): Promise<any[]> {
