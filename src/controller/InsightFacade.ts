@@ -4,6 +4,7 @@ import Course from "../model/Course";
 import Section from "../model/Section";
 import JSZip, {JSZipObject} from "jszip";
 import Dataset from "../model/Dataset";
+import Query from "../model/Query";
 
 
 /**
@@ -47,15 +48,17 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public performQuery(query: any): Promise<any[]> {
-		// const q1 = new Query()
-		// if (!q1.isQueryValid(query)) {
-		// 	// error and return
-		// }
+		const q1 = new Query();
+		if (!q1.isValidQuery(query)) {
+			// error and return
+		}
+
 		// q1.course = loadCourses(q1.datasetID); // returns an array of courses
 		// const where = ...
 		// const options = ...
+
 		// return q1.process(where, options , key);
-		return Promise.reject([]);
+		return Promise.resolve([]);
 	}
 
 	public listDatasets(): Promise<InsightDataset[]> {

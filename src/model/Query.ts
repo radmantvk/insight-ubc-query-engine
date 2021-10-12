@@ -1,19 +1,17 @@
-// import Options from "./Options";
-// import Body from "./Body";
-// import Filter from "./Filter";
-
+import QueryValidator from "./QueryValidator";
 
 export interface QueryOBJ {
-	WHERE?: any;
+	WHERE?: QueryFilter;
 	OPTIONS?: QueryOptions;
 }
 
 export interface QueryOptions {
 	COLUMNS?: QueryOptions;
+	// order
 }
 
 export interface QueryFilter {
-	[key: string]: any											// Filter can be Logic (NOT/AND), MComp (LT/GT/EQ), SComp (IS), NEG (NOT)
+	[key: string]: any
 }
 
 export interface QueryResult {
@@ -21,27 +19,22 @@ export interface QueryResult {
 }
 
 export default class Query {
-	// private datasetID: string;
-	constructor() {
-		return this;
-	}
-
 
 	public isValidQuery(query: QueryOBJ): boolean {
-		return ("WHERE" in query && "OPTIONS" in query);			// check if query contains a WHERE and OPTIONS block
-		// validate that there is only 1 filter if any
-		// containsMkey()
+		let queryValidator: QueryValidator = new QueryValidator();
+		return queryValidator.queryValidate(query);
 	}
 
-	public process(): Promise<any> { // inputs where and options
-		// // figure out
-		// this.handleWhere(where);
-		// // with handle Where we need to store the appropriate sections in a separate array
-		// this.handleOptions(options);
-		// // which folder/dataset to load
-		// // instantiate all sections
-		return Promise.resolve();
-	}
+	// TODO processQuery
+	// public process(where, options): Promise<any> {
+	// 	// figure out
+	// 	this.handleWhere(where);
+	// 	// with handle Where we need to store the appropriate sections in a separate array
+	// 	this.handleOptions(options);
+	// 	// which folder/dataset to load
+	// 	// instantiate all sections
+	//
+	// }
 
 
 	/**
@@ -75,30 +68,13 @@ export default class Query {
 		}
 	}
 
-	/**
-	 * receive the appropriate values and apply the appropriate comparison.
-	 * @param operator: the type of comparator (GT/EQ/LQ/IS)
-	 * @param operand: the value of the key inside the object
-	 * FOR EXAMPLE: a query with the WHERE block such as :
-	 * WHERE: GT: { courses_avg: 97 },
-	 * 97 would be the operand
-	 */
+
 	public applyComparator(comparator: any, operand: any) {
-		let key = Object.keys(operand);
+		return this;
 	}
 
-	/**
-	 * Logic comparison based on the EBNF
-	 * 1) must contain at least 1 filter
-	 * @param logic: "AND" / "OR"
-	 */
 	public applyLogic(logic: any) {
-
-		if(logic === "AND") {
-			//
-		} else if (logic === "OR") {
-			//
-		}
+		return this;
 	}
 
 	public applyNegation(negation: any) {
@@ -109,26 +85,5 @@ export default class Query {
 	public handleOptions(opts: QueryOptions) {
 		return this;
 	}
-
-	public keyTranslate(datasetKey: string) {
-		if (datasetKey === "dept") {
-			return "Subject";
-		}
-		if (datasetKey === "id") {
-			return "Course";
-		}
-		if (datasetKey === "avg" || datasetKey === "title" || datasetKey === "pass" || datasetKey === "fail"
-			|| datasetKey === "audit" || datasetKey === "year") {
-			let newDatasetKey = datasetKey.charAt(0).toUpperCase() + datasetKey.slice(1);
-			return newDatasetKey;
-		}
-		if (datasetKey === "instructor") {
-			return "Professor";
-		}
-		if (datasetKey === "uuid") {
-			return "id";
-		}
-	}
-
-
+  
 }
