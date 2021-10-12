@@ -18,14 +18,35 @@ export interface QueryResult {
 	Result: [];
 }
 
-export default class Query {
 
-	public isValidQuery(query: QueryOBJ): boolean {
-		let queryValidator: QueryValidator = new QueryValidator();
-		return queryValidator.queryValidate(query);
+let datasetID: string;
+export default class Query {
+	private readonly _datasetID: string = "";
+	private isQueryValid = false;
+
+	public isValidQuery(query: any) {
+		// let queryValidator: QueryValidator = new QueryValidator();
+		// if (!queryValidator.queryValidate(query)) {
+		// 	return false;
+		// }
+		// let isValid = queryValidator.queryValidate(query);
+		this.isQueryValid = true; // set it to true if valid
+		let hello = query.OPTIONS.COLUMNS[0];
+		console.log(hello.toString());
+		// jif valid, what is the id
+
+		return true;
 	}
 
-	// TODO processQuery
+
+	private get datasetID() {
+		if (!this.isQueryValid) {
+			// error because its invalid
+		}
+		return this._datasetID;
+	}
+
+// TODO processQuery
 	// public process(where, options): Promise<any> {
 	// 	// figure out
 	// 	this.handleWhere(where);
@@ -51,8 +72,8 @@ export default class Query {
 		// if (Object.keys(where).length === 0)
 		let op: string = Object.keys(where)[0];				// operator		-> this will return either "AND", "OR", "GT", etc
 		let queryResult: QueryResult;						// result instantiated
-		if ("" in where) {
-			// empty
+		if (Object.keys(where).length === 0) {
+			return false;
 		}else if ("OR" === op) {
 			this.applyLogic("OR");
 		} else if ("AND" === op) {
@@ -85,5 +106,5 @@ export default class Query {
 	public handleOptions(opts: QueryOptions) {
 		return this;
 	}
-  
+
 }

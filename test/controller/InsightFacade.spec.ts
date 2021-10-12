@@ -539,58 +539,58 @@ describe("InsightFacade", function () {
 	//  * You should not need to modify it; instead, add additional files to the queries directory.
 	//  * You can still make tests the normal way, this is just a convenient tool for a majority of queries.
 	//  */
-	// describe("PerformQuery", () => {
-	// 	before(function () {
-	// 		console.info(`Before: ${this.test?.parent?.title}`);
-	//
-	// 		facade = new InsightFacade();
-	//
-	// 		// Load the datasets specified in datasetsToQuery and add them to InsightFacade.
-	// 		// Will *fail* if there is a problem reading ANY dataset.
-	// 		const loadDatasetPromises = [
-	// 			facade.addDataset("courses", datasetContents.get("courses") ?? "", InsightDatasetKind.Courses),
-	// 		];
-	//
-	// 		return Promise.all(loadDatasetPromises);
-	// 	});
-	//
-	// 	after(function () {
-	// 		console.info(`After: ${this.test?.parent?.title}`);
-	// 		fs.removeSync(persistDir);
-	// 	});
-	//
-	// 	type PQErrorKind = "ResultTooLargeError" | "InsightError";
-	//
-	// 	testFolder<any, any[], PQErrorKind>(
-	// 		"Dynamic InsightFacade PerformQuery tests",
-	// 		(input) => facade.performQuery(input),
-	// 		"./test/resources/queries",
-	// 		{
-	// 			errorValidator: (error): error is PQErrorKind =>
-	// 				error === "ResultTooLargeError" || error === "InsightError",
-	// 			assertOnResult(expected: any[], actual: any, input: any) {
-	// 				// orderKey == "courses_avg"
-	// 				const orderKey = input.OPTIONS.ORDER;
-	// 				expect(actual).to.be.an.instanceof(Array);
-	// 				expect(actual).to.have.length(expected.length);
-	// 				expect(actual).to.have.deep.members(expected);
-	// 				// TODO: check that actual is sorted using orderKey (might need another function)
-	// 				// if (orderKey !== undefined) {
-	// 				// 	// check the order of the actual array
-	// 				// 	for (let i = 1; i < actual.length; i = i + 1) {
-	// 				// 		// actual[0][orderKey] = 90.02
-	// 				// 		actual[i - 1][orderKey] <= actual[i][orderKey];
-	// 				// 	}
-	// 				// }
-	// 			},
-	// 			assertOnError(expected, actual: any) {
-	// 				if (expected === "ResultTooLargeError") {
-	// 					expect(actual).to.be.instanceof(ResultTooLargeError);
-	// 				} else {
-	// 					expect(actual).to.be.instanceof(InsightError);
-	// 				}
-	// 			},
-	// 		}
-	// 	);
-	// });
+	describe("PerformQuery", () => {
+		before(function () {
+			console.info(`Before: ${this.test?.parent?.title}`);
+
+			facade = new InsightFacade();
+
+			// Load the datasets specified in datasetsToQuery and add them to InsightFacade.
+			// Will *fail* if there is a problem reading ANY dataset.
+			const loadDatasetPromises = [
+				facade.addDataset("courses", datasetContents.get("courses") ?? "", InsightDatasetKind.Courses),
+			];
+
+			return Promise.all(loadDatasetPromises);
+		});
+
+		after(function () {
+			console.info(`After: ${this.test?.parent?.title}`);
+			fs.removeSync(persistDir);
+		});
+
+		type PQErrorKind = "ResultTooLargeError" | "InsightError";
+
+		testFolder<any, any[], PQErrorKind>(
+			"Dynamic InsightFacade PerformQuery tests",
+			(input) => facade.performQuery(input),
+			"./test/resources/queries",
+			{
+				errorValidator: (error): error is PQErrorKind =>
+					error === "ResultTooLargeError" || error === "InsightError",
+				assertOnResult(expected: any[], actual: any, input: any) {
+					// orderKey == "courses_avg"
+					const orderKey = input.OPTIONS.ORDER;
+					expect(actual).to.be.an.instanceof(Array);
+					expect(actual).to.have.length(expected.length);
+					expect(actual).to.have.deep.members(expected);
+					// TODO: check that actual is sorted using orderKey (might need another function)
+					// if (orderKey !== undefined) {
+					// 	// check the order of the actual array
+					// 	for (let i = 1; i < actual.length; i = i + 1) {
+					// 		// actual[0][orderKey] = 90.02
+					// 		actual[i - 1][orderKey] <= actual[i][orderKey];
+					// 	}
+					// }
+				},
+				assertOnError(expected, actual: any) {
+					if (expected === "ResultTooLargeError") {
+						expect(actual).to.be.instanceof(ResultTooLargeError);
+					} else {
+						expect(actual).to.be.instanceof(InsightError);
+					}
+				},
+			}
+		);
+	});
 });
