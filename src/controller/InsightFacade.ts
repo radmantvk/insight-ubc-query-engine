@@ -2,6 +2,8 @@ import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFou
 import * as fs from "fs-extra";
 import Course from "../model/Course";
 import Section from "../model/Section";
+import JSZip, {JSZipObject} from "jszip";
+import Dataset from "../model/Dataset";
 
 
 /**
@@ -13,22 +15,22 @@ export default class InsightFacade implements IInsightFacade {
 	private dataSets: string[] = [];
 
 	constructor() {
-		console.trace("InsightFacadeImpl::init()");
+		// console.trace("InsightFacadeImpl::init()");
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		const isValid = this.isIDAndKindValid(id, kind);
 		const isUnzipped = this.unzip(content);
 		return Promise.all([isValid, isUnzipped])
-			.then((validity) => {
-				console.log(validity[0]); // testing
-				return this.processData(validity[1]);
+			.then((promises) => {
+				console.log(promises[0]); // testing
+				return this.processData(id, promises[1]);
 			}).then((message) => {
 				console.log(message); // testing
 				this.dataSets.push(id);
 				return Promise.resolve(this.dataSets);
 			}).catch((err) => {
-				console.error(err); // testing
+				// console.log(err); // testing
 				return Promise.reject(InsightError);
 			});
 	}
@@ -45,10 +47,15 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public performQuery(query: any): Promise<any[]> {
-		// check query validity
-		// load and instantiate all objects in the folder named by the query id
-
-		return Promise.resolve([]);
+		// const q1 = new Query()
+		// if (!q1.isQueryValid(query)) {
+		// 	// error and return
+		// }
+		// q1.course = loadCourses(q1.datasetID); // returns an array of courses
+		// const where = ...
+		// const options = ...
+		// return q1.process(where, options , key);
+		return Promise.reject([]);
 	}
 
 	public listDatasets(): Promise<InsightDataset[]> {
@@ -77,7 +84,7 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	private unzip(content: string): Promise<any> {
-		const JSZip = require("jszip");
+		// TODO: check to see if content is a zipfile
 		const zip = new JSZip();
 		return zip.loadAsync(content, {base64: true})
 			.catch((err: any) => {
@@ -108,23 +115,58 @@ export default class InsightFacade implements IInsightFacade {
 	// storing into disk (not everything)
 	// if anything failed: return Promise.reject
 	// return Promise.reject(InsightError)
-	private processData(unzippedData: any): Promise<string> {
-		if (!unzippedData.folder("courses").exists) {
-			return Promise.reject("processData: folder courses doesn't exist!");
+	private processData(id: string, unzippedData: any): Promise<any> {
+		if (!this.directoryCoursesExists(unzippedData)) {
+			console.log("processData: Directory courses not found!");
+			return Promise.reject(InsightError);
 		}
-		let containsValidJson;
-		let courses = unzippedData.folder("courses");
-		let variable: Array<Promise<any>> = [];
-		unzippedData.folder("courses").forEach(function (relativePath: any, file: any) {
-			variable.push(file.async("text"));
+		let listOfFilesToBeLoaded: Array<Promise<any>> = [];
+		unzippedData.folder("courses").forEach(function (relativePath: any, file: JSZipObject) {
+			listOfFilesToBeLoaded.push(file.async("text")); // what does .async do here?
 		});
-		Promise.all(variable).then((data) => {
-			console.log(data);
-			data.forEach((eachData: string) => {
-				const json = JSON.parse(eachData);
+		if (!fs.pathExistsSync("./data/")) {
+			fs.mkdirSync("./data/");
+		}
+		let courses: Course[] = [];
+		return Promise.all(listOfFilesToBeLoaded).then((data) => {
+			data.forEach((courseObject: string) => {
+				const sectionArr = JSON.parse(courseObject).result;
+				const sections: Section[] = this.createSections(sectionArr);
+				if (sections.length > 0) {
+					const courseID = sections[0].dept + "-" + sections[0].id; // assuming sections is not empty
+					const course: Course = new Course(courseID, sections);
+					courses.push(course);
+				}
 			});
+			let listOfCoursesToBeStored: Array<Promise<any>> = [];
+			this.createDirectory(id)
+				.then(() => {
+					for (const course of courses) {
+						const path = "./data/" + id + "/" +  course.id + ".json";
+						listOfFilesToBeLoaded.push(fs.writeJSON(path, course.toJson()));
+					}
+				});
+			return Promise.all(listOfCoursesToBeStored);
 		});
-		return Promise.resolve("processData: successfully finished");
+	}
+	private createDirectory(id: string): Promise<any> {
+		if (fs.pathExistsSync("./data/")) {
+			return fs.mkdir("./data/" + id);
+		} else {
+			return fs.mkdir("./data/")
+				.then(() => {
+					return fs.mkdir("./data/" + id);
+				});
+		}
+	}
+
+	private directoryCoursesExists(data: any): boolean {
+		for (const file of Object.keys(data.files)) {
+			if (file.toString().split("/")[0] === "courses") {
+				return true;
+			}
+		}
+		return false;
 	}
 	// type Section = {
 	// 	avg: "",
@@ -140,24 +182,20 @@ export default class InsightFacade implements IInsightFacade {
 	 * add it to List of Section
 	 * return List after looping through all sections
 	 */
-	private createSections(arrayOfObj: JSON[]): Section[] {
-
-		let sections: Section[] = [];
-		for (const section of arrayOfObj) {
-			// let course: JSON = section["avg"];
-			// section.
-
-			// if ("Section" in section && "Course" in section &&
-			// 	"Avg" in section && "Professor" in section &&
-			// 	"Title" in section && "Pass" in section &&
-			// 	"Fail" in section && "Audit" in section &&
-			// 	"id" in section && "Year" in section) {
-			// 	if (section instanceof Section) {				// idk what this is but i got an error without it
-			// 		sections.push(section);
-			// 	}
-			// }
+	private createSections(sections: any): Section[] {
+		let listOfSections: Section[] = [];
+		for (const section of sections) {
+			if ("Section" in section && "Course" in section &&
+				"Avg" in section && "Professor" in section &&
+				"Title" in section && "Pass" in section &&
+				"Fail" in section && "Audit" in section &&
+				"id" in section && "Year" in section) {
+				const s: Section = new Section(section.Subject, section.Course, section.Avg, section.Professor,
+					section.Title, section.Pass, section.Fail, section.Audit, section.id, section.Year);
+				listOfSections.push(s);
+			}
 		}
-		return sections;
+		return listOfSections;
 	}
 }
 

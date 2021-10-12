@@ -8,10 +8,6 @@ export interface QueryOBJ {
 	OPTIONS?: QueryOptions;
 }
 
-export interface QueryResult {
-	Result: [];
-}
-
 export interface QueryOptions {
 	COLUMNS?: QueryOptions;
 }
@@ -20,14 +16,31 @@ export interface QueryFilter {
 	[key: string]: any											// Filter can be Logic (NOT/AND), MComp (LT/GT/EQ), SComp (IS), NEG (NOT)
 }
 
+export interface QueryResult {
+	Result: [];
+}
 
 export default class Query {
+	// private datasetID: string;
 	constructor() {
 		return this;
 	}
 
-	public isQueryValid(query: QueryOBJ): boolean {
+
+	public isValidQuery(query: QueryOBJ): boolean {
 		return ("WHERE" in query && "OPTIONS" in query);			// check if query contains a WHERE and OPTIONS block
+		// validate that there is only 1 filter if any
+		// containsMkey()
+	}
+
+	public process(): Promise<any> { // inputs where and options
+		// // figure out
+		// this.handleWhere(where);
+		// // with handle Where we need to store the appropriate sections in a separate array
+		// this.handleOptions(options);
+		// // which folder/dataset to load
+		// // instantiate all sections
+		return Promise.resolve();
 	}
 
 
@@ -42,6 +55,7 @@ export default class Query {
 	 * @param where : value of the where key, Filter.
 	 */
 	public handleWhere(where: QueryFilter) {
+		// if (Object.keys(where).length === 0)
 		let op: string = Object.keys(where)[0];				// operator		-> this will return either "AND", "OR", "GT", etc
 		let queryResult: QueryResult;						// result instantiated
 		if ("" in where) {
@@ -94,16 +108,6 @@ export default class Query {
 
 	public handleOptions(opts: QueryOptions) {
 		return this;
-	}
-
-
-	/**
-	 * Check if a query key is valid
-	 * <id>_<key> is correct format, where id is the id of the dataset
-	 * @param queryKey
-	 */
-	public isValidQueryKey(queryKey: string, datasetID: string): boolean {
-		return (queryKey.split("_")[0] === datasetID);
 	}
 
 	public keyTranslate(datasetKey: string) {
