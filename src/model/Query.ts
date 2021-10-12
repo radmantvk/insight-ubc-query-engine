@@ -20,8 +20,6 @@ export interface QueryFilter {
 
 
 export default class Query {
-	constructor() {
-	}
 
 	public isValidQuery(query: QueryOBJ): boolean {
 		let queryValidator: QueryValidator = new QueryValidator();
