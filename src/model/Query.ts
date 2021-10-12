@@ -5,10 +5,6 @@ export interface QueryOBJ {
 	OPTIONS?: QueryOptions;
 }
 
-export interface QueryResult {
-	Result: [];
-}
-
 export interface QueryOptions {
 	COLUMNS?: QueryOptions;
 	// order
@@ -18,6 +14,9 @@ export interface QueryFilter {
 	[key: string]: any
 }
 
+export interface QueryResult {
+	Result: [];
+}
 
 export default class Query {
 
@@ -49,6 +48,7 @@ export default class Query {
 	 * @param where : value of the where key, Filter.
 	 */
 	public handleWhere(where: QueryFilter) {
+		// if (Object.keys(where).length === 0)
 		let op: string = Object.keys(where)[0];				// operator		-> this will return either "AND", "OR", "GT", etc
 		let queryResult: QueryResult;						// result instantiated
 		if ("" in where) {
@@ -85,5 +85,5 @@ export default class Query {
 	public handleOptions(opts: QueryOptions) {
 		return this;
 	}
-
+  
 }

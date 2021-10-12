@@ -1,8 +1,8 @@
 
 
 export default class Section {
-	private readonly dept: string; // saved as subject
-	private readonly id: string; // file name
+	private readonly _dept: string; // saved as subject "aanb"
+	private readonly _id: string; // file name  "551"
 	private readonly avg: number; // possibly sort base on average
 	private readonly instructor: string;
 	private readonly title: string;
@@ -14,8 +14,8 @@ export default class Section {
 
 	constructor(dept: string, id: string, avg: number, instructor: string, title: string, pass: number,
 		fail: number, audit: number, uuid: string, year: number) {
-		this.dept = dept;
-		this.id = id;
+		this._dept = dept;
+		this._id = id;
 		this.avg = avg;
 		this.instructor = instructor;
 		this.title = title;
@@ -28,8 +28,8 @@ export default class Section {
 
 	public toJson(): string {
 		return JSON.stringify({
-			dept: this.dept,
-			id: this.id,
+			dept: this._dept,
+			id: this._id,
 			avg: this.avg,
 			instructor: this.instructor,
 			title: this.title,
@@ -39,6 +39,14 @@ export default class Section {
 			uuid: this.uuid,
 			year: this.year
 		});
+	}
+
+	public get dept(): string {
+		return this._dept;
+	}
+
+	public get id(): string {
+		return this._id;
 	}
 }
 

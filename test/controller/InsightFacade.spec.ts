@@ -29,6 +29,7 @@ describe("InsightFacade", function () {
 		notZipFile: "test/resources/archives/notZipFile.jpg",
 		noValidSections: "test/resources/archives/noValidSections.zip",
 		unserialized: "test/resources/archives/unserialized.zip",
+		test : "test/resources/archives/test.zip"
 	};
 
 	before (() => {
@@ -41,7 +42,8 @@ describe("InsightFacade", function () {
 		fs.removeSync(persistDir);
 	});
 	describe("test", function () {
-		const content = fs.readFileSync(datasetsToLoad["notNamedCourses"]).toString("base64");
+		fs.removeSync(persistDir);
+		const content = fs.readFileSync(datasetsToLoad["test"]).toString("base64");
 		const id: string = "course";
 		facade = new InsightFacade();
 		it("Should test", function () {
