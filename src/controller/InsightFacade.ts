@@ -14,7 +14,7 @@ import Query from "../model/Query";
  */
 export default class InsightFacade implements IInsightFacade {
 	private dataSets: string[] = [];
-
+	private insightDatasets: InsightDataset[] = [];
 	constructor() {
 		// console.trace("InsightFacadeImpl::init()");
 	}
@@ -28,11 +28,22 @@ export default class InsightFacade implements IInsightFacade {
 				return this.processData(id, promises[1]);
 			}).then((message) => {
 				console.log(message); // testing
+				// this.dataSets.push(id);
+				let insight: InsightDataset = {
+					id : id,
+					kind : kind,
+					numRows : message
+				};
+				this.insightDatasets.push(insight);
 				this.dataSets.push(id);
-				return Promise.resolve(this.dataSets);
+				let listOfAddedIDs: string[] = [];
+				for (const dataset of this.insightDatasets) {
+					listOfAddedIDs.push(dataset.id);
+				}
+				return Promise.resolve(listOfAddedIDs);
 			}).catch((err) => {
-				// console.log(err); // testing
-				return Promise.reject(InsightError);
+				console.log(err.toString()); // testing
+				return Promise.reject(new InsightError(err));
 			});
 	}
 
@@ -40,11 +51,17 @@ export default class InsightFacade implements IInsightFacade {
 		// check the id is valid
 		if (!this.dataSets.includes(id)) {
 			console.log("no such id exists");
-			return Promise.reject(NotFoundError);
+			return Promise.reject(new NotFoundError());
 		}
-		// TODO processRemove() to remove dataset from the disk or any other fields
 		this.removeData(id);
-		return Promise.resolve(id);
+		return fs.remove("./data/" + id)
+			.then(() => {
+				return Promise.resolve(id);
+			})
+			.catch((err) => {
+				console.log(err.toString());
+				return Promise.reject(err);
+			});
 	}
 
 	public performQuery(query: any): Promise<any[]> {
@@ -66,7 +83,7 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public listDatasets(): Promise<InsightDataset[]> {
-		return Promise.resolve([]);
+		return Promise.resolve(this.insightDatasets);
 	}
 	/**
 	 * Checks the id and kind of dataset validity
@@ -76,15 +93,16 @@ export default class InsightFacade implements IInsightFacade {
 	 */
 	private isIDAndKindValid(id: string, kind: InsightDatasetKind): Promise<string> {
 		if (kind === InsightDatasetKind.Rooms) {
-			return Promise.reject("isIDAndKindValid: InsightDatasetKind is Rooms!");
+			return Promise.reject(new InsightError()); // "isIDAndKindValid: InsightDatasetKind is Rooms!"
 		} else if (this.dataSets.includes(id)) {
-			return Promise.reject("isIDAndKindValid: id was already added!");
-		} else if (this.dataSets.includes("_")) {
-			return Promise.reject("isIDAndKindValid: id includes underscore!");
+			return Promise.reject(new InsightError()); // "isIDAndKindValid: id was already added!")
+		} else if (id.includes("_")) {
+			return Promise.reject(new InsightError()); // "isIDAndKindValid: id includes underscore!"
 		} else {
-			const trimmedID: string = id.replace(" ", "");
+			let trimmedID: string = id.replace(/ /g, "");
+
 			if (trimmedID.length === 0) {
-				return Promise.reject("isIDAndKindValid: id was an empty string or only spaces!");
+				return Promise.reject(new InsightError()); // "isIDAndKindValid: id was an empty string or only spaces!"
 			}
 		}
 		return Promise.resolve("isIDAndKindValid: id and kind is valid");
@@ -96,7 +114,7 @@ export default class InsightFacade implements IInsightFacade {
 		return zip.loadAsync(content, {base64: true})
 			.catch((err: any) => {
 				console.log("unzip: failed");
-				return Promise.reject(InsightError);
+				return Promise.reject(new InsightError(err));
 			});
 	}
 
@@ -104,6 +122,11 @@ export default class InsightFacade implements IInsightFacade {
 		this.dataSets.forEach((value, index) => {
 			if(value === id) {
 				this.dataSets.splice(index,1);
+			}
+		});
+		this.insightDatasets.forEach((value, index) => {
+			if (value.id === id) {
+				this.insightDatasets.splice(index, 1);
 			}
 		});
 	}
@@ -125,7 +148,7 @@ export default class InsightFacade implements IInsightFacade {
 	private processData(id: string, unzippedData: any): Promise<any> {
 		if (!this.directoryCoursesExists(unzippedData)) {
 			console.log("processData: Directory courses not found!");
-			return Promise.reject(InsightError);
+			return Promise.reject(new InsightError());
 		}
 		let listOfFilesToBeLoaded: Array<Promise<any>> = [];
 		unzippedData.folder("courses").forEach(function (relativePath: any, file: JSZipObject) {
@@ -136,13 +159,20 @@ export default class InsightFacade implements IInsightFacade {
 		}
 		let courses: Course[] = [];
 		return Promise.all(listOfFilesToBeLoaded).then((data) => {
+			let counter = 0;
 			data.forEach((courseObject: string) => {
-				const sectionArr = JSON.parse(courseObject).result;
-				const sections: Section[] = this.createSections(sectionArr);
-				if (sections.length > 0) {
-					const courseID = sections[0].dept + "-" + sections[0].id; // assuming sections is not empty
-					const course: Course = new Course(courseID, sections);
-					courses.push(course);
+				let sections: Section[] = [];
+				try {
+					const sectionArr = JSON.parse(courseObject);
+					sections = this.createSections(sectionArr.result);
+					counter += sections.length;
+					if (sections.length > 0) {
+						const courseID = sections[0].dept + "-" + sections[0].id; // assuming sections is not empty
+						const course: Course = new Course(courseID, sections);
+						courses.push(course);
+					}
+				} catch (e) {
+					console.log("do nothing to the invalid json file");
 				}
 			});
 			let listOfCoursesToBeStored: Array<Promise<any>> = [];
@@ -153,7 +183,10 @@ export default class InsightFacade implements IInsightFacade {
 						listOfFilesToBeLoaded.push(fs.writeJSON(path, course.toJson()));
 					}
 				});
-			return Promise.all(listOfCoursesToBeStored);
+			return Promise.all(listOfCoursesToBeStored)
+				.then(() => {
+					return counter;
+				});
 		});
 	}
 	private createDirectory(id: string): Promise<any> {
@@ -175,10 +208,6 @@ export default class InsightFacade implements IInsightFacade {
 		}
 		return false;
 	}
-	// type Section = {
-	// 	avg: "",
-	// 	course: ""
-	// }
 
 	/**
 	 * let sections = list of Sections

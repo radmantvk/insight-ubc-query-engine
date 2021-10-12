@@ -35,7 +35,10 @@ export default class Query {
 		console.log(hello.toString());
 		// jif valid, what is the id
 
-		return true;
+	public isValidQuery(query: any): boolean {
+		let queryValidator: QueryValidator = new QueryValidator();
+		let hello = query.OPTIONS.COLUMNS;
+		return queryValidator.queryValidate(query);
 	}
 
 
