@@ -24,10 +24,10 @@ export default class InsightFacade implements IInsightFacade {
 		const isUnzipped = this.unzip(content);
 		return Promise.all([isValid, isUnzipped])
 			.then((promises) => {
-				console.log(promises[0]); // testing
+				// console.log(promises[0]); // testing
 				return this.processData(id, promises[1]);
 			}).then((message) => {
-				console.log(message); // testing
+				// console.log(message); // testing
 				// this.dataSets.push(id);
 				let insight: InsightDataset = {
 					id : id,
@@ -42,25 +42,28 @@ export default class InsightFacade implements IInsightFacade {
 				}
 				return Promise.resolve(listOfAddedIDs);
 			}).catch((err) => {
-				console.log(err.toString()); // testing
+				// console.log(err.toString()); // testing
 				return Promise.reject(new InsightError(err));
 			});
 	}
 
 	public removeDataset(id: string): Promise<string> {
 		// check the id is valid
-		if (!this.dataSets.includes(id)) {
-			console.log("no such id exists");
-			return Promise.reject(new NotFoundError());
-		}
-		this.removeData(id);
-		return fs.remove("./data/" + id)
+		return this.isIDAndKindValid(id, InsightDatasetKind.Courses)
 			.then(() => {
-				return Promise.resolve(id);
-			})
-			.catch((err) => {
-				console.log(err.toString());
-				return Promise.reject(err);
+				if (!this.dataSets.includes(id)) {
+					// console.log("no such id exists");
+					return Promise.reject(new NotFoundError());
+				}
+				this.removeData(id);
+				return fs.remove("./data/" + id)
+					.then(() => {
+						return Promise.resolve(id);
+					})
+					.catch((err) => {
+						// console.log(err.toString());
+						return Promise.reject(err);
+					});
 			});
 	}
 
@@ -73,6 +76,7 @@ export default class InsightFacade implements IInsightFacade {
 		if (isValid) {
 			// let datasetToLoad = q1.getID;
 		}
+		// const listOfCourses: Course[] = loadDataSet(q1.datasetID);
 
 		// q1.course = loadCourses(q1.datasetID); // returns an array of courses
 		// const where = ...
@@ -85,6 +89,11 @@ export default class InsightFacade implements IInsightFacade {
 	public listDatasets(): Promise<InsightDataset[]> {
 		return Promise.resolve(this.insightDatasets);
 	}
+
+	// private loadDataSet(datasetID: string): Course[] {
+	// 	let data = fs.readFileSync("./data/" + datasetID);
+	// 	return [];
+	// }
 	/**
 	 * Checks the id and kind of dataset validity
 	 * @param id the id of the dataset
@@ -113,7 +122,7 @@ export default class InsightFacade implements IInsightFacade {
 		const zip = new JSZip();
 		return zip.loadAsync(content, {base64: true})
 			.catch((err: any) => {
-				console.log("unzip: failed");
+				// console.log("unzip: failed");
 				return Promise.reject(new InsightError(err));
 			});
 	}
@@ -147,7 +156,7 @@ export default class InsightFacade implements IInsightFacade {
 	// return Promise.reject(InsightError)
 	private processData(id: string, unzippedData: any): Promise<any> {
 		if (!this.directoryCoursesExists(unzippedData)) {
-			console.log("processData: Directory courses not found!");
+			// console.log("processData: Directory courses not found!");
 			return Promise.reject(new InsightError());
 		}
 		let listOfFilesToBeLoaded: Array<Promise<any>> = [];
@@ -159,6 +168,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 		let courses: Course[] = [];
 		return Promise.all(listOfFilesToBeLoaded).then((data) => {
+			let containsOneOrMoreJsonFiles = false;
 			let counter = 0;
 			data.forEach((courseObject: string) => {
 				let sections: Section[] = [];
@@ -171,10 +181,14 @@ export default class InsightFacade implements IInsightFacade {
 						const course: Course = new Course(courseID, sections);
 						courses.push(course);
 					}
+					containsOneOrMoreJsonFiles = true;
 				} catch (e) {
-					console.log("do nothing to the invalid json file");
+					// console.log("do nothing to the invalid json file");
 				}
 			});
+			if (!containsOneOrMoreJsonFiles) {
+				return Promise.reject(new InsightError());
+			}
 			let listOfCoursesToBeStored: Array<Promise<any>> = [];
 			this.createDirectory(id)
 				.then(() => {

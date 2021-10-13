@@ -21,28 +21,18 @@ export interface QueryResult {
 
 let datasetID: string;
 export default class Query {
-	private readonly _datasetID: string = "";
+	private _datasetID: string = "";
 	private isQueryValid = false;
-
-	public isValidQuery(query: any) {
-		// let queryValidator: QueryValidator = new QueryValidator();
-		// if (!queryValidator.queryValidate(query)) {
-		// 	return false;
-		// }
-		// let isValid = queryValidator.queryValidate(query);
-		this.isQueryValid = true; // set it to true if valid
-		let hello = query.OPTIONS.COLUMNS[0];
-		console.log(hello.toString());
-		// jif valid, what is the id
 
 	public isValidQuery(query: any): boolean {
 		let queryValidator: QueryValidator = new QueryValidator();
-		let hello = query.OPTIONS.COLUMNS;
+		let qkey = query.OPTIONS.COLUMNS;
+		this._datasetID = qkey.split("_")[0];
 		return queryValidator.queryValidate(query);
 	}
 
 
-	private get datasetID() {
+	public get datasetID() {
 		if (!this.isQueryValid) {
 			// error because its invalid
 		}
