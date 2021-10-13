@@ -41,6 +41,21 @@ export default class Section {
 		});
 	}
 
+	// public jsonToSection(): string {
+	// 	return JSON.parse({
+	// 		dept: this._dept,
+	// 		id: this._id,
+	// 		avg: this.avg,
+	// 		instructor: this.instructor,
+	// 		title: this.title,
+	// 		pass: this.pass,
+	// 		fail: this.fail,
+	// 		audit: this.audit,
+	// 		uuid: this.uuid,
+	// 		year: this.year
+	// 	});
+	// }
+
 	public get dept(): string {
 		return this._dept;
 	}
