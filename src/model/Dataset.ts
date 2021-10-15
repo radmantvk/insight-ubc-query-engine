@@ -1,4 +1,3 @@
-import Section from "./Course";
 import Course from "./Course";
 
 export default class Dataset {
@@ -8,9 +7,11 @@ export default class Dataset {
 		this.id = id;
 		this.courses = courses;
 	}
+
 	public load(): void {
 		return;
 	}
+
 	public store(): void {
 		return;
 	}
