@@ -13,19 +13,23 @@ import Query from "../model/Query";
  *
  */
 export default class InsightFacade implements IInsightFacade {
-	private dataSets: string[] = [];
+	// private dataSets: string[] = [];
 	private insightDatasets: InsightDataset[] = [];
 	constructor() {
 		// console.trace("InsightFacadeImpl::init()");
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-		const isValid = this.isIDAndKindValid(id, kind);
-		const isUnzipped = this.unzip(content);
-		return Promise.all([isValid, isUnzipped])
-			.then((promises) => {
+		if (!this.isIdValid(id) || this.idHasBeenAdded(id)) {
+			return Promise.reject(new InsightError("invalid id to add"));
+		}
+		if (kind === InsightDatasetKind.Rooms) {
+			return Promise.reject(new InsightError("invalid kind to add"));
+		}
+		return this.unzip(content)
+			.then((unzippedContent) => {
 				// console.log(promises[0]); // testing
-				return this.processData(id, promises[1]);
+				return this.processData(id, unzippedContent);
 			}).then((message) => {
 				// console.log(message); // testing
 				// this.dataSets.push(id);
@@ -35,7 +39,7 @@ export default class InsightFacade implements IInsightFacade {
 					numRows : message
 				};
 				this.insightDatasets.push(insight);
-				this.dataSets.push(id);
+				// this.dataSets.push(id);
 				let listOfAddedIDs: string[] = [];
 				for (const dataset of this.insightDatasets) {
 					listOfAddedIDs.push(dataset.id);
@@ -48,22 +52,25 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public removeDataset(id: string): Promise<string> {
-		// check the id is valid
-		return this.isIDAndKindValid(id, InsightDatasetKind.Courses)
+		if (!this.isIdValid(id)) {
+			return Promise.reject(new InsightError());
+		} else if (!this.idHasBeenAdded(id)) {
+			return Promise.reject(new NotFoundError());
+		}
+		// remove data from list
+		this.insightDatasets.forEach((value, index) => {
+			if (value.id === id) {
+				this.insightDatasets.splice(index, 1);
+			}
+		});
+		// remove data from disk
+		return fs.remove("./data/" + id)
 			.then(() => {
-				if (!this.dataSets.includes(id)) {
-					// console.log("no such id exists");
-					return Promise.reject(new NotFoundError());
-				}
-				this.removeData(id);
-				return fs.remove("./data/" + id)
-					.then(() => {
-						return Promise.resolve(id);
-					})
-					.catch((err) => {
-						// console.log(err.toString());
-						return Promise.reject(err);
-					});
+				return Promise.resolve(id);
+			})
+			.catch((err) => {
+				// console.log(err.toString());
+				return Promise.reject(err);
 			});
 	}
 
@@ -76,6 +83,8 @@ export default class InsightFacade implements IInsightFacade {
 		// 		// if (isValid) {
 		// 		// 	// let datasetToLoad = q1.getID;
 		// 		// }
+
+
 		// const listOfCourses: Course[] = loadDataSet(q1.datasetID);
 
 		// q1.course = loadCourses(q1.datasetID); // returns an array of courses
@@ -90,33 +99,6 @@ export default class InsightFacade implements IInsightFacade {
 		return Promise.resolve(this.insightDatasets);
 	}
 
-	// private loadDataSet(datasetID: string): Course[] {
-	// 	let data = fs.readFileSync("./data/" + datasetID);
-	// 	return [];
-	// }
-	/**
-	 * Checks the id and kind of dataset validity
-	 * @param id the id of the dataset
-	 * @param kind the kind of dataset (room or courses)
-	 * @return Promise <string[]>
-	 */
-	private isIDAndKindValid(id: string, kind: InsightDatasetKind): Promise<string> {
-		if (kind === InsightDatasetKind.Rooms) {
-			return Promise.reject(new InsightError()); // "isIDAndKindValid: InsightDatasetKind is Rooms!"
-		} else if (this.dataSets.includes(id)) {
-			return Promise.reject(new InsightError()); // "isIDAndKindValid: id was already added!")
-		} else if (id.includes("_")) {
-			return Promise.reject(new InsightError()); // "isIDAndKindValid: id includes underscore!"
-		} else {
-			let trimmedID: string = id.replace(/ /g, "");
-
-			if (trimmedID.length === 0) {
-				return Promise.reject(new InsightError()); // "isIDAndKindValid: id was an empty string or only spaces!"
-			}
-		}
-		return Promise.resolve("isIDAndKindValid: id and kind is valid");
-	}
-
 	private unzip(content: string): Promise<any> {
 		// TODO: check to see if content is a zipfile
 		const zip = new JSZip();
@@ -127,33 +109,6 @@ export default class InsightFacade implements IInsightFacade {
 			});
 	}
 
-	private removeData(id: string) {
-		this.dataSets.forEach((value, index) => {
-			if(value === id) {
-				this.dataSets.splice(index,1);
-			}
-		});
-		this.insightDatasets.forEach((value, index) => {
-			if (value.id === id) {
-				this.insightDatasets.splice(index, 1);
-			}
-		});
-	}
-
-	/**
-	 * @param unzippedData
-	 * @private
-	 */
-	// skip invalid JSONs, need at least 1 json file to continue or FAIL
-	// skip invalid sections, if 1 is valid then ok; else, skip file
-	// If no valid sections have been added, don't add dataset
-
-	// check validity:1. there is at least 1 valid course section (non-empty file), a valid json format, and in valid directory (courses)
-
-	// const path = "project_team147/data/courses/";
-	// storing into disk (not everything)
-	// if anything failed: return Promise.reject
-	// return Promise.reject(InsightError)
 	private processData(id: string, unzippedData: any): Promise<any> {
 		if (!this.directoryCoursesExists(unzippedData)) {
 			// console.log("processData: Directory courses not found!");
@@ -247,6 +202,27 @@ export default class InsightFacade implements IInsightFacade {
 			}
 		}
 		return listOfSections;
+	}
+
+	private isIdValid(id: string): boolean {
+		if (id.includes("_")) {
+			return false;
+		} else {
+			let trimmedID: string = id.replace(/ /g, "");
+			if (trimmedID.length === 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private idHasBeenAdded(id: string): boolean {
+		for (const insight of this.insightDatasets) {
+			if (insight.id === id) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 
