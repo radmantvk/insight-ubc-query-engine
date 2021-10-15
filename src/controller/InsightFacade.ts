@@ -70,12 +70,12 @@ export default class InsightFacade implements IInsightFacade {
 	public performQuery(query: any): Promise<any[]> {
 		const q1 = new Query();
 		if (!q1.isValidQuery(query)) {
-			// error and return
+			return Promise.reject(new InsightError());
 		}
-		let isValid = q1.isValidQuery(query);
-		if (isValid) {
-			// let datasetToLoad = q1.getID;
-		}
+		// let isValid = q1.isValidQuery(query);
+		// 		// if (isValid) {
+		// 		// 	// let datasetToLoad = q1.getID;
+		// 		// }
 		// const listOfCourses: Course[] = loadDataSet(q1.datasetID);
 
 		// q1.course = loadCourses(q1.datasetID); // returns an array of courses
@@ -203,6 +203,7 @@ export default class InsightFacade implements IInsightFacade {
 				});
 		});
 	}
+
 	private createDirectory(id: string): Promise<any> {
 		if (fs.pathExistsSync("./data/")) {
 			return fs.mkdir("./data/" + id);

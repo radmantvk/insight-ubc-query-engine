@@ -41,22 +41,22 @@ describe("InsightFacade", function () {
 		// Just in case there is anything hanging around from a previous run
 		fs.removeSync(persistDir);
 	});
-	// describe("test", function () {
-	// 	fs.removeSync(persistDir);
-	// 	const content = fs.readFileSync(datasetsToLoad["courses"]).toString("base64");
-	// 	const id: string = "course";
-	// 	facade = new InsightFacade();
-	// 	it("Should test", function () {
-	// 		return facade.addDataset(id, content, InsightDatasetKind.Courses)
-	// 			.then((res) => {
-	// 				console.log("AddDataset fulfilled. ID names are: " + res);
-	// 			})
-	// 			.catch((err) => {
-	// 				console.log("AddDataset rejected. Error type is: " + err.name);
-	// 			});
-	// 	});
-	//
-	// });
+	describe("test", function () {
+		fs.removeSync(persistDir);
+		const content = fs.readFileSync(datasetsToLoad["courses"]).toString("base64");
+		const id: string = "course";
+		facade = new InsightFacade();
+		it("Should test", function () {
+			return facade.addDataset(id, content, InsightDatasetKind.Courses)
+				.then((res) => {
+					console.log("AddDataset fulfilled. ID names are: " + res);
+				})
+				.catch((err) => {
+					console.log("AddDataset rejected. Error type is: " + err.name);
+				});
+		});
+
+	});
 
 	describe("Add/Remove/List Dataset", function () {
 		before(function () {
