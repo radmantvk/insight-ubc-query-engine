@@ -1,5 +1,6 @@
 import QueryValidator from "./QueryValidator";
 
+
 export interface QueryOBJ {
 	WHERE?: QueryFilter;
 	OPTIONS?: QueryOptions;
@@ -19,23 +20,19 @@ export interface QueryResult {
 }
 
 
-let datasetID: string;
+enum Fields {
+	AVG, PASS, FAIL,AUDIT,YEAR,DEPT,ID,INSTRUCTOR,TITLE,UUID
+}
+
 export default class Query {
 	private _datasetID: string = "";
-	private isQueryValid = false;
-
-	public isValidQuery(query: any): boolean {
-		let queryValidator: QueryValidator = new QueryValidator();
-		let qkey = query.OPTIONS.COLUMNS;
-		this._datasetID = qkey.split("_")[0];
-		return queryValidator.queryValidate(query);
+	private _query: any;
+	constructor(query: any) {
+		this._datasetID = query.OPTIONS.COLUMNS[0].split("_")[0];
+		this._query = query;
 	}
 
-
 	public get datasetID() {
-		if (!this.isQueryValid) {
-			// error because its invalid
-		}
 		return this._datasetID;
 	}
 
@@ -53,33 +50,21 @@ export default class Query {
 
 	/**
 	 * Responsible for the Where block in Query
-	 * rei
-	 * 1) check if the inside of the WHERE is empty, return entire dataset; otherwise continue
-	 * 2) check what type of filter is applied (Logic, M/S Comparator, Negation)
-	 * 3) if Logic: call applyLogic method
-	 * 4) if M/S Comparator: call applyComparator method
-	 * 5) if Negation: call applyNegation method.
 	 * @param where : value of the where key, Filter.
 	 */
-	public handleWhere(where: QueryFilter) {
-		// if (Object.keys(where).length === 0)
-		let op: string = Object.keys(where)[0];				// operator		-> this will return either "AND", "OR", "GT", etc
-		let queryResult: QueryResult;						// result instantiated
-		if (Object.keys(where).length === 0) {
-			return false;
-		}else if ("OR" === op) {
-			this.applyLogic("OR");
-		} else if ("AND" === op) {
-			this.applyLogic("AND");
-		} else if ("LT" === op || "GT" === op || "EQ" === op) {
-			let number: any = Object.values(op)[0];			// value of the op object at position 0 (this will return the value)
-			this.applyComparator(op,number);
-		} else if ("IS" === op) {
-			let inputString = Object.values(op)[0];
-			this.applyComparator("IS", inputString);
-		} else {
-			// fail
+	public handleWhere(where: any) {
+		// if (where == "")
+	}
+
+	// return a list of all fields inside columns
+	public getColumns(): string[] {
+		const keys = this.query.OPTIONS.COLUMNS;
+		let columns = [];
+		for (const key of keys) {
+			const column = key.split("_")[1];
+			columns.push(column);
 		}
+		return columns;
 	}
 
 
@@ -100,4 +85,7 @@ export default class Query {
 		return this;
 	}
 
+	public get query(): any {
+		return this._query;
+	}
 }

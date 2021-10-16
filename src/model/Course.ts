@@ -1,5 +1,6 @@
 import Section from "./Section";
 
+
 export default class Course {
 	private readonly _sections: Section[] = [];
 	private readonly _id: string;
@@ -12,12 +13,16 @@ export default class Course {
 // toString method looping through the section and creating the json.
 
 	public toJson(): string {
-		let jsonString = "[";
-		for (const section of this._sections) {
-			jsonString += section.toJson() + ", ";
-		}
-		jsonString += "]";
-		return jsonString;
+		// let jsonString = "{";
+		// for (const section of this._sections) {
+		// 	jsonString += section.toJson() + ", ";
+		// }
+		// jsonString += "}";
+		// return jsonString;
+		return JSON.stringify({
+			id: this._id,
+			sections: this._sections
+		});
 	}
 
 	public get id(): string {
