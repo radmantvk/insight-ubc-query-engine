@@ -37,15 +37,16 @@ export default class Query {
 	}
 
 // TODO processQuery
-	// public process(where, options): Promise<any> {
-	// 	// figure out
-	// 	this.handleWhere(where);
-	// 	// with handle Where we need to store the appropriate sections in a separate array
-	// 	this.handleOptions(options);
-	// 	// which folder/dataset to load
-	// 	// instantiate all sections
-	//
-	// }
+	public process(where: any, options: any): Promise<any> {
+		// figure out
+		this.handleWhere(where);
+		// with handle Where we need to store the appropriate sections in a separate array
+		this.handleOptions(options);
+		// which folder/dataset to load
+		// instantiate all sections
+
+		return Promise.resolve([]);
+	}
 
 
 	/**

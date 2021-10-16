@@ -108,6 +108,7 @@ export default class InsightFacade implements IInsightFacade {
 				return Promise.reject(new InsightError(err));
 			});
 	}
+
 	private processData(id: string, unzippedData: any): Promise<any> {
 		if (!this.directoryCoursesExists(unzippedData)) {
 			// console.log("processData: Directory courses not found!");
@@ -157,6 +158,7 @@ export default class InsightFacade implements IInsightFacade {
 				});
 		});
 	}
+
 	private createDirectory(id: string): Promise<any> {
 		if (fs.pathExistsSync("./data/")) {
 			return fs.mkdir("./data/" + id);
@@ -247,6 +249,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 		return true;
 	}
+
 	private idHasBeenAdded(id: string): boolean {
 		for (const insight of this.insightDatasets) {
 			if (insight.id === id) {
