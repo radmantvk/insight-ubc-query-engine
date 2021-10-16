@@ -5,6 +5,7 @@ import Section from "../model/Section";
 import JSZip, {JSZipObject} from "jszip";
 import Dataset from "../model/Dataset";
 import Query from "../model/Query";
+import QueryValidator from "../model/QueryValidator";
 
 
 /**
@@ -13,7 +14,6 @@ import Query from "../model/Query";
  *
  */
 export default class InsightFacade implements IInsightFacade {
-	// private dataSets: string[] = [];
 	private insightDatasets: InsightDataset[] = [];
 	constructor() {
 		// console.trace("InsightFacadeImpl::init()");
@@ -75,21 +75,23 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public performQuery(query: any): Promise<any[]> {
-		const q1 = new Query();
-		if (!q1.isValidQuery(query)) {
+		const queryValidator = new QueryValidator();
+		if (!queryValidator.queryValidate(query)) {
 			return Promise.reject(new InsightError());
 		}
-		// let isValid = q1.isValidQuery(query);
-		// 		// if (isValid) {
-		// 		// 	// let datasetToLoad = q1.getID;
-		// 		// }
-
-
-		// const listOfCourses: Course[] = loadDataSet(q1.datasetID);
-
-		// q1.course = loadCourses(q1.datasetID); // returns an array of courses
-		// const where = ...
-		// const options = ...
+		const myQuery = new Query(query);
+		if (!this.idHasBeenAdded(myQuery.datasetID)) {
+			return Promise.reject(new InsightError());
+		}
+		this.readAndLoadCourses(myQuery.datasetID).then((courses) => {
+			let course1 = courses[0];
+			return Promise.resolve();
+		}).catch(() => {
+			return Promise.reject(new InsightError());
+		});
+		// unzippedData.folder("courses").forEach(function (relativePath: any, file: JSZipObject) {
+		// 	listOfCoursesToBeLoaded.push(file.async("text")); // what does .async do here?
+		// });
 
 		// return q1.process(where, options , key);
 		return Promise.resolve([]);
@@ -100,11 +102,9 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	private unzip(content: string): Promise<any> {
-		// TODO: check to see if content is a zipfile
 		const zip = new JSZip();
 		return zip.loadAsync(content, {base64: true})
 			.catch((err: any) => {
-				// console.log("unzip: failed");
 				return Promise.reject(new InsightError(err));
 			});
 	}
@@ -116,7 +116,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 		let listOfFilesToBeLoaded: Array<Promise<any>> = [];
 		unzippedData.folder("courses").forEach(function (relativePath: any, file: JSZipObject) {
-			listOfFilesToBeLoaded.push(file.async("text")); // what does .async do here?
+			listOfFilesToBeLoaded.push(file.async("text"));
 		});
 		if (!fs.pathExistsSync("./data/")) {
 			fs.mkdirSync("./data/");
@@ -204,6 +204,40 @@ export default class InsightFacade implements IInsightFacade {
 		return listOfSections;
 	}
 
+	private readAndLoadCourses(datasetID: any): Promise<Course[]> {
+		let path = "./data/" + datasetID;
+		let fileNames = fs.readdirSync(path);
+		let listOfFilesToBeLoaded: Array<Promise<any>> = [];
+		for (const fileName of fileNames) {
+			let course: Course;
+			const jsonPath = path + "/" + fileName;
+			const jsonToRead = fs.readJson(jsonPath);
+			listOfFilesToBeLoaded.push(jsonToRead);
+				// .then((json) => {
+				// 	// courses.push(this.jsonToCourse(json));
+				// 	const jsonObj = JSON.parse(json);
+				// 	course = new Course(jsonObj.id, jsonObj.sections);
+				// 	console.log("hel");
+				// 	return Promise.resolve([]);
+				// })
+				// .catch((err) => {
+				// 	console.log(err.toString());
+				// 	return Promise.resolve([]);
+				// });
+		}
+		let courses: Course[] = [];
+		return Promise.all(listOfFilesToBeLoaded).then((data) => {
+			for (const json of data) {
+				const jsonObj = JSON.parse(json);
+				const course = new Course(jsonObj.id, jsonObj.sections);
+				courses.push(course);
+			}
+		})
+			.then(() => {
+				return Promise.resolve(courses);
+			});
+	}
+
 	private isIdValid(id: string): boolean {
 		if (id.includes("_")) {
 			return false;
@@ -225,4 +259,5 @@ export default class InsightFacade implements IInsightFacade {
 		return false;
 	}
 }
+
 

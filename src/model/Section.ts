@@ -26,20 +26,20 @@ export default class Section {
 		this.year = year;
 	}
 
-	public toJson(): string {
-		return JSON.stringify({
-			dept: this._dept,
-			id: this._id,
-			avg: this.avg,
-			instructor: this.instructor,
-			title: this.title,
-			pass: this.pass,
-			fail: this.fail,
-			audit: this.audit,
-			uuid: this.uuid,
-			year: this.year
-		});
-	}
+	// public toJson(): string {
+	// 	return JSON.stringify({
+	// 		dept: this._dept,
+	// 		id: this._id,
+	// 		avg: this.avg,
+	// 		instructor: this.instructor,
+	// 		title: this.title,
+	// 		pass: this.pass,
+	// 		fail: this.fail,
+	// 		audit: this.audit,
+	// 		uuid: this.uuid,
+	// 		year: this.year
+	// 	});
+	// }
 
 	// public jsonToSection(): string {
 	// 	return JSON.parse({
