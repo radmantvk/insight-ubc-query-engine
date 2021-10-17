@@ -3,7 +3,6 @@ import * as fs from "fs-extra";
 import Course from "../model/Course";
 import Section from "../model/Section";
 import JSZip, {JSZipObject} from "jszip";
-import Dataset from "../model/Dataset";
 import Query from "../model/Query";
 import QueryValidator from "../model/QueryValidator";
 
@@ -23,23 +22,16 @@ export default class InsightFacade implements IInsightFacade {
 		if (!this.isIdValid(id) || this.idHasBeenAdded(id)) {
 			return Promise.reject(new InsightError("invalid id to add"));
 		}
-		if (kind === InsightDatasetKind.Rooms) {
-			return Promise.reject(new InsightError("invalid kind to add"));
-		}
 		return this.unzip(content)
 			.then((unzippedContent) => {
-				// console.log(promises[0]); // testing
-				return this.processData(id, unzippedContent);
+				return this.processData(id, kind, unzippedContent);
 			}).then((message) => {
-				// console.log(message); // testing
-				// this.dataSets.push(id);
 				let insight: InsightDataset = {
 					id : id,
 					kind : kind,
 					numRows : message
 				};
 				this.insightDatasets.push(insight);
-				// this.dataSets.push(id);
 				let listOfAddedIDs: string[] = [];
 				for (const dataset of this.insightDatasets) {
 					listOfAddedIDs.push(dataset.id);
@@ -84,16 +76,11 @@ export default class InsightFacade implements IInsightFacade {
 			return Promise.reject(new InsightError());
 		}
 		this.readAndLoadCourses(myQuery.datasetID).then((courses) => {
-			let course1 = courses[0];
+			// myQuery.process();
 			return Promise.resolve();
 		}).catch(() => {
 			return Promise.reject(new InsightError());
 		});
-		// unzippedData.folder("courses").forEach(function (relativePath: any, file: JSZipObject) {
-		// 	listOfCoursesToBeLoaded.push(file.async("text")); // what does .async do here?
-		// });
-
-		// return q1.process(where, options , key);
 		return Promise.resolve([]);
 	}
 
@@ -108,55 +95,24 @@ export default class InsightFacade implements IInsightFacade {
 				return Promise.reject(new InsightError(err));
 			});
 	}
-
-	private processData(id: string, unzippedData: any): Promise<any> {
-		if (!this.directoryCoursesExists(unzippedData)) {
-			// console.log("processData: Directory courses not found!");
+	private processData(id: string, kind: InsightDatasetKind, unzippedData: any): Promise<any> {
+		const kindToString = this.getKindToString(kind);
+		if (!this.directoryExists(kindToString, unzippedData)) {
 			return Promise.reject(new InsightError());
 		}
 		let listOfFilesToBeLoaded: Array<Promise<any>> = [];
-		unzippedData.folder("courses").forEach(function (relativePath: any, file: JSZipObject) {
+		unzippedData.folder(kindToString).forEach(function (relativePath: any, file: JSZipObject) {
 			listOfFilesToBeLoaded.push(file.async("text"));
 		});
 		if (!fs.pathExistsSync("./data/")) {
 			fs.mkdirSync("./data/");
 		}
-		let courses: Course[] = [];
-		return Promise.all(listOfFilesToBeLoaded).then((data) => {
-			let containsOneOrMoreJsonFiles = false;
-			let counter = 0;
-			data.forEach((courseObject: string) => {
-				let sections: Section[] = [];
-				try {
-					const sectionArr = JSON.parse(courseObject);
-					sections = this.createSections(sectionArr.result);
-					counter += sections.length;
-					if (sections.length > 0) {
-						const courseID = sections[0].dept + "-" + sections[0].id; // assuming sections is not empty
-						const course: Course = new Course(courseID, sections);
-						courses.push(course);
-					}
-					containsOneOrMoreJsonFiles = true;
-				} catch (e) {
-					// console.log("do nothing to the invalid json file");
-				}
-			});
-			if (!containsOneOrMoreJsonFiles) {
-				return Promise.reject(new InsightError());
-			}
-			let listOfCoursesToBeStored: Array<Promise<any>> = [];
-			this.createDirectory(id)
-				.then(() => {
-					for (const course of courses) {
-						const path = "./data/" + id + "/" +  course.id + ".json";
-						listOfFilesToBeLoaded.push(fs.writeJSON(path, course.toJson()));
-					}
-				});
-			return Promise.all(listOfCoursesToBeStored)
-				.then(() => {
-					return counter;
-				});
-		});
+		if (kind === InsightDatasetKind.Courses) {
+			return this.processCourses(id, listOfFilesToBeLoaded);
+		} else { // InsightDatasetKind === Rooms
+			// TODO: implement processRooms
+			return Promise.resolve("");
+		}
 	}
 
 	private createDirectory(id: string): Promise<any> {
@@ -170,9 +126,9 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-	private directoryCoursesExists(data: any): boolean {
+	private directoryExists(kind: string, data: any): boolean {
 		for (const file of Object.keys(data.files)) {
-			if (file.toString().split("/")[0] === "courses") {
+			if (file.toString().split("/")[0] === kind) {
 				return true;
 			}
 		}
@@ -257,6 +213,54 @@ export default class InsightFacade implements IInsightFacade {
 			}
 		}
 		return false;
+	}
+
+	private getKindToString(kind: InsightDatasetKind): string {
+		if (kind === InsightDatasetKind.Courses) {
+			return "courses";
+		} else {
+			return "rooms";
+
+		}
+	}
+
+	private processCourses(id: string, listOfFilesToBeLoaded: any[]) {
+		let courses: Course[] = [];
+		return Promise.all(listOfFilesToBeLoaded).then((data) => {
+			let containsOneOrMoreJsonFiles = false;
+			let counter = 0;
+			data.forEach((courseObject: string) => {
+				let sections: Section[] = [];
+				try {
+					const sectionArr = JSON.parse(courseObject);
+					sections = this.createSections(sectionArr.result);
+					counter += sections.length;
+					if (sections.length > 0) {
+						const courseID = "courses-" + sections[0].dept + "-" + sections[0].id; // assuming sections is not empty
+						const course: Course = new Course(courseID, sections);
+						courses.push(course);
+					}
+					containsOneOrMoreJsonFiles = true;
+				} catch (e) {
+					// console.log("do nothing to the invalid json file");
+				}
+			});
+			if (!containsOneOrMoreJsonFiles) {
+				return Promise.reject(new InsightError());
+			}
+			let listOfCoursesToBeStored: Array<Promise<any>> = [];
+			this.createDirectory(id)
+				.then(() => {
+					for (const course of courses) {
+						const path = "./data/" + id + "/" +  course.id + ".json";
+						listOfFilesToBeLoaded.push(fs.writeJSON(path, course.toJson()));
+					}
+				});
+			return Promise.all(listOfCoursesToBeStored)
+				.then(() => {
+					return counter;
+				});
+		});
 	}
 }
 
