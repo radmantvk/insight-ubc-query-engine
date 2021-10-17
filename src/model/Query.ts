@@ -1,4 +1,7 @@
 import QueryValidator from "./QueryValidator";
+import Course from "./Course";
+import Filter from "./Filter";
+import Section from "./Section";
 
 
 export interface QueryOBJ {
@@ -24,7 +27,9 @@ enum Fields {
 	AVG, PASS, FAIL,AUDIT,YEAR,DEPT,ID,INSTRUCTOR,TITLE,UUID
 }
 
+
 export default class Query {
+	private courses: Course[] = [];
 	private _datasetID: string = "";
 	private _query: any;
 	constructor(query: any) {
@@ -37,34 +42,25 @@ export default class Query {
 	}
 
 // TODO processQuery
-	public process() {
-		let WHERE: any;
-		let OPTIONS: any;
-		Object.keys(this.query).forEach((key) => {
-			if (key === "WHERE") {
-				WHERE = this.query[key];
-			}
-			if (key === "OPTIONS") {
-				OPTIONS = this.query[key];
-			}
-		});
-
-		let filterKeys = Object.keys(WHERE);
-
-		if (filterKeys.length === 0) {
-			// return entire dataset
-		}
-
-		return this;
+	public process(courses: Course[]) {
+		const filter: Filter = new Filter(this.query.WHERE);
+		const sections = this.getSections(courses);
+		const filteredSections: Section[] = filter.handleFilter(sections);
+		const sortedSection: Section[] = this.sortSections(filteredSections);
+		const result: any[] = this.filterColumnsAndConvertToObjects(sortedSection);
+		return result;
 	}
 
+	public getSections(courses: Course[]) {
+		return [];
+	}
 
-	/**
-	 * Responsible for the Where block in Query
-	 * @param where : value of the where key, Filter.
-	 */
-	public handleWhere(where: any) {
-		// if (where == "")
+	public sortSections(sections: Section[]): Section[] {
+		return [];
+	}
+
+	public filterColumnsAndConvertToObjects(sections: Section[]): Section[] {
+		return [];
 	}
 
 	// return a list of all fields inside columns
@@ -79,24 +75,8 @@ export default class Query {
 	}
 
 
-	public applyComparator(comparator: any, operand: any) {
-		return this;
-	}
-
-	public applyLogic(body: any, filterVal: any) {
-		return this;
-	}
-
-	public applyNegation(negation: any) {
-		return this;
-	}
-
-
-	public handleOptions(opts: QueryOptions) {
-		return this;
-	}
-
 	public get query(): any {
 		return this._query;
 	}
+
 }
