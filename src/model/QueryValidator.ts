@@ -2,6 +2,9 @@ import {QueryOBJ} from "./Query";
 
 let datasetID: string;
 
+let columnKeys: any = [];								// we want to store the column keys so if there is an order, the order key must be in this array
+
+
 export default class QueryValidator {
 
 	public queryValidate(query: QueryOBJ) {
@@ -19,24 +22,21 @@ export default class QueryValidator {
 			}
 		});
 
+		let keysOPTION = Object.keys(OPTIONS);
+		if (keysOPTION.length !== 1 && keysOPTION.length !== 2) {
+			return false;
+		}
 		if (!this.optionsValidate(OPTIONS)) {
 			return false;
 		}
 
 		let keysFILTER = Object.keys(WHERE);
-		// invalid number of keys in where and options
 		if (keysFILTER.length > 1) {
 			return false;
 		}
 
-
 		let keyFILTER: string = Object.keys(WHERE)[0];
-		this.isValidFilter(WHERE, keyFILTER);
-
-
-		let keysOPTION = Object.keys(OPTIONS);
-		// must ensure OPTIONS block has at least 1 key, and max 2.
-		if (keysOPTION.length < 1 || keysOPTION.length > 2) {
+		if(!this.isValidFilter(WHERE, keyFILTER)) {
 			return false;
 		}
 
@@ -54,6 +54,7 @@ export default class QueryValidator {
 			return false;
 		}
 
+
 		if (filter === "AND" || filter === "OR") {
 			if (!this.logicValidate(FILTER, filter)) {
 				return false;
@@ -66,7 +67,7 @@ export default class QueryValidator {
 			}
 		}
 		if (filter === "IS") {
-			if (!this.stringValidate(FILTER, filter)) {
+			if (!this.stringValidate(FILTER)) {
 				return false;
 			}
 		}
@@ -103,6 +104,7 @@ export default class QueryValidator {
 				}
 			});
 		}
+		return true;
 	}
 
 
@@ -119,20 +121,39 @@ export default class QueryValidator {
 		if (Object.keys(valueMATH).length !== 1) {				// only one key should exist
 			return false;
 		}
-
 		let mKey = Object.keys(valueMATH)[0];					// mKey in { "GT": { mKey: number} }
 		let number = valueMATH[mKey];
-		if (!(number instanceof Number)) {						// must be a number
+		if (typeof number !== "number") {						// must be a number
 			return false;
 		}
-
 		if (!this.isValidQueryKey(mKey, true)) {			// validity of mKey
 			return false;
 		}
+		return true;
 	}
 
-	private stringValidate(FILTER: any, filter: string) {
-		return false;
+	/**
+	 * Called when filter is "IS"
+	 * must ensure queryKey is valid
+	 * must ensure that if astericks are used
+	 * @param FILTER: the FILTER object to access the key and value of
+	 * @private
+	 */
+	private stringValidate(FILTER: any) {
+		let isOBJECT: any = FILTER["IS"];
+		if (Object.keys(isOBJECT).length === 0 || Object.keys(isOBJECT).length > 1) {
+			return false;
+		}
+		let queryKey = Object.keys(isOBJECT)[0];
+		if (!this.isValidQueryKey(queryKey, false)) {
+			return false;
+		}
+		let inputString: string = queryKey.split("_")[1];
+		const regex = /[*]?[^*]*[*]?/g;
+		if (!inputString.match(regex)) {
+			return false;
+		}
+		return true;
 	}
 
 
@@ -145,38 +166,40 @@ export default class QueryValidator {
 	 */
 	private negateValidate(FILTER: any) {
 		let valueNEGATE: any = FILTER["NOT"];					// will give us { filter }
-
 		if (Object.keys(valueNEGATE).length !== 1) {			// must be a single filter
 			return false;
 		}
-
 		if (!this.isValidFilter(valueNEGATE, Object.keys(valueNEGATE)[0])) {
 			return false;
 		}
+		return true;
 	}
 
 	/**
-	 * Called when the key "COLUMNS" is found within OPTIONS
 	 * must ensure the value of the COLUMNS key is a non-empty array
 	 * must ensure key is valid (can be mkey or skey)
 	 * @param OPTIONS: The OPTIONS object where the key "COLUMNS" was found
 	 */
 	public columnValidate(OPTIONS: any): boolean {
 		let columnVal = OPTIONS["COLUMNS"];
-
 		if (!(columnVal instanceof Array)) {
 			return false;
 		}
-
 		if (columnVal.length === 0) {
 			return false;
 		}
-
 		for (let key in columnVal) {
-			datasetID = key.split("_")[0];
-			if (!(this.isValidQueryKey(key, true)) && !(this.isValidQueryKey(key, false))) {
+			if (typeof columnVal[key] !== "string") {
 				return false;
 			}
+			datasetID = columnVal[key].split("_")[0];
+			if (datasetID.includes(" ") || datasetID.length === 0) {
+				return false;
+			}
+			if (!(this.isValidQueryKey(columnVal[key], true)) && !(this.isValidQueryKey(columnVal[key], false))) {
+				return false;
+			}
+			columnKeys.push(columnVal[key]);
 		}
 		return true;
 	}
@@ -191,15 +214,15 @@ export default class QueryValidator {
 	 */
 	private orderValidate(OPTIONS: any): boolean {
 		let orderVal = OPTIONS["ORDER"];
-
-		if (!(typeof orderVal === "string")) {
+		if (typeof orderVal !== "string") {
 			return false;
 		}
-
+		if (!columnKeys.includes(orderVal)) {
+			return false;
+		}
 		if (!(this.isValidQueryKey(orderVal, true)) && !(this.isValidQueryKey(orderVal, false))) {
 			return false;
 		}
-
 		return true;
 
 	}
@@ -213,15 +236,12 @@ export default class QueryValidator {
 	 */
 	public isValidQueryKey(queryKey: string, isMKey: boolean): boolean {
 		let idString = queryKey.split("_")[0];
-
 		if (idString !== datasetID) {
 			return false;
 		}
-
 		if (idString.includes("_")){
 			return false;
 		}
-
 		let field = queryKey.split("_")[1];
 		if (isMKey) {
 			let mField = field;
@@ -249,25 +269,19 @@ export default class QueryValidator {
 	 * @private
 	 */
 	private optionsValidate(OPTIONS: any): boolean {
-		Object.keys(OPTIONS).forEach((key) => {
-			if (Object.keys(OPTIONS)[0] !== "COLUMNS") {
-				return false;
-			}
-			if (Object.keys(OPTIONS).length === 2 && Object.keys(OPTIONS)[1] !== "ORDER") {
-				return false;
-			}
-			if (key === "COLUMNS") {
-				if (!this.columnValidate(OPTIONS)) {
-					return false;
-				}
-			}
-			if (key === "ORDER") {
-				if (!this.orderValidate(OPTIONS)) {
-					return false;
-				}
-			}
+		if (Object.keys(OPTIONS)[0] !== "COLUMNS") {
 			return false;
-		});
+		}
+		if (!this.columnValidate(OPTIONS)) {
+			return false;
+		}
+		if (Object.keys(OPTIONS).length === 2 && Object.keys(OPTIONS)[1] !== "ORDER") {
+			return false;
+		} else if (Object.keys(OPTIONS).length === 2) {
+			if (!this.orderValidate(OPTIONS)) {
+				return false;
+			}
+		}
 		return true;
 	}
 }

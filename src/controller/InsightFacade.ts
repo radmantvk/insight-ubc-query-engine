@@ -114,6 +114,7 @@ export default class InsightFacade implements IInsightFacade {
 			return Promise.resolve("");
 		}
 	}
+
 	private createDirectory(id: string): Promise<any> {
 		if (fs.pathExistsSync("./data/")) {
 			return fs.mkdir("./data/" + id);
@@ -204,6 +205,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 		return true;
 	}
+
 	private idHasBeenAdded(id: string): boolean {
 		for (const insight of this.insightDatasets) {
 			if (insight.id === id) {
