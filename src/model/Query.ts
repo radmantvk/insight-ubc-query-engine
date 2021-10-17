@@ -37,15 +37,25 @@ export default class Query {
 	}
 
 // TODO processQuery
-	public process(where: any, options: any): Promise<any> {
-		// figure out
-		this.handleWhere(where);
-		// with handle Where we need to store the appropriate sections in a separate array
-		this.handleOptions(options);
-		// which folder/dataset to load
-		// instantiate all sections
+	public process() {
+		let WHERE: any;
+		let OPTIONS: any;
+		Object.keys(this.query).forEach((key) => {
+			if (key === "WHERE") {
+				WHERE = this.query[key];
+			}
+			if (key === "OPTIONS") {
+				OPTIONS = this.query[key];
+			}
+		});
 
-		return Promise.resolve([]);
+		let filterKeys = Object.keys(WHERE);
+
+		if (filterKeys.length === 0) {
+			// return entire dataset
+		}
+
+		return this;
 	}
 
 
@@ -73,7 +83,7 @@ export default class Query {
 		return this;
 	}
 
-	public applyLogic(logic: any) {
+	public applyLogic(body: any, filterVal: any) {
 		return this;
 	}
 
