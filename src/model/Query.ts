@@ -2,7 +2,7 @@ import QueryValidator from "./QueryValidator";
 import Course from "./Course";
 import Filter from "./Filter";
 import Section from "./Section";
-
+import QuerySorter from "./QuerySorter";
 
 export interface QueryOBJ {
 	WHERE?: QueryFilter;
@@ -11,7 +11,7 @@ export interface QueryOBJ {
 
 export interface QueryOptions {
 	COLUMNS?: QueryOptions;
-	// order
+	ORDER?: any;
 }
 
 export interface QueryFilter {
@@ -43,20 +43,36 @@ export default class Query {
 
 // TODO processQuery
 	public process(courses: Course[]) {
-		const filter: Filter = new Filter(this.query.WHERE);
-		const sections = this.getSections(courses);
-		const filteredSections: Section[] = filter.handleFilter(sections);
-		const sortedSection: Section[] = this.sortSections(filteredSections);
-		const result: any[] = this.filterColumnsAndConvertToObjects(sortedSection);
+		let filter: Filter = new Filter(this.query.WHERE);
+		let sections = this.getSections(courses);
+		let filteredSections: Section[] = filter.handleFilter(sections);
+		let sortedSection: Section[] = this.sortSections(filteredSections);
+		let result: any[] = this.filterColumnsAndConvertToObjects(sortedSection);
 		return result;
 	}
 
 	public getSections(courses: Course[]) {
-		return [];
+		let sections: Section[] = [];
+		for (const course of courses) {
+			let hello: any[] = course.sections;
+			sections = sections.concat(hello);
+		}
+		return sections;
 	}
 
 	public sortSections(sections: Section[]): Section[] {
-		return [];
+		let order = "";
+		Object.keys(this.query.OPTIONS).forEach((key) => {
+			if (key === "ORDER") {
+				order = this.query.OPTIONS.ORDER;
+			}
+		});
+		if (order === "") { // No need to sort if there is no order
+			return sections;
+		}
+		order = order.split("_")[1];
+		let sorter: QuerySorter = new QuerySorter(order, sections);
+		return sorter.sort();
 	}
 
 	public filterColumnsAndConvertToObjects(sections: Section[]): Section[] {

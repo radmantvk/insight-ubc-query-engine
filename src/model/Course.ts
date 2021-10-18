@@ -2,7 +2,7 @@ import Section from "./Section";
 
 
 export default class Course {
-	private readonly _sections: Section[] = [];
+	private _sections: Section[] = [];
 	private readonly _id: string;
 
 	constructor(id: string, sections: Section[]) {

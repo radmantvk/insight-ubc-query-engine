@@ -8,25 +8,25 @@ export default class Filter {
 	}
 
 	public handleFilter(sections: Section[]) {
-		const keys = Object.keys(this.content);
-		if (keys.length === 0) {
-			return sections;
-		}
-		let key = keys[0];
-
-		if (key === "AND" || key === "OR") {
-			this.applyLogic(this.content, key);
-		}
-		if (key === "GT" || key === "LT" || key === "EQ") {
-			this.applyMathComparator(this.content, key);
-		}
-		if (key === "IS") {
-			this.applyStringComparator(this.content);
-		}
-		if (key === "NOT") {
-			this.applyNegation(this.content);
-		}
-		return [];
+		// const keys = Object.keys(this.content);
+		// if (keys.length === 0) {
+		// 	return sections;
+		// }
+		// let key = keys[0];
+		//
+		// if (key === "AND" || key === "OR") {
+		// 	this.applyLogic(this.content, key);
+		// }
+		// if (key === "GT" || key === "LT" || key === "EQ") {
+		// 	this.applyMathComparator(this.content, key);
+		// }
+		// if (key === "IS") {
+		// 	this.applyStringComparator(this.content);
+		// }
+		// if (key === "NOT") {
+		// 	this.applyNegation(this.content);
+		// }
+		return sections;
 	}
 
 	public applyMathComparator(body: any, filter: any) {
