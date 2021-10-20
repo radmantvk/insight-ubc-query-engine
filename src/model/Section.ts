@@ -12,8 +12,9 @@ export default class Section {
 	private readonly _uuid: string; // saved as id
 	private readonly _year: number;
 
+
 	constructor(dept: string, id: string, avg: number, instructor: string, title: string, pass: number,
-		fail: number, audit: number, uuid: string, year: number) {
+		fail: number, audit: number, uuid: any, year: number) {
 		this._dept = dept;
 		this._id = id;
 		this._avg = avg;
@@ -22,8 +23,11 @@ export default class Section {
 		this._pass = pass;
 		this._fail = fail;
 		this._audit = audit;
-		this._uuid = uuid;
-		this._year = year;
+		if (typeof uuid === "number") {
+			this._uuid = uuid.toString();
+		} else {
+			this._uuid = uuid;
+		}
 	}
 
 	// public toJson(): string {
@@ -63,7 +67,6 @@ export default class Section {
 	public get id(): string {
 		return this._id;
 	}
-
 
 	public get avg(): number {
 		return this._avg;

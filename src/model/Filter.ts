@@ -6,6 +6,7 @@ import exp = require("constants");
 export default class Filter {
 	// private filteredSections: Section[] = [];
 
+
 	public handleFilter(sections: Section[], content: any): Section[] {
 		const keys = Object.keys(content);
 		let key = keys[0];
@@ -46,7 +47,6 @@ export default class Filter {
 			default:
 				return [];
 		}
-
 	}
 
 	private applyLTFilter(sections: Section[], mField: any, bound: any): Section[] {
