@@ -43,9 +43,9 @@ export default class Query {
 
 // TODO processQuery
 	public process(courses: Course[]) {
-		let filter: Filter = new Filter(this.query.WHERE);
+		let filter: Filter = new Filter();
 		let sections = this.getSections(courses);
-		let filteredSections: Section[] = filter.handleFilter(sections);
+		let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE, false);
 		let sortedSection: Section[] = this.sortSections(filteredSections);
 		let result: any[] = this.filterColumnsAndConvertToObjects(sortedSection);
 		return result;
