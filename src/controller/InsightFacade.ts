@@ -95,6 +95,7 @@ export default class InsightFacade implements IInsightFacade {
 				return Promise.reject(new InsightError(err));
 			});
 	}
+
 	private processData(id: string, kind: InsightDatasetKind, unzippedData: any): Promise<any> {
 		const kindToString = this.getKindToString(kind);
 		if (!this.directoryExists(kindToString, unzippedData)) {
