@@ -17,8 +17,7 @@ export default class Filter {
 		} else if (key === "NOT") {
 			return this.applyNegation(content, sections);
 		} else if (key === "AND" || key === "OR") {
-			// return this.applyLogic(content, key, sections);
-			return sections;
+			return this.applyLogic(content, key, sections);
 		} else {
 			return sections;
 		}
@@ -46,7 +45,6 @@ export default class Filter {
 			default:
 				return [];
 		}
-
 	}
 
 	private applyLTFilter(sections: Section[], mField: any, bound: any): Section[] {
@@ -96,7 +94,7 @@ export default class Filter {
 				}
 			}
 		} else if (inputString[0] === "*" && inputString[inputString.length - 1] === "*") { // *abc*
-			const expectedString = inputString.replace("*", "");
+			const expectedString = inputString.replace(/\*/g, "");
 			for (let section of sections) {
 				const sectField = this.getSField(sField, section); // "cpsc"
 				if (sectField.includes(expectedString)) {
@@ -104,7 +102,7 @@ export default class Filter {
 				}
 			}
 		} else if (inputString[0] === "*") { // *sc or *
-			const expectedString = inputString.replace("*", ""); // "" or "sc"
+			const expectedString = inputString.replace(/\*/g, ""); // "" or "sc"
 			if (expectedString.length === 0) { // empty string
 				for  (const section of sections) {
 					validSections.push(section);
@@ -112,14 +110,14 @@ export default class Filter {
 			} else {  // "sc"
 				for (const section of sections) {
 					let sectField: string = this.getSField(sField, section);
-					let toCompare = sectField.substring(sectField.length - expectedString.length, sectField.length - 1);
+					let toCompare = sectField.substring(sectField.length - expectedString.length, sectField.length);
 					if (expectedString === toCompare) {
 						validSections.push(section);
 					}
 				}
 			}
 		} else if (inputString[inputString.length - 1] === "*") { // cp*
-			const expectedString = inputString.replace("*", "");
+			const expectedString = inputString.replace(/\*/g, "");
 			for (const section of sections) {
 				let sectField: string = this.getSField(sField, section);
 				let toCompare = sectField.substring(0, inputString.length - 1);
@@ -127,8 +125,6 @@ export default class Filter {
 					validSections.push(section);
 				}
 			}
-		} else {
-			console.log("error");
 		}
 		return validSections;
 	}
@@ -171,12 +167,12 @@ export default class Filter {
 				results = this.handleFilter(results, filter);
 			}
 		} else if (key === "OR") {
-			let listOfSections = [];
+			let listOfFilteredSections = [];
 			for (let filter of logicArray) {
-				listOfSections.push(this.handleFilter(results, filter));
+				listOfFilteredSections.push(this.handleFilter(sections, filter));
 			}
-			for (const section of listOfSections) {
-				for (const sec of sections) {
+			for (const filteredSection of listOfFilteredSections) {
+				for (const sec of filteredSection) {
 					if (!results.includes(sec)) {
 						results.push(sec);
 					}

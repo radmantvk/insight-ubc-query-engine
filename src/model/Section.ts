@@ -1,5 +1,3 @@
-
-
 export default class Section {
 	public readonly _dept: string; // saved as subject "aanb"
 	public readonly _id: string; // file name  "551"
@@ -30,36 +28,6 @@ export default class Section {
 		this._uuid = uuid;
 		this._year = year;
 	}
-
-	// public toJson(): string {
-	// 	return JSON.stringify({
-	// 		dept: this._dept,
-	// 		id: this._id,
-	// 		avg: this.avg,
-	// 		instructor: this.instructor,
-	// 		title: this.title,
-	// 		pass: this.pass,
-	// 		fail: this.fail,
-	// 		audit: this.audit,
-	// 		uuid: this.uuid,
-	// 		year: this.year
-	// 	});
-	// }
-
-	// public jsonToSection(): string {
-	// 	return JSON.parse({
-	// 		dept: this._dept,
-	// 		id: this._id,
-	// 		avg: this.avg,
-	// 		instructor: this.instructor,
-	// 		title: this.title,
-	// 		pass: this.pass,
-	// 		fail: this.fail,
-	// 		audit: this.audit,
-	// 		uuid: this.uuid,
-	// 		year: this.year
-	// 	});
-	// }
 
 	public get dept(): string {
 		return this._dept;
@@ -101,4 +69,3 @@ export default class Section {
 		return this._year;
 	}
 }
-

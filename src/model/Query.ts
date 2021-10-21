@@ -3,6 +3,7 @@ import Course from "./Course";
 import Filter from "./Filter";
 import Section from "./Section";
 import QuerySorter from "./QuerySorter";
+import {ResultTooLargeError} from "../controller/IInsightFacade";
 
 export interface QueryOBJ {
 	WHERE?: QueryFilter;
@@ -22,12 +23,6 @@ export interface QueryResult {
 	Result: [];
 }
 
-
-enum Fields {
-	AVG, PASS, FAIL,AUDIT,YEAR,DEPT,ID,INSTRUCTOR,TITLE,UUID
-}
-
-
 export default class Query {
 	private courses: Course[] = [];
 	private _datasetID: string = "";
@@ -41,13 +36,19 @@ export default class Query {
 		return this._datasetID;
 	}
 
-// TODO processQuery
 	public process(courses: Course[]) {
+		let id = "";
+		if (!(courses.length === 0)) {
+			id = courses[0].id.split("-")[0];
+		}
 		let filter: Filter = new Filter();
 		let sections = this.getSections(courses);
 		let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE);
+		if (filteredSections.length > 5000) {
+			return Promise.reject(new ResultTooLargeError());
+		}
 		let sortedSection: Section[] = this.sortSections(filteredSections);
-		let result: any[] = this.filterColumnsAndConvertToObjects(sortedSection);
+		let result: any[] = this.filterColumnsAndConvertToObjects(id, sortedSection);
 		return result;
 	}
 
@@ -75,24 +76,110 @@ export default class Query {
 		return sorter.sort();
 	}
 
-	public filterColumnsAndConvertToObjects(sections: Section[]): Section[] {
-		return [];
-	}
-
-	// return a list of all fields inside columns
-	public getColumns(): string[] {
-		const keys = this.query.OPTIONS.COLUMNS;
-		let columns = [];
-		for (const key of keys) {
-			const column = key.split("_")[1];
-			columns.push(column);
+	public filterColumnsAndConvertToObjects(id: string, sections: Section[]): Section[] {
+		let columns: string[] = this.query.OPTIONS.COLUMNS; // ["courses_dept", ...]
+		let arrayOfObjs: Section[] = [];
+		for (const section of sections) {
+			let sectionObj: any = {
+			};
+			for (const inputString of columns) { // column = "courses_avg"
+				const columnKey: string = inputString.split("_")[1];
+				if (columnKey === "avg" || columnKey === "pass" || columnKey === "fail" ||
+					columnKey === "audit" || columnKey === "year") {
+					sectionObj[inputString] = this.getMField(columnKey, section);
+				} else {
+					sectionObj[inputString] = this.getSField(columnKey, section).toString();
+				}
+			}
+			arrayOfObjs.push(sectionObj);
 		}
-		return columns;
+		return arrayOfObjs;
 	}
 
+	// // return a list of all fields inside columns
+	// public getColumns(): string[] {
+	// 	const keys = this.query.OPTIONS.COLUMNS;
+	// 	let columns = [];
+	// 	for (const key of keys) {
+	// 		const column = key.split("_")[1];
+	// 		columns.push(column);
+	// 	}
+	// 	return columns;
+	// }
 
 	public get query(): any {
 		return this._query;
 	}
 
+
+	private getMField(key: string, section: Section): number {
+		if (key === "avg") {
+			return section._avg;
+		}
+		if (key === "pass") {
+			return section._pass;
+		}
+		if (key === "fail") {
+			return section._fail;
+		}
+		if (key === "audit") {
+			return section._audit;
+		}
+		if (key === "year") {
+			let stringYear = section._year.toString();
+			return parseInt(stringYear, 10);
+		}
+		// return parseInt(section._year, 10);
+		return 0;
+	}
+
+	private getSField(key: string, section: any): string {
+		if (key === "dept") {
+			return section._dept;
+		}
+		if (key === "id") {
+			return section._id;
+		}
+		if (key === "instructor") {
+			return section._instructor;
+		}
+		if (key === "title") {
+			return section._title;
+		}
+		return section._uuid;
+	}
+
+	// private getSectionField(key: any, section: any): any {
+	// 	const field = key.split("_")[1];
+	// 	if (field === "avg") {
+	// 		return section._avg;
+	// 	}
+	// 	if (field === "pass") {
+	// 		return section._pass;
+	// 	}
+	// 	if (field === "fail") {
+	// 		return section._fail;
+	// 	}
+	// 	if (field === "audit") {
+	// 		return section._audit;
+	// 	}
+	// 	if (field === "year") {
+	// 		return section._year;
+	// 	}
+	// 	if (field === "dept") {
+	// 		return section._dept;
+	// 	}
+	// 	if (field === "id") {
+	// 		return section._id;
+	// 	}
+	// 	if (field === "instructor") {
+	// 		return section._instructor;
+	// 	}
+	// 	if (field === "title") {
+	// 		return section._title;
+	// 	}
+	// 	if (field === "uuid") {
+	// 		return section._uuid;
+	// 	}
+	// }
 }
