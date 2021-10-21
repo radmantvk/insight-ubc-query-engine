@@ -41,9 +41,9 @@ export default class Query {
 		if (!(courses.length === 0)) {
 			id = courses[0].id.split("-")[0];
 		}
-		let filter: Filter = new Filter(this.query.WHERE);
+		let filter: Filter = new Filter();
 		let sections = this.getSections(courses);
-		let filteredSections: Section[] = filter.handleFilter(sections);
+		let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE, false);
 		if (filteredSections.length > 5000) {
 			return Promise.reject(new ResultTooLargeError());
 		}
