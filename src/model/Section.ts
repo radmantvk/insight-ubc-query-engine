@@ -1,16 +1,16 @@
 
 
 export default class Section {
-	private readonly _dept: string; // saved as subject "aanb"
-	private readonly _id: string; // file name  "551"
-	private readonly _avg: number; // possibly sort base on average
-	private readonly _instructor: string;
-	private readonly _title: string;
-	private readonly _pass: number;
-	private readonly _fail: number;
-	private readonly _audit: number
-	private readonly _uuid: string; // saved as id
-	private readonly _year: number;
+	public readonly _dept: string; // saved as subject "aanb"
+	public readonly _id: string; // file name  "551"
+	public readonly _avg: number; // possibly sort base on average
+	public readonly _instructor: string;
+	public readonly _title: string;
+	public readonly _pass: number;
+	public readonly _fail: number;
+	public readonly _audit: number
+	public readonly _uuid: string; // saved as id
+	public readonly _year: number;
 
 
 	constructor(dept: string, id: string, avg: number, instructor: string, title: string, pass: number,
