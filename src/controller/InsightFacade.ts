@@ -76,8 +76,7 @@ export default class InsightFacade implements IInsightFacade {
 			return Promise.reject(new InsightError());
 		}
 		this.readAndLoadCourses(myQuery.datasetID).then((courses) => {
-			// myQuery.process();
-			return Promise.resolve();
+			return myQuery.process(courses);
 		}).catch(() => {
 			return Promise.reject(new InsightError());
 		});
@@ -166,21 +165,9 @@ export default class InsightFacade implements IInsightFacade {
 		let fileNames = fs.readdirSync(path);
 		let listOfFilesToBeLoaded: Array<Promise<any>> = [];
 		for (const fileName of fileNames) {
-			let course: Course;
 			const jsonPath = path + "/" + fileName;
 			const jsonToRead = fs.readJson(jsonPath);
 			listOfFilesToBeLoaded.push(jsonToRead);
-				// .then((json) => {
-				// 	// courses.push(this.jsonToCourse(json));
-				// 	const jsonObj = JSON.parse(json);
-				// 	course = new Course(jsonObj.id, jsonObj.sections);
-				// 	console.log("hel");
-				// 	return Promise.resolve([]);
-				// })
-				// .catch((err) => {
-				// 	console.log(err.toString());
-				// 	return Promise.resolve([]);
-				// });
 		}
 		let courses: Course[] = [];
 		return Promise.all(listOfFilesToBeLoaded).then((data) => {

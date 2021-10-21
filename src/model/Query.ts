@@ -1,5 +1,8 @@
 import QueryValidator from "./QueryValidator";
-
+import Course from "./Course";
+import Filter from "./Filter";
+import Section from "./Section";
+import QuerySorter from "./QuerySorter";
 
 export interface QueryOBJ {
 	WHERE?: QueryFilter;
@@ -8,7 +11,7 @@ export interface QueryOBJ {
 
 export interface QueryOptions {
 	COLUMNS?: QueryOptions;
-	// order
+	ORDER?: any;
 }
 
 export interface QueryFilter {
@@ -24,7 +27,9 @@ enum Fields {
 	AVG, PASS, FAIL,AUDIT,YEAR,DEPT,ID,INSTRUCTOR,TITLE,UUID
 }
 
+
 export default class Query {
+	private courses: Course[] = [];
 	private _datasetID: string = "";
 	private _query: any;
 	constructor(query: any) {
@@ -37,34 +42,41 @@ export default class Query {
 	}
 
 // TODO processQuery
-	public process() {
-		let WHERE: any;
-		let OPTIONS: any;
-		Object.keys(this.query).forEach((key) => {
-			if (key === "WHERE") {
-				WHERE = this.query[key];
-			}
-			if (key === "OPTIONS") {
-				OPTIONS = this.query[key];
-			}
-		});
-
-		let filterKeys = Object.keys(WHERE);
-
-		if (filterKeys.length === 0) {
-			// return entire dataset
-		}
-
-		return this;
+	public process(courses: Course[]) {
+		let filter: Filter = new Filter();
+		let sections = this.getSections(courses);
+		let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE);
+		let sortedSection: Section[] = this.sortSections(filteredSections);
+		let result: any[] = this.filterColumnsAndConvertToObjects(sortedSection);
+		return result;
 	}
 
+	public getSections(courses: Course[]) {
+		let sections: Section[] = [];
+		for (const course of courses) {
+			let hello: any[] = course.sections;
+			sections = sections.concat(hello);
+		}
+		return sections;
+	}
 
-	/**
-	 * Responsible for the Where block in Query
-	 * @param where : value of the where key, Filter.
-	 */
-	public handleWhere(where: any) {
-		// if (where == "")
+	public sortSections(sections: Section[]): Section[] {
+		let order = "";
+		Object.keys(this.query.OPTIONS).forEach((key) => {
+			if (key === "ORDER") {
+				order = this.query.OPTIONS.ORDER;
+			}
+		});
+		if (order === "") { // No need to sort if there is no order
+			return sections;
+		}
+		order = order.split("_")[1];
+		let sorter: QuerySorter = new QuerySorter(order, sections);
+		return sorter.sort();
+	}
+
+	public filterColumnsAndConvertToObjects(sections: Section[]): Section[] {
+		return [];
 	}
 
 	// return a list of all fields inside columns
@@ -79,24 +91,8 @@ export default class Query {
 	}
 
 
-	public applyComparator(comparator: any, operand: any) {
-		return this;
-	}
-
-	public applyLogic(body: any, filterVal: any) {
-		return this;
-	}
-
-	public applyNegation(negation: any) {
-		return this;
-	}
-
-
-	public handleOptions(opts: QueryOptions) {
-		return this;
-	}
-
 	public get query(): any {
 		return this._query;
 	}
+
 }
