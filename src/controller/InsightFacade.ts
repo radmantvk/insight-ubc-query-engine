@@ -75,12 +75,10 @@ export default class InsightFacade implements IInsightFacade {
 		if (!this.idHasBeenAdded(myQuery.datasetID)) {
 			return Promise.reject(new InsightError());
 		}
-		this.readAndLoadCourses(myQuery.datasetID).then((courses) => {
+		return this.readAndLoadCourses(myQuery.datasetID).then((courses) => {
 			return myQuery.process(courses);
-		}).catch(() => {
-			return Promise.reject(new InsightError());
 		});
-		return Promise.resolve([]);
+		// return Promise.resolve([]);
 	}
 
 	public listDatasets(): Promise<InsightDataset[]> {
