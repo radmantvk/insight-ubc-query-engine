@@ -34,7 +34,9 @@ export default class QueryValidator {
 		if (keysFILTER.length > 1) {
 			return false;
 		}
-
+		if (Object.keys(WHERE).length === 0) {
+			return true;
+		}
 		let keyFILTER: string = Object.keys(WHERE)[0];
 		if(!this.isValidFilter(WHERE, keyFILTER)) {
 			return false;
