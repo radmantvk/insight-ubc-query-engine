@@ -43,7 +43,9 @@ export default class Query {
 		}
 		let filter: Filter = new Filter();
 		let sections = this.getSections(courses);
+
 		let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE);
+
 		if (filteredSections.length > 5000) {
 			return Promise.reject(new ResultTooLargeError());
 		}
@@ -59,6 +61,7 @@ export default class Query {
 			sections = sections.concat(hello);
 		}
 		return sections;
+
 	}
 
 	public sortSections(sections: Section[]): Section[] {
@@ -88,7 +91,7 @@ export default class Query {
 					columnKey === "audit" || columnKey === "year") {
 					sectionObj[inputString] = this.getMField(columnKey, section);
 				} else {
-					sectionObj[inputString] = this.getSField(columnKey, section).toString();
+					sectionObj[inputString] = this.getSField(columnKey, section);
 				}
 			}
 			arrayOfObjs.push(sectionObj);
@@ -110,7 +113,6 @@ export default class Query {
 	public get query(): any {
 		return this._query;
 	}
-
 
 	private getMField(key: string, section: Section): number {
 		if (key === "avg") {
@@ -149,37 +151,5 @@ export default class Query {
 		return section._uuid;
 	}
 
-	// private getSectionField(key: any, section: any): any {
-	// 	const field = key.split("_")[1];
-	// 	if (field === "avg") {
-	// 		return section._avg;
-	// 	}
-	// 	if (field === "pass") {
-	// 		return section._pass;
-	// 	}
-	// 	if (field === "fail") {
-	// 		return section._fail;
-	// 	}
-	// 	if (field === "audit") {
-	// 		return section._audit;
-	// 	}
-	// 	if (field === "year") {
-	// 		return section._year;
-	// 	}
-	// 	if (field === "dept") {
-	// 		return section._dept;
-	// 	}
-	// 	if (field === "id") {
-	// 		return section._id;
-	// 	}
-	// 	if (field === "instructor") {
-	// 		return section._instructor;
-	// 	}
-	// 	if (field === "title") {
-	// 		return section._title;
-	// 	}
-	// 	if (field === "uuid") {
-	// 		return section._uuid;
-	// 	}
-	// }
+
 }

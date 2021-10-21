@@ -10,6 +10,7 @@ export default class Section {
 	public readonly _uuid: string; // saved as id
 	public readonly _year: number;
 
+
 	constructor(dept: string, id: string, avg: number, instructor: string, title: string, pass: number,
 		fail: number, audit: number, uuid: any, year: number) {
 		this._dept = dept;
@@ -25,7 +26,6 @@ export default class Section {
 		} else {
 			this._uuid = uuid;
 		}
-		this._uuid = uuid;
 		this._year = year;
 	}
 

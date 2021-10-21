@@ -18,14 +18,13 @@ export default class Filter {
 			return this.applyNegation(content, sections);
 		} else if (key === "AND" || key === "OR") {
 			return this.applyLogic(content, key, sections);
+
 		} else {
 			return sections;
 		}
 
 	}
 
-
-	//  "{ mkey : number }
 	private applyMathFilter(content: any, key: string, sections: Section[]): Section[] {
 		let filterKey: any = content[key];
 		let mKey = Object.keys(filterKey)[0];
