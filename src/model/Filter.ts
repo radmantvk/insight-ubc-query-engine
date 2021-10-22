@@ -20,19 +20,21 @@ export default class Filter {
 			return this.applyNegation(content, sections);
 		} else if (key === "AND" || key === "OR") {
 			return this.applyLogic(content, key, sections);
-
 		} else {
 			return sections;
 		}
 
 	}
 
+
 	private applyMathFilter(content: any, key: string, sections: Section[]): Section[] {
 		let filterKey: any = content[key];
 		let mKey = Object.keys(filterKey)[0];
 		let bound = filterKey[mKey];
 		let mField = mKey.split("_")[1];
+
 		switch (key) {
+
 			case "LT":
 				return this.applyLTFilter(sections, mField, bound);
 				break;
@@ -125,6 +127,8 @@ export default class Filter {
 					validSections.push(section);
 				}
 			}
+		} else {
+			console.log("error");
 		}
 		return validSections;
 	}
@@ -173,7 +177,6 @@ export default class Filter {
 			}
 			for (const filteredSection of listOfFilteredSections) {
 				for (const sec of filteredSection) {
-
 					if (!results.includes(sec)) {
 						results.push(sec);
 					}

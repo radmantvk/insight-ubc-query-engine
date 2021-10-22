@@ -27,6 +27,7 @@ export default class Section {
 			this._uuid = uuid;
 		}
 		this._year = year;
+
 	}
 
 	public get dept(): string {
