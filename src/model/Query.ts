@@ -151,5 +151,4 @@ export default class Query {
 		return section._uuid;
 	}
 
-
 }

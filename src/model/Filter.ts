@@ -4,12 +4,14 @@ import {query} from "express";
 import exp = require("constants");
 
 export default class Filter {
-	// private filteredSections: Section[] = [];
+	// private filteredSections: Section[] = []
 
 	public handleFilter(sections: Section[], content: any): Section[] {
 		const keys = Object.keys(content);
-		let key = keys[0];
-// { "GT": {   }}
+		if (!(keys.length === 1)) { // TODO: supposed to give and error?
+			return sections;
+		}
+		const key = keys[0];
 		if (key === "GT" || key === "LT" || key === "EQ") {
 			return this.applyMathFilter(content, key, sections);
 		} else if (key === "IS") {
@@ -30,7 +32,6 @@ export default class Filter {
 		let mKey = Object.keys(filterKey)[0];
 		let bound = filterKey[mKey];
 		let mField = mKey.split("_")[1];
-
 		switch (key) {
 			case "LT":
 				return this.applyLTFilter(sections, mField, bound);
@@ -172,6 +173,7 @@ export default class Filter {
 			}
 			for (const filteredSection of listOfFilteredSections) {
 				for (const sec of filteredSection) {
+
 					if (!results.includes(sec)) {
 						results.push(sec);
 					}
