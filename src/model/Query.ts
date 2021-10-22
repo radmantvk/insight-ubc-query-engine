@@ -43,7 +43,9 @@ export default class Query {
 		}
 		let filter: Filter = new Filter();
 		let sections = this.getSections(courses);
-		let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE, false);
+
+		let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE);
+
 		if (filteredSections.length > 5000) {
 			return Promise.reject(new ResultTooLargeError());
 		}
@@ -59,6 +61,7 @@ export default class Query {
 			sections = sections.concat(hello);
 		}
 		return sections;
+
 	}
 
 	public sortSections(sections: Section[]): Section[] {
@@ -112,71 +115,40 @@ export default class Query {
 	}
 
 	private getMField(key: string, section: Section): number {
-		const field = key.split("_")[1];
-		if (field === "avg") {
+		if (key === "avg") {
 			return section._avg;
 		}
-		if (field === "pass") {
+		if (key === "pass") {
 			return section._pass;
 		}
-		if (field === "fail") {
+		if (key === "fail") {
 			return section._fail;
 		}
-		if (field === "audit") {
+		if (key === "audit") {
 			return section._audit;
 		}
-		return section._year;
+		if (key === "year") {
+			let stringYear = section._year.toString();
+			return parseInt(stringYear, 10);
+		}
+		// return parseInt(section._year, 10);
+		return 0;
 	}
 
 	private getSField(key: string, section: any): string {
-		const field = key.split("_")[1];
-		if (field === "dept") {
+		if (key === "dept") {
 			return section._dept;
 		}
-		if (field === "id") {
+		if (key === "id") {
 			return section._id;
 		}
-		if (field === "instructor") {
+		if (key === "instructor") {
 			return section._instructor;
 		}
-		if (field === "title") {
+		if (key === "title") {
 			return section._title;
 		}
 		return section._uuid;
 	}
-
-	// private getSectionField(key: any, section: any): any {
-	// 	const field = key.split("_")[1];
-	// 	if (field === "avg") {
-	// 		return section._avg;
-	// 	}
-	// 	if (field === "pass") {
-	// 		return section._pass;
-	// 	}
-	// 	if (field === "fail") {
-	// 		return section._fail;
-	// 	}
-	// 	if (field === "audit") {
-	// 		return section._audit;
-	// 	}
-	// 	if (field === "year") {
-	// 		return section._year;
-	// 	}
-	// 	if (field === "dept") {
-	// 		return section._dept;
-	// 	}
-	// 	if (field === "id") {
-	// 		return section._id;
-	// 	}
-	// 	if (field === "instructor") {
-	// 		return section._instructor;
-	// 	}
-	// 	if (field === "title") {
-	// 		return section._title;
-	// 	}
-	// 	if (field === "uuid") {
-	// 		return section._uuid;
-	// 	}
-	// }
 
 }

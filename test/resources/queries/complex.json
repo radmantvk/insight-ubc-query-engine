@@ -3,15 +3,12 @@
 	"input": {
 		"WHERE": {
 			"OR": [
-				{
-					"AND": [
-						{
-							"GT": {
+				{"AND": [
+						{	"GT": {
 								"courses_avg": 90
 							}
 						},
-						{
-							"IS": {
+						{"IS": {
 								"courses_dept": "adhe"
 							}
 						}

@@ -4,13 +4,14 @@ import {query} from "express";
 import exp = require("constants");
 
 export default class Filter {
-	// private filteredSections: Section[] = [];
-
+	// private filteredSections: Section[] = []
 
 	public handleFilter(sections: Section[], content: any): Section[] {
 		const keys = Object.keys(content);
-		let key = keys[0];
-// { "GT": {   }}
+		if (!(keys.length === 1)) { // TODO: supposed to give and error?
+			return sections;
+		}
+		const key = keys[0];
 		if (key === "GT" || key === "LT" || key === "EQ") {
 			return this.applyMathFilter(content, key, sections);
 		} else if (key === "IS") {
@@ -18,8 +19,7 @@ export default class Filter {
 		} else if (key === "NOT") {
 			return this.applyNegation(content, sections);
 		} else if (key === "AND" || key === "OR") {
-			// return this.applyLogic(content, key, sections);
-			return sections;
+			return this.applyLogic(content, key, sections);
 		} else {
 			return sections;
 		}
@@ -27,14 +27,14 @@ export default class Filter {
 	}
 
 
-	//  "{ mkey : number }
 	private applyMathFilter(content: any, key: string, sections: Section[]): Section[] {
 		let filterKey: any = content[key];
 		let mKey = Object.keys(filterKey)[0];
 		let bound = filterKey[mKey];
 		let mField = mKey.split("_")[1];
 
-		switch (filterKey) {
+		switch (key) {
+
 			case "LT":
 				return this.applyLTFilter(sections, mField, bound);
 				break;
@@ -96,7 +96,7 @@ export default class Filter {
 				}
 			}
 		} else if (inputString[0] === "*" && inputString[inputString.length - 1] === "*") { // *abc*
-			const expectedString = inputString.replace("*", "");
+			const expectedString = inputString.replace(/\*/g, "");
 			for (let section of sections) {
 				const sectField = this.getSField(sField, section); // "cpsc"
 				if (sectField.includes(expectedString)) {
@@ -104,7 +104,7 @@ export default class Filter {
 				}
 			}
 		} else if (inputString[0] === "*") { // *sc or *
-			const expectedString = inputString.replace("*", ""); // "" or "sc"
+			const expectedString = inputString.replace(/\*/g, ""); // "" or "sc"
 			if (expectedString.length === 0) { // empty string
 				for  (const section of sections) {
 					validSections.push(section);
@@ -112,14 +112,14 @@ export default class Filter {
 			} else {  // "sc"
 				for (const section of sections) {
 					let sectField: string = this.getSField(sField, section);
-					let toCompare = sectField.substring(sectField.length - expectedString.length, sectField.length - 1);
+					let toCompare = sectField.substring(sectField.length - expectedString.length, sectField.length);
 					if (expectedString === toCompare) {
 						validSections.push(section);
 					}
 				}
 			}
 		} else if (inputString[inputString.length - 1] === "*") { // cp*
-			const expectedString = inputString.replace("*", "");
+			const expectedString = inputString.replace(/\*/g, "");
 			for (const section of sections) {
 				let sectField: string = this.getSField(sField, section);
 				let toCompare = sectField.substring(0, inputString.length - 1);
@@ -171,12 +171,12 @@ export default class Filter {
 				results = this.handleFilter(results, filter);
 			}
 		} else if (key === "OR") {
-			let listOfSections = [];
+			let listOfFilteredSections = [];
 			for (let filter of logicArray) {
-				listOfSections.push(this.handleFilter(results, filter));
+				listOfFilteredSections.push(this.handleFilter(sections, filter));
 			}
-			for (const section of listOfSections) {
-				for (const sec of sections) {
+			for (const filteredSection of listOfFilteredSections) {
+				for (const sec of filteredSection) {
 					if (!results.includes(sec)) {
 						results.push(sec);
 					}

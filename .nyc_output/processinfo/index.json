@@ -1,1 +1,5 @@
+<<<<<<< HEAD
+{"processes":{"b15f30d9-0a56-4fb9-b86a-5d853d40d0e8":{"parent":"b75d9b5b-0d12-4d65-a9cc-8379ec92c76f","children":[]},"b75d9b5b-0d12-4d65-a9cc-8379ec92c76f":{"parent":null,"children":["b15f30d9-0a56-4fb9-b86a-5d853d40d0e8"]}},"files":{"/Users/user/project_team147/src/controller/IInsightFacade.ts":["b15f30d9-0a56-4fb9-b86a-5d853d40d0e8"],"/Users/user/project_team147/src/controller/InsightFacade.ts":["b15f30d9-0a56-4fb9-b86a-5d853d40d0e8"],"/Users/user/project_team147/src/model/Course.ts":["b15f30d9-0a56-4fb9-b86a-5d853d40d0e8"],"/Users/user/project_team147/src/model/Section.ts":["b15f30d9-0a56-4fb9-b86a-5d853d40d0e8"],"/Users/user/project_team147/src/model/Query.ts":["b15f30d9-0a56-4fb9-b86a-5d853d40d0e8"],"/Users/user/project_team147/src/model/Filter.ts":["b15f30d9-0a56-4fb9-b86a-5d853d40d0e8"],"/Users/user/project_team147/src/model/QuerySorter.ts":["b15f30d9-0a56-4fb9-b86a-5d853d40d0e8"],"/Users/user/project_team147/src/model/QueryValidator.ts":["b15f30d9-0a56-4fb9-b86a-5d853d40d0e8"]},"externalIds":{}}
+=======
 {"processes":{},"files":{},"externalIds":{}}
+>>>>>>> master

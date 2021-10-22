@@ -13,6 +13,9 @@ export default class QueryValidator {
 		}
 		let WHERE: any;
 		let OPTIONS: any;
+		if (Object.keys(query).length !== 2) {
+			return false;
+		}
 		Object.keys(query).forEach((key) => {
 			if (key === "WHERE") {
 				WHERE = query[key];
@@ -38,7 +41,7 @@ export default class QueryValidator {
 			return true;
 		}
 		let keyFILTER: string = Object.keys(WHERE)[0];
-		if(!this.isValidFilter(WHERE, keyFILTER)) {
+		if(!this.isValidFilter(WHERE)) {
 			return false;
 		}
 
@@ -50,31 +53,36 @@ export default class QueryValidator {
 	 * @param FILTER: The value of filter key (e.g for a "GT" filter, it would be {mKey: number}
 	 * @param filter: the filter string (AND/OR/GT/LT/EQ/IS/NOT)
 	 */
-	public isValidFilter(FILTER: any, filter: string): boolean {
-		if (filter !== "AND" && filter !== "OR" && filter !== "GT" && filter !== "LT" &&
-			filter !== "EQ" && filter !== "IS" && filter !== "NOT") {
+	public isValidFilter(FILTER: any): boolean {
+		const filterKeys = Object.keys(FILTER);
+		if (filterKeys.length === 0) {
+			return false;
+		}
+		let comparator = filterKeys[0];
+		if (comparator !== "AND" && comparator !== "OR" && comparator !== "GT" && comparator !== "LT" &&
+			comparator !== "EQ" && comparator !== "IS" && comparator !== "NOT") {
 			return false;
 		}
 
 
-		if (filter === "AND" || filter === "OR") {
-			if (!this.logicValidate(FILTER, filter)) {
+		if (comparator === "AND" || comparator === "OR") {
+			if (!this.logicValidate(FILTER, comparator)) {
 				return false;
 			}
 		}
 
-		if (filter === "GT" || filter === "LT" || filter === "EQ") {
-			if (!this.mathValidate(FILTER, filter)) {
+		if (comparator === "GT" || comparator === "LT" || comparator === "EQ") {
+			if (!this.mathValidate(FILTER, comparator)) {
 				return false;
 			}
 		}
-		if (filter === "IS") {
+		if (comparator === "IS") {
 			if (!this.stringValidate(FILTER)) {
 				return false;
 			}
 		}
 
-		if (filter === "NOT") {
+		if (comparator === "NOT") {
 			if (!this.negateValidate(FILTER)) {
 				return false;
 			}
@@ -99,12 +107,12 @@ export default class QueryValidator {
 			return false;
 		}
 
+
 		for (let insideFilter of value) {
-			Object.keys(insideFilter).forEach((key) => {
-				if (!this.isValidFilter(insideFilter, key)) {
-					return false;
-				}
-			});
+			// [{}] {}
+			if (!this.isValidFilter(insideFilter)) {
+				return false;
+			}
 		}
 		return true;
 	}
@@ -150,9 +158,9 @@ export default class QueryValidator {
 		if (!this.isValidQueryKey(queryKey, false)) {
 			return false;
 		}
-		let inputString: string = queryKey.split("_")[1];
+		let isVALUE: any = isOBJECT[queryKey];
 		const regex = /[*]?[^*]*[*]?/g;
-		if (!inputString.match(regex)) {
+		if (!isVALUE.match(regex)) {
 			return false;
 		}
 		return true;
@@ -171,7 +179,7 @@ export default class QueryValidator {
 		if (Object.keys(valueNEGATE).length !== 1) {			// must be a single filter
 			return false;
 		}
-		if (!this.isValidFilter(valueNEGATE, Object.keys(valueNEGATE)[0])) {
+		if (!this.isValidFilter(valueNEGATE)) {
 			return false;
 		}
 		return true;
