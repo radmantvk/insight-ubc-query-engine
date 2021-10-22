@@ -151,8 +151,7 @@ export default class InsightFacade implements IInsightFacade {
 				"Fail" in section && "Audit" in section &&
 				"id" in section && "Year" in section) {
 				let s: Section;
-				const yo = section._year;
-				if (section._year === "overall") {
+				if (section["Section"] === "overall") {
 					s = new Section(section.Subject, section.Course, section.Avg, section.Professor,
 						section.Title, section.Pass, section.Fail, section.Audit, section.id, 1900);
 				} else {
