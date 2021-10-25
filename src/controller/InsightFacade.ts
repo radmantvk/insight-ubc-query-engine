@@ -2,6 +2,7 @@ import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFou
 import * as fs from "fs-extra";
 import Course from "../model/Course";
 import Section from "../model/Section";
+// import Room from "../model/Room";
 import JSZip, {JSZipObject} from "jszip";
 import Query from "../model/Query";
 import QueryValidator from "../model/QueryValidator";
@@ -108,8 +109,7 @@ export default class InsightFacade implements IInsightFacade {
 		if (kind === InsightDatasetKind.Courses) {
 			return this.processCourses(id, listOfFilesToBeLoaded);
 		} else { // InsightDatasetKind === Rooms
-			// TODO: implement processRooms
-			return Promise.resolve("");
+			return this.processRooms(id, listOfFilesToBeLoaded);
 		}
 	}
 
@@ -151,8 +151,7 @@ export default class InsightFacade implements IInsightFacade {
 				"Fail" in section && "Audit" in section &&
 				"id" in section && "Year" in section) {
 				let s: Section;
-				const yo = section._year;
-				if (section._year === "overall") {
+				if (section["Section"] === "overall") {
 					s = new Section(section.Subject, section.Course, section.Avg, section.Professor,
 						section.Title, section.Pass, section.Fail, section.Audit, section.id, 1900);
 				} else {
@@ -252,6 +251,45 @@ export default class InsightFacade implements IInsightFacade {
 			return Promise.all(listOfCoursesToBeStored)
 				.then(() => {
 					return counter;
+				});
+		});
+	}
+
+	private processRooms(id: string, listOfFilesToBeLoaded: Array<Promise<any>>) {
+		const parse5 = require("parse5");
+		// let rooms: Room[] = [];
+		return Promise.all(listOfFilesToBeLoaded).then((data) => {
+			data.forEach((courseObject: string) => {
+				// let sections: Section[] = [];
+				try {
+					const document = parse5.parse(courseObject);
+					const tag = document.childNodes[0].tagName;
+					const h = ";";
+					// sections = this.createSections(sectionArr.result);
+					// if (sections.length > 0) {
+					// 	const courseID = "courses-" + sections[0].dept + "-" + sections[0].id; // assuming sections is not empty
+					// 	const course: Course = new Course(courseID, sections);
+					// 	// courses.push(course);
+					// }
+					// containsOneOrMoreJsonFiles = true;
+				} catch (e) {
+					// console.log("do nothing to the invalid json file");
+				}
+			});
+			// if (!containsOneOrMoreJsonFiles) {
+			// 	return Promise.reject(new InsightError());
+			// }
+			let listOfCoursesToBeStored: Array<Promise<any>> = [];
+			this.createDirectory(id)
+				.then(() => {
+					// for (const course of courses) {
+					// 	const path = "./data/" + id + "/" +  course.id + ".json";
+					// 	listOfFilesToBeLoaded.push(fs.writeJSON(path, course.toJson()));
+					// }
+				});
+			return Promise.all(listOfCoursesToBeStored)
+				.then(() => {
+					// return counter;
 				});
 		});
 	}
