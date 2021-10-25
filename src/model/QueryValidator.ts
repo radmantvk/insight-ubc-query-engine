@@ -13,18 +13,24 @@ export default class QueryValidator {
 		}
 		let WHERE: any;
 		let OPTIONS: any;
-		if (Object.keys(query).length !== 2) {
+		let queryKeys = Object.keys(query);
+		if (queryKeys.length < 2 || queryKeys.length > 3) {
 			return false;
 		}
-		Object.keys(query).forEach((key) => {
+		for (let key of queryKeys) {
+			if (key !== "WHERE" && key !== "OPTIONS" && key !== "TRANSFORMATIONS") {
+				return false;
+			}
 			if (key === "WHERE") {
 				WHERE = query[key];
 			}
 			if (key === "OPTIONS") {
 				OPTIONS = query[key];
 			}
-		});
-
+			if (key === "TRANSFORMATIONS") {
+				const TRANSFORMATIONS = query[key];
+			}
+		}
 		let keysOPTION = Object.keys(OPTIONS);
 		if (keysOPTION.length !== 1 && keysOPTION.length !== 2) {
 			return false;
@@ -32,7 +38,6 @@ export default class QueryValidator {
 		if (!this.optionsValidate(OPTIONS)) {
 			return false;
 		}
-
 		let keysFILTER = Object.keys(WHERE);
 		if (keysFILTER.length > 1) {
 			return false;
@@ -41,9 +46,8 @@ export default class QueryValidator {
 			return true;
 		}
 		let keyFILTER: string = Object.keys(WHERE)[0];
-		let theID = OPTIONS["COLUMNS"][0].split("_")[0];
-
-		let filterValidator: FilterValidator = new FilterValidator(theID);
+		datasetID = OPTIONS["COLUMNS"][0].split("_")[0];
+		let filterValidator: FilterValidator = new FilterValidator(datasetID);
 		if(!filterValidator.isValidFilter(WHERE)) {
 			return false;
 		}

@@ -143,58 +143,6 @@ export default class FilterValidator {
 	}
 
 	/**
-	 * must ensure the value of the COLUMNS key is a non-empty array
-	 * must ensure key is valid (can be mkey or skey)
-	 * @param OPTIONS: The OPTIONS object where the key "COLUMNS" was found
-	 */
-	public columnValidate(OPTIONS: any): boolean {
-		let columnVal = OPTIONS["COLUMNS"];
-		if (!(columnVal instanceof Array)) {
-			return false;
-		}
-		if (columnVal.length === 0) {
-			return false;
-		}
-		for (let key in columnVal) {
-			if (typeof columnVal[key] !== "string") {
-				return false;
-			}
-			// datasetID = columnVal[key].split("_")[0];
-			if (this.datasetID.includes(" ") || this.datasetID.length === 0) {
-				return false;
-			}
-			if (!(this.isValidQueryKey(columnVal[key], true)) && !(this.isValidQueryKey(columnVal[key], false))) {
-				return false;
-			}
-			columnKeys.push(columnVal[key]);
-		}
-		return true;
-	}
-
-
-	/**
-	 * Called when the key "ORDER" is found within OPTIONS
-	 * must ensure the value of the "ORDER" key is a string
-	 * must ensure key is valid
-	 * @param OPTIONS: the OPTIONS object where the key "ORDER" was found
-	 * @private
-	 */
-	private orderValidate(OPTIONS: any): boolean {
-		let orderVal = OPTIONS["ORDER"];
-		if (typeof orderVal !== "string") {
-			return false;
-		}
-		if (!columnKeys.includes(orderVal)) {
-			return false;
-		}
-		if (!(this.isValidQueryKey(orderVal, true)) && !(this.isValidQueryKey(orderVal, false))) {
-			return false;
-		}
-		return true;
-
-	}
-
-	/**
 	 * Check if a query key is valid
 	 * <id>_<key> is correct format, where id is the id of the dataset
 	 * an id_string can contain any character except for underscore
