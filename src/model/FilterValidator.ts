@@ -1,5 +1,4 @@
 
-
 let columnKeys: any = [];								// we want to store the column keys so if there is an order, the order key must be in this array
 export default class FilterValidator {
 	private datasetID: string = "";
@@ -68,7 +67,6 @@ export default class FilterValidator {
 
 
 		for (let insideFilter of value) {
-			// [{}] {}
 			if (!this.isValidFilter(insideFilter)) {
 				return false;
 			}
@@ -118,7 +116,13 @@ export default class FilterValidator {
 		}
 		let isVALUE: any = isOBJECT[queryKey];
 		const regex = /[*]?[^*]*[*]?/g;
-		if (!isVALUE.match(regex)) {
+		if (isVALUE[0] === "*") {
+			isVALUE = isVALUE.substring(1, isVALUE.length);
+		}
+		if (isVALUE[isVALUE.length - 1] === "*") {
+			isVALUE = isVALUE.substring(0, isVALUE.length - 1);
+		}
+		if (isVALUE.includes("*")) {
 			return false;
 		}
 		return true;
@@ -141,58 +145,6 @@ export default class FilterValidator {
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * must ensure the value of the COLUMNS key is a non-empty array
-	 * must ensure key is valid (can be mkey or skey)
-	 * @param OPTIONS: The OPTIONS object where the key "COLUMNS" was found
-	 */
-	public columnValidate(OPTIONS: any): boolean {
-		let columnVal = OPTIONS["COLUMNS"];
-		if (!(columnVal instanceof Array)) {
-			return false;
-		}
-		if (columnVal.length === 0) {
-			return false;
-		}
-		for (let key in columnVal) {
-			if (typeof columnVal[key] !== "string") {
-				return false;
-			}
-			this.datasetID = columnVal[key].split("_")[0];
-			if (this.datasetID.includes(" ") || this.datasetID.length === 0) {
-				return false;
-			}
-			if (!(this.isValidQueryKey(columnVal[key], true)) && !(this.isValidQueryKey(columnVal[key], false))) {
-				return false;
-			}
-			columnKeys.push(columnVal[key]);
-		}
-		return true;
-	}
-
-
-	/**
-	 * Called when the key "ORDER" is found within OPTIONS
-	 * must ensure the value of the "ORDER" key is a string
-	 * must ensure key is valid
-	 * @param OPTIONS: the OPTIONS object where the key "ORDER" was found
-	 * @private
-	 */
-	private orderValidate(OPTIONS: any): boolean {
-		let orderVal = OPTIONS["ORDER"];
-		if (typeof orderVal !== "string") {
-			return false;
-		}
-		if (!columnKeys.includes(orderVal)) {
-			return false;
-		}
-		if (!(this.isValidQueryKey(orderVal, true)) && !(this.isValidQueryKey(orderVal, false))) {
-			return false;
-		}
-		return true;
-
 	}
 
 	/**
