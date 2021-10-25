@@ -8,11 +8,17 @@ import {ResultTooLargeError} from "../controller/IInsightFacade";
 export interface QueryOBJ {
 	WHERE?: QueryFilter;
 	OPTIONS?: QueryOptions;
+	TRANSFORMATIONS?: QueryOBJ;
 }
 
 export interface QueryOptions {
 	COLUMNS?: QueryOptions;
 	ORDER?: any;
+}
+
+export interface QueryTransformations {
+	GROUP?: QueryTransformations;
+	APPLY?: QueryTransformations;
 }
 
 export interface QueryFilter {
