@@ -1,6 +1,11 @@
-let datasetID: string;
+
 let columnKeys: any = [];								// we want to store the column keys so if there is an order, the order key must be in this array
 export default class FilterValidator {
+	private datasetID: string = "";
+
+	constructor(datasetID: string) {
+		this.datasetID = datasetID;
+	}
 
 	/**
 	 * return true if correct filter matches one of the viable options in EBNF
@@ -154,8 +159,8 @@ export default class FilterValidator {
 			if (typeof columnVal[key] !== "string") {
 				return false;
 			}
-			datasetID = columnVal[key].split("_")[0];
-			if (datasetID.includes(" ") || datasetID.length === 0) {
+			this.datasetID = columnVal[key].split("_")[0];
+			if (this.datasetID.includes(" ") || this.datasetID.length === 0) {
 				return false;
 			}
 			if (!(this.isValidQueryKey(columnVal[key], true)) && !(this.isValidQueryKey(columnVal[key], false))) {
@@ -198,7 +203,7 @@ export default class FilterValidator {
 	 */
 	public isValidQueryKey(queryKey: string, isMKey: boolean): boolean {
 		let idString = queryKey.split("_")[0];
-		if (idString !== datasetID) {
+		if (idString !== this.datasetID) {
 			return false;
 		}
 		if (idString.includes("_")){
