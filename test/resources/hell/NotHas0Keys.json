@@ -1,0 +1,17 @@
+
+{
+  "title": "NOT has 0 keys",
+  "input":{
+            "WHERE": {
+              "NOT": {}
+            },
+            "OPTIONS": {
+              "COLUMNS": [
+                "courses_avg"
+              ],
+              "ORDER": "courses_avg"
+            }
+          },
+  "errorExpected": true,
+  "with": "InsightError"
+}
