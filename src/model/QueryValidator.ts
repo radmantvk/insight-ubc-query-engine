@@ -56,7 +56,6 @@ export default class QueryValidator {
 		if(!filterValidator.isValidFilter(WHERE)) {
 			return false;
 		}
-
 		return true;
 	}
 
