@@ -1,5 +1,6 @@
 import {QueryOBJ} from "./Query";
 import FilterValidator from "./FilterValidator";
+import TransformValidator from "./TransformValidator";
 
 let datasetID: string;
 
@@ -29,6 +30,10 @@ export default class QueryValidator {
 			}
 			if (key === "TRANSFORMATIONS") {
 				const TRANSFORMATIONS = query[key];
+				const transformValidator: TransformValidator = new TransformValidator();
+				if (!transformValidator.validate(TRANSFORMATIONS)) {
+					return false;
+				}
 			}
 		}
 		let keysOPTION = Object.keys(OPTIONS);
@@ -73,12 +78,22 @@ export default class QueryValidator {
 				return false;
 			}
 			datasetID = columnVal[key].split("_")[0];
+			let field = columnVal[key].split("_")[1];
 			if (datasetID.includes(" ") || datasetID.length === 0) {
 				return false;
 			}
-			if (!(this.isValidQueryKey(columnVal[key], true)) &&
-				!(this.isValidQueryKey(columnVal[key], false))) {
-				return false;
+			if (this.isValidMField(field)) {
+				if (!this.isValidQueryKey(columnVal[key], true)) {
+					return false;
+				}
+			} else if (this.isValidSField(field)) {
+				if (!this.isValidQueryKey(columnVal[key], false)) {
+					return false;
+				}
+			} else {
+				if (!this.isValidApplyKey(columnVal[key])) {
+					return false;
+				}
 			}
 			columnKeys.push(columnVal[key]);
 		}
@@ -127,18 +142,26 @@ export default class QueryValidator {
 		let field = queryKey.split("_")[1];
 		if (isMKey) {
 			let mField = field;
-			if (mField === "avg" || mField === "pass" || mField === "fail" || mField === "audit" || mField === "year") {
-				return true;
-			}
-			return false;
+			return this.isValidMField(mField);
 		} else {
 			let sField = field;
-			if (sField === "dept" || sField === "id" || sField === "instructor" || sField === "title" ||
-				sField === "uuid") {
-				return true;
-			}
-			return false;
+			return this.isValidSField(sField);
 		}
+	}
+
+	private isValidSField(sField: string) {
+		if (sField === "dept" || sField === "id" || sField === "instructor" || sField === "title" ||
+			sField === "uuid") {
+			return true;
+		}
+		return false;
+	}
+
+	private isValidMField(mField: string) {
+		if (mField === "avg" || mField === "pass" || mField === "fail" || mField === "audit" || mField === "year") {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -165,5 +188,13 @@ export default class QueryValidator {
 			}
 		}
 		return true;
+	}
+
+	private isValidApplyKey(key: string) {
+		if (key.includes("_")) {
+			return false;
+		} else if (key.length === 0) {
+			return false;
+		}
 	}
 }

@@ -67,7 +67,6 @@ export default class FilterValidator {
 
 
 		for (let insideFilter of value) {
-			// [{}] {}
 			if (!this.isValidFilter(insideFilter)) {
 				return false;
 			}
@@ -117,7 +116,13 @@ export default class FilterValidator {
 		}
 		let isVALUE: any = isOBJECT[queryKey];
 		const regex = /[*]?[^*]*[*]?/g;
-		if (!isVALUE.match(regex)) {
+		if (isVALUE[0] === "*") {
+			isVALUE = isVALUE.substring(1, isVALUE.length);
+		}
+		if (isVALUE[isVALUE.length - 1] === "*") {
+			isVALUE = isVALUE.substring(0, isVALUE.length - 1);
+		}
+		if (isVALUE.includes("*")) {
 			return false;
 		}
 		return true;
