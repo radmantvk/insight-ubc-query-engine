@@ -1,6 +1,6 @@
 import Section from "./Section";
 
-
+// old
 export default class Room {
 	// private _sections: Section[] = [];
 	// private readonly _id: string;

@@ -1,4 +1,5 @@
 
+
 let columnKeys: any = [];								// we want to store the column keys so if there is an order, the order key must be in this array
 export default class FilterValidator {
 	private datasetID: string = "";

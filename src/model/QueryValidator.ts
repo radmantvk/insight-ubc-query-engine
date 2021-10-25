@@ -6,6 +6,7 @@ let columnKeys: any = [];								// we want to store the column keys so if there
 
 
 export default class QueryValidator {
+
 	private datasetID: string = "";
 
 	public queryValidate(query: QueryOBJ) {
@@ -144,7 +145,8 @@ export default class QueryValidator {
 			if (this.datasetID.includes(" ") || this.datasetID.length === 0) {
 				return false;
 			}
-			if (!(this.isValidQueryKey(columnVal[key], true)) && !(this.isValidQueryKey(columnVal[key], false))) {
+			if (!(this.isValidQueryKey(columnVal[key], true)) &&
+				!(this.isValidQueryKey(columnVal[key], false))) {
 				return false;
 			}
 			columnKeys.push(columnVal[key]);
@@ -168,7 +170,8 @@ export default class QueryValidator {
 		if (!columnKeys.includes(orderVal)) {
 			return false;
 		}
-		if (!(this.isValidQueryKey(orderVal, true)) && !(this.isValidQueryKey(orderVal, false))) {
+		if (!(this.isValidQueryKey(orderVal, true)) &&
+			!(this.isValidQueryKey(orderVal, false))) {
 			return false;
 		}
 		return true;
