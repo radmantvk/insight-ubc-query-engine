@@ -1,7 +1,8 @@
-// let datasetID: string;
+
+
 let columnKeys: any = [];								// we want to store the column keys so if there is an order, the order key must be in this array
 export default class FilterValidator {
-	private readonly datasetID;
+	private datasetID: string = "";
 
 	constructor(datasetID: string) {
 		this.datasetID = datasetID;
@@ -67,6 +68,7 @@ export default class FilterValidator {
 
 
 		for (let insideFilter of value) {
+			// [{}] {}
 			if (!this.isValidFilter(insideFilter)) {
 				return false;
 			}
@@ -116,13 +118,7 @@ export default class FilterValidator {
 		}
 		let isVALUE: any = isOBJECT[queryKey];
 		const regex = /[*]?[^*]*[*]?/g;
-		if (isVALUE[0] === "*") {
-			isVALUE = isVALUE.substring(1, isVALUE.length);
-		}
-		if (isVALUE[isVALUE.length - 1] === "*") {
-			isVALUE = isVALUE.substring(0, isVALUE.length - 1);
-		}
-		if (isVALUE.includes("*")) {
+		if (!isVALUE.match(regex)) {
 			return false;
 		}
 		return true;
@@ -164,7 +160,7 @@ export default class FilterValidator {
 			if (typeof columnVal[key] !== "string") {
 				return false;
 			}
-			// datasetID = columnVal[key].split("_")[0];
+			this.datasetID = columnVal[key].split("_")[0];
 			if (this.datasetID.includes(" ") || this.datasetID.length === 0) {
 				return false;
 			}

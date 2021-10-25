@@ -1,55 +1,129 @@
 import {QueryOBJ} from "./Query";
 import FilterValidator from "./FilterValidator";
 
-let datasetID: string;
 
 let columnKeys: any = [];								// we want to store the column keys so if there is an order, the order key must be in this array
 
 
 export default class QueryValidator {
+
+	private datasetID: string = "";
+
 	public queryValidate(query: QueryOBJ) {
 		if (query === "undefined" || query == null || !("WHERE" in query) || !("OPTIONS" in query)) {
 			return false;
 		}
 		let WHERE: any;
 		let OPTIONS: any;
-		if (Object.keys(query).length !== 2) {
+		let queryKeys = Object.keys(query);
+		if (queryKeys.length < 2 || queryKeys.length > 3) {
 			return false;
 		}
-		Object.keys(query).forEach((key) => {
+
+		for (let key of queryKeys) {
+			if (key !== "WHERE" && key !== "OPTIONS" && key !== "TRANSFORMATIONS") {
+				return false;
+			}
 			if (key === "WHERE") {
 				WHERE = query[key];
+				let whereKeys = Object.keys(WHERE);
+				if (whereKeys.length > 1) {
+					return false;
+				}
+				const filterValidator: FilterValidator = new FilterValidator(this.datasetID);
+				if (!(whereKeys.length === 0)) {
+					if (!filterValidator.isValidFilter(WHERE)) {
+						return false;
+					}
+				}
 			}
 			if (key === "OPTIONS") {
 				OPTIONS = query[key];
+				this.datasetID = OPTIONS["COLUMNS"][0].split("_")[0];
+				let optionKeys = Object.keys(OPTIONS);
+				if (optionKeys.length !== 1 && optionKeys.length !== 2) {
+					return false;
+				}
+				if (!this.optionsValidate(OPTIONS)) {
+					return false;
+				}
 			}
-		});
-
-		let keysOPTION = Object.keys(OPTIONS);
-		if (keysOPTION.length !== 1 && keysOPTION.length !== 2) {
-			return false;
+			// if (key === "TRANSFORMATIONS") {
+			// 	let TRANSFORMATIONS = query[key];
+			// 	return true;
+			// }
 		}
-		if (!this.optionsValidate(OPTIONS)) {
-			return false;
-		}
-
-		let keysFILTER = Object.keys(WHERE);
-		if (keysFILTER.length > 1) {
-			return false;
-		}
-		if (Object.keys(WHERE).length === 0) {
-			return true;
-		}
-		let keyFILTER: string = Object.keys(WHERE)[0];
-		let theID = OPTIONS["COLUMNS"][0].split("_")[0];
-
-		let filterValidator: FilterValidator = new FilterValidator(theID);
-		if(!filterValidator.isValidFilter(WHERE)) {
-			return false;
-		}
-
 		return true;
 	}
+
+	// /**
+	//  * return true if correct filter matches one of the viable options in EBNF
+	//  * @param FILTER: The value of filter key (e.g for a "GT" filter, it would be {mKey: number}
+	//  * @param filter: the filter string (AND/OR/GT/LT/EQ/IS/NOT)
+	//  */
+	// public isValidFilter(FILTER: any): boolean {
+	// 	const filterKeys = Object.keys(FILTER);
+	// 	if (filterKeys.length === 0) {
+	// 		return false;
+	// 	}
+	// 	let comparator = filterKeys[0];
+	// 	if (comparator !== "AND" && comparator !== "OR" && comparator !== "GT" && comparator !== "LT" &&
+	// 		comparator !== "EQ" && comparator !== "IS" && comparator !== "NOT") {
+	// 		return false;
+	// 	}
+	//
+	// 	if (comparator === "AND" || comparator === "OR") {
+	// 		if (!this.logicValidate(FILTER, comparator)) {
+	// 			return false;
+	// 		}
+	// 	}
+	//
+	// 	if (comparator === "GT" || comparator === "LT" || comparator === "EQ") {
+	// 		if (!this.mathValidate(FILTER, comparator)) {
+	// 			return false;
+	// 		}
+	// 	}
+	// 	if (comparator === "IS") {
+	// 		if (!this.stringValidate(FILTER)) {
+	// 			return false;
+	// 		}
+	// 	}
+	//
+	// 	if (comparator === "NOT") {
+	// 		if (!this.negateValidate(FILTER)) {
+	// 			return false;
+	// 		}
+	// 	}
+	// 	return true;
+	// }
+
+	// /**
+	//  * called when the filter key is "AND" or "OR"
+	//  * Must ensure that the value of the filter key is type of array and non-empty
+	//  * Must ensure that the elements of the array are valid filters (recursion)
+	//  * @param FILTER: the FILTER object to access key and value of
+	//  * @param filter: the filter key "AND", or "OR
+	//  */
+	// public logicValidate(FILTER: any, filter: string) {
+	// 	let value: any = FILTER[filter];
+	// 	if (!(value instanceof Array)) {
+	// 		return false;
+	// 	}
+	//
+	// 	if (value.length === 0) {
+	// 		return false;
+	// 	}
+	//
+	//
+	// 	for (let insideFilter of value) {
+	// 		// [{}] {}
+	// 		if (!this.isValidFilter(insideFilter)) {
+	// 			return false;
+	// 		}
+	// 	}
+	// 	return true;
+	// }
+
 
 	/**
 	 * must ensure the value of the COLUMNS key is a non-empty array
@@ -68,8 +142,7 @@ export default class QueryValidator {
 			if (typeof columnVal[key] !== "string") {
 				return false;
 			}
-			datasetID = columnVal[key].split("_")[0];
-			if (datasetID.includes(" ") || datasetID.length === 0) {
+			if (this.datasetID.includes(" ") || this.datasetID.length === 0) {
 				return false;
 			}
 			if (!(this.isValidQueryKey(columnVal[key], true)) &&
@@ -114,7 +187,7 @@ export default class QueryValidator {
 	 */
 	public isValidQueryKey(queryKey: string, isMKey: boolean): boolean {
 		let idString = queryKey.split("_")[0];
-		if (idString !== datasetID) {
+		if (idString !== this.datasetID) {
 			return false;
 		}
 		if (idString.includes("_")){
