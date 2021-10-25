@@ -1,13 +1,18 @@
 import {QueryOBJ} from "./Query";
 import FilterValidator from "./FilterValidator";
+
 import TransformValidator from "./TransformValidator";
 
 let datasetID: string;
+
 
 let columnKeys: any = [];								// we want to store the column keys so if there is an order, the order key must be in this array
 
 
 export default class QueryValidator {
+	private datasetID: string = "";
+
+
 	public queryValidate(query: QueryOBJ) {
 		if (query === "undefined" || query == null || !("WHERE" in query) || !("OPTIONS" in query)) {
 			return false;
@@ -58,7 +63,6 @@ export default class QueryValidator {
 		}
 		return true;
 	}
-
 	/**
 	 * must ensure the value of the COLUMNS key is a non-empty array
 	 * must ensure key is valid (can be mkey or skey)
