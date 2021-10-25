@@ -64,7 +64,6 @@ export default class QueryValidator {
 			return false;
 		}
 
-
 		if (comparator === "AND" || comparator === "OR") {
 			if (!this.logicValidate(FILTER, comparator)) {
 				return false;
