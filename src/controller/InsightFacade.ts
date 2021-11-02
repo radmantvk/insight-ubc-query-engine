@@ -6,6 +6,10 @@ import Section from "../model/Section";
 import JSZip, {JSZipObject} from "jszip";
 import Query from "../model/Query";
 import QueryValidator from "../model/QueryValidator";
+import CoursesProcessor from "../model/CoursesProcessor";
+import RoomsProcessor from "../model/RoomsProcessor";
+import Building from "../model/Building";
+import Room from "../model/Room";
 
 
 /**
@@ -67,6 +71,24 @@ export default class InsightFacade implements IInsightFacade {
 			});
 	}
 
+	// public performQuery(query: any): Promise<any[]> {
+	// 	const queryValidator = new QueryValidator();
+	// 	// if (!queryValidator.queryValidate(query)) {
+	// 	// 	return Promise.reject(new InsightError());
+	// 	// }
+	// 	const myQuery = new Query(query);
+	// 	if (!this.idHasBeenAdded(myQuery.datasetID)) {
+	// 		return Promise.reject(new InsightError());
+	// 	}
+	// 	const kind: string = this.getKind(myQuery.datasetID);
+	// 	return this.readAndLoad(myQuery.datasetID, kind)
+	// 		.then((courses: any[]) => {
+	// 			return myQuery.process(courses, kind); // TODO: pass in if courses or not
+	// 			// console.log("yo");
+	// 		});
+	// 	// return Promise.resolve([]);
+	// }
+
 	public performQuery(query: any): Promise<any[]> {
 		const queryValidator = new QueryValidator();
 		if (!queryValidator.queryValidate(query)) {
@@ -79,89 +101,6 @@ export default class InsightFacade implements IInsightFacade {
 		return this.readAndLoadCourses(myQuery.datasetID).then((courses) => {
 			return myQuery.process(courses);
 		});
-		// return Promise.resolve([]);
-	}
-
-	public listDatasets(): Promise<InsightDataset[]> {
-		return Promise.resolve(this.insightDatasets);
-	}
-
-	private unzip(content: string): Promise<any> {
-		const zip = new JSZip();
-		return zip.loadAsync(content, {base64: true})
-			.catch((err: any) => {
-				return Promise.reject(new InsightError(err));
-			});
-	}
-
-	private processData(id: string, kind: InsightDatasetKind, unzippedData: any): Promise<any> {
-		const kindToString = this.getKindToString(kind);
-		if (!this.directoryExists(kindToString, unzippedData)) {
-			return Promise.reject(new InsightError());
-		}
-		let listOfFilesToBeLoaded: Array<Promise<any>> = [];
-		unzippedData.folder(kindToString).forEach(function (relativePath: any, file: JSZipObject) {
-			listOfFilesToBeLoaded.push(file.async("text"));
-		});
-		if (!fs.pathExistsSync("./data/")) {
-			fs.mkdirSync("./data/");
-		}
-		if (kind === InsightDatasetKind.Courses) {
-			return this.processCourses(id, listOfFilesToBeLoaded);
-		} else { // InsightDatasetKind === Rooms
-			return this.processRooms(id, listOfFilesToBeLoaded);
-		}
-	}
-
-	private createDirectory(id: string): Promise<any> {
-		if (fs.pathExistsSync("./data/")) {
-			return fs.mkdir("./data/" + id);
-		} else {
-			return fs.mkdir("./data/")
-				.then(() => {
-					return fs.mkdir("./data/" + id);
-				});
-		}
-	}
-
-	private directoryExists(kind: string, data: any): boolean {
-		for (const file of Object.keys(data.files)) {
-			if (file.toString().split("/")[0] === kind) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * let sections = list of Sections
-	 * inside each loop:
-	 * let Section section;
-	 * extract all fields (ex. dept) store on a local variable
-	 * instantiate section
-	 * add it to List of Section
-	 * return List after looping through all sections
-	 */
-	private createSections(sections: any): Section[] {
-		let listOfSections: Section[] = [];
-		for (const section of sections) {
-			if ("Section" in section && "Course" in section &&
-				"Avg" in section && "Professor" in section &&
-				"Title" in section && "Pass" in section &&
-				"Fail" in section && "Audit" in section &&
-				"id" in section && "Year" in section) {
-				let s: Section;
-				if (section["Section"] === "overall") {
-					s = new Section(section.Subject, section.Course, section.Avg, section.Professor,
-						section.Title, section.Pass, section.Fail, section.Audit, section.id, 1900);
-				} else {
-					s = new Section(section.Subject, section.Course, section.Avg, section.Professor,
-						section.Title, section.Pass, section.Fail, section.Audit, section.id, section.Year);
-				}
-				listOfSections.push(s);
-			}
-		}
-		return listOfSections;
 	}
 
 	private readAndLoadCourses(datasetID: any): Promise<Course[]> {
@@ -184,6 +123,99 @@ export default class InsightFacade implements IInsightFacade {
 			.then(() => {
 				return Promise.resolve(courses);
 			});
+	}
+
+	public listDatasets(): Promise<InsightDataset[]> {
+		return Promise.resolve(this.insightDatasets);
+	}
+
+	private unzip(content: string): Promise<any> {
+		const zip = new JSZip();
+		return zip.loadAsync(content, {base64: true})
+			.catch((err: any) => {
+				return Promise.reject(new InsightError(err));
+			});
+	}
+
+	private processData(id: string, kind: InsightDatasetKind, unzippedData: any): Promise<any> {
+		// return numRows
+		const kindToString = this.getKindToString(kind);
+		if (!this.directoryExists(kindToString, unzippedData)) {
+			return Promise.reject(new InsightError());
+		}
+		if (!fs.pathExistsSync("./data/")) {
+			fs.mkdirSync("./data/");
+		}
+		if (kind === InsightDatasetKind.Courses) {
+			let listOfFilesToBeLoaded: Array<Promise<any>> = [];
+			unzippedData.folder(kindToString).forEach(function (relativePath: any, file: JSZipObject) {
+				listOfFilesToBeLoaded.push(file.async("text"));
+			});
+			return CoursesProcessor.process(id, listOfFilesToBeLoaded);
+		} else { // InsightDatasetKind === Rooms
+			let indexFileLoading: Array<Promise<any>> = [];
+			unzippedData.folder(kindToString).forEach(function (relativePath: any, file: JSZipObject) {
+				const buildingFolder = "rooms/campus/discover/buildings-and-classrooms/";
+				if (file.name === "rooms/index.htm"){
+					indexFileLoading.push(file.async("text"));
+				}
+			});
+			return RoomsProcessor.getBuildings(indexFileLoading)
+				.then((buildings) => {
+					const buildingFilesToBeLoaded: any[] = this.getBuildingFiles(unzippedData, buildings);
+					return RoomsProcessor.getRooms(buildings, buildingFilesToBeLoaded)
+						.then((rooms) => {
+							return Promise.resolve(RoomsProcessor.process(id, rooms));
+						});
+				}).catch((error) => {
+					return Promise.reject(new InsightError());
+				});
+		}
+	}
+
+	private directoryExists(kind: string, data: any): boolean {
+		for (const file of Object.keys(data.files)) {
+			if (file.toString().split("/")[0] === kind) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private readAndLoad(datasetID: any, kind: string): Promise<any[]> {
+		let path = "./data/" + datasetID;
+		let fileNames = fs.readdirSync(path);
+		let listOfFilesToBeLoaded: Array<Promise<any>> = [];
+		for (const fileName of fileNames) {
+			const jsonPath = path + "/" + fileName;
+			const jsonToRead = fs.readJson(jsonPath);
+			listOfFilesToBeLoaded.push(jsonToRead);
+		}
+		let courses: Course[] = [];
+		let rooms: Room[] = [];
+		return Promise.all(listOfFilesToBeLoaded).then((data) => {
+			// if (kind === "courses") {
+			for (const json of data) {
+				const jsonObj = JSON.parse(json);
+				// checking for a property to see if its course or room
+				const course = new Course(jsonObj.id, jsonObj.sections);
+				courses.push(course);
+			}
+			// } else {
+			// 	for (const json of data) {
+			// 		const jsonObj = JSON.parse(json);
+			// 		// checking for a property to see if its course or room
+			// 		// const course = new Course(jsonObj.id, jsonObj.sections);
+			// 		// rooms.push(room);
+			// 	}
+			// }
+		}).then(() => {
+			// if (kind === "courses") {
+			return Promise.resolve(courses);
+			// } else {
+			// 	return Promise.resolve(rooms);
+			// }
+		});
 	}
 
 	private isIdValid(id: string): boolean {
@@ -216,83 +248,33 @@ export default class InsightFacade implements IInsightFacade {
 		}
 	}
 
-	private processCourses(id: string, listOfFilesToBeLoaded: any[]) {
-		let courses: Course[] = [];
-		return Promise.all(listOfFilesToBeLoaded).then((data) => {
-			let containsOneOrMoreJsonFiles = false;
-			let counter = 0;
-			data.forEach((courseObject: string) => {
-				let sections: Section[] = [];
-				try {
-					const sectionArr = JSON.parse(courseObject);
-					sections = this.createSections(sectionArr.result);
-					counter += sections.length;
-					if (sections.length > 0) {
-						const courseID = "courses-" + sections[0].dept + "-" + sections[0].id; // assuming sections is not empty
-						const course: Course = new Course(courseID, sections);
-						courses.push(course);
-					}
-					containsOneOrMoreJsonFiles = true;
-				} catch (e) {
-					// console.log("do nothing to the invalid json file");
-				}
-			});
-			if (!containsOneOrMoreJsonFiles) {
-				return Promise.reject(new InsightError());
+	private getKind(id: string): string {
+		for (const insight of this.insightDatasets) {
+			if (insight.id === id) {
+				return this.getKindToString(insight.kind);
 			}
-			let listOfCoursesToBeStored: Array<Promise<any>> = [];
-			this.createDirectory(id)
-				.then(() => {
-					for (const course of courses) {
-						const path = "./data/" + id + "/" +  course.id + ".json";
-						listOfFilesToBeLoaded.push(fs.writeJSON(path, course.toJson()));
-					}
-				});
-			return Promise.all(listOfCoursesToBeStored)
-				.then(() => {
-					return counter;
-				});
-		});
+		}
+		return "";
 	}
 
-	private processRooms(id: string, listOfFilesToBeLoaded: Array<Promise<any>>) {
-		const parse5 = require("parse5");
-		// let rooms: Room[] = [];
-		return Promise.all(listOfFilesToBeLoaded).then((data) => {
-			data.forEach((courseObject: string) => {
-				// let sections: Section[] = [];
-				try {
-					const document = parse5.parse(courseObject);
-					const tag = document.childNodes[0].tagName;
-					const h = ";";
-					// sections = this.createSections(sectionArr.result);
-					// if (sections.length > 0) {
-					// 	const courseID = "courses-" + sections[0].dept + "-" + sections[0].id; // assuming sections is not empty
-					// 	const course: Course = new Course(courseID, sections);
-					// 	// courses.push(course);
-					// }
-					// containsOneOrMoreJsonFiles = true;
-				} catch (e) {
-					// console.log("do nothing to the invalid json file");
-				}
-			});
-			// if (!containsOneOrMoreJsonFiles) {
-			// 	return Promise.reject(new InsightError());
-			// }
-			let listOfCoursesToBeStored: Array<Promise<any>> = [];
-			this.createDirectory(id)
-				.then(() => {
-					// for (const course of courses) {
-					// 	const path = "./data/" + id + "/" +  course.id + ".json";
-					// 	listOfFilesToBeLoaded.push(fs.writeJSON(path, course.toJson()));
-					// }
-				});
-			return Promise.all(listOfCoursesToBeStored)
-				.then(() => {
-					// return counter;
-				});
+	private getBuildingFiles(unzippedData: any, buildings: Building[]): any[] {
+		let buildingFilesToBeLoaded: any[] = [];
+		unzippedData.folder("rooms").forEach(function (relativePath: any, file: JSZipObject) {
+			if (InsightFacade.hrefExists(buildings, file.name)) {
+				buildingFilesToBeLoaded.push(file.async("text"));
+			}
 		});
+		return buildingFilesToBeLoaded;
 	}
+
+	private static hrefExists(buildings: Building[], href: string): boolean {
+		href = href.replace("rooms/", "./");
+		for (const building of buildings) {
+			if (href === building.href) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
-
-

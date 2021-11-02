@@ -1,0 +1,27 @@
+{
+	"title": "Valid Scomparison right end",
+	"input":{
+		"WHERE": {
+			"AND": [
+				{
+					"IS": {
+						"courses_dept": "cps*"
+					}
+				},
+				{
+					"GT": {
+						"courses_avg": 93
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"courses_avg"
+			],
+			"ORDER": "courses_avg"
+		}
+	},
+	"errorExpected": false,
+	"with": [{"courses_avg":93.38},{"courses_avg":93.38},{"courses_avg":93.5},{"courses_avg":93.5},{"courses_avg":94},{"courses_avg":94},{"courses_avg":94.5},{"courses_avg":94.5},{"courses_avg":95},{"courses_avg":95}]
+}

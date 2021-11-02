@@ -1,0 +1,20 @@
+{
+
+  "title": "Valid: GT lower boundary",
+
+  "input":{
+            "WHERE": {
+              "GT": {
+                "courses_avg": 98
+              }
+            },
+            "OPTIONS": {
+              "COLUMNS": [
+                "courses_uuid"
+              ],
+              "ORDER": "courses_uuid"
+            }
+          },
+  "errorExpected": false,
+  "with": [{"courses_uuid":"10235"},{"courses_uuid":"10236"},{"courses_uuid":"15343"},{"courses_uuid":"15344"},{"courses_uuid":"26777"},{"courses_uuid":"29255"},{"courses_uuid":"29256"},{"courses_uuid":"33779"},{"courses_uuid":"33780"},{"courses_uuid":"33781"},{"courses_uuid":"44816"},{"courses_uuid":"44817"},{"courses_uuid":"49677"},{"courses_uuid":"49678"},{"courses_uuid":"5373"},{"courses_uuid":"5374"},{"courses_uuid":"6320"},{"courses_uuid":"65069"},{"courses_uuid":"65070"},{"courses_uuid":"73638"},{"courses_uuid":"73639"},{"courses_uuid":"88151"},{"courses_uuid":"88152"},{"courses_uuid":"96250"},{"courses_uuid":"96251"}]
+}
