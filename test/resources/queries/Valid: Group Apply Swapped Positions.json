@@ -1,0 +1,38 @@
+{
+	"title": "Valid: Swapped Group and Apply",
+	"input": {
+		"WHERE": {
+			"AND": [
+				{
+					"GT": {
+						"courses_avg": 80
+					}
+				},
+				{
+					"IS": {
+						"courses_dept": "cpsc"
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"courses_dept",
+				"overallAvg"
+			]
+		},
+		"TRANSFORMATIONS": {
+			"APPLY": [
+				{
+					"overallAvg": {
+						"AVG": "courses_avg"
+					}
+				}],
+			"GROUP": [
+				"courses_dept"
+			]
+		}
+	},
+	"errorExpected": false,
+	"with": []
+}
