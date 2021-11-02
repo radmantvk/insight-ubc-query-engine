@@ -98,8 +98,9 @@ export default class InsightFacade implements IInsightFacade {
 		if (!this.idHasBeenAdded(myQuery.datasetID)) {
 			return Promise.reject(new InsightError());
 		}
-		return this.readAndLoadCourses(myQuery.datasetID).then((courses) => {
-			return myQuery.process(courses);
+		const kind: string = this.getKind(myQuery.datasetID);
+		return this.readAndLoad(myQuery.datasetID , kind).then((courses) => {
+			return myQuery.process(courses, kind);
 		});
 	}
 
@@ -194,21 +195,21 @@ export default class InsightFacade implements IInsightFacade {
 		let courses: Course[] = [];
 		let rooms: Room[] = [];
 		return Promise.all(listOfFilesToBeLoaded).then((data) => {
-			// if (kind === "courses") {
-			for (const json of data) {
-				const jsonObj = JSON.parse(json);
-				// checking for a property to see if its course or room
-				const course = new Course(jsonObj.id, jsonObj.sections);
-				courses.push(course);
+			if (kind === "courses") {
+				for (const json of data) {
+					const jsonObj = JSON.parse(json);
+					// checking for a property to see if its course or room
+					const course = new Course(jsonObj.id, jsonObj.sections);
+					courses.push(course);
+				}
+			} else {
+				for (const json of data) {
+					const jsonObj = JSON.parse(json);
+					// checking for a property to see if its course or room
+					// const course = new Course(jsonObj.id, jsonObj.sections);
+					// rooms.push(room);
+				}
 			}
-			// } else {
-			// 	for (const json of data) {
-			// 		const jsonObj = JSON.parse(json);
-			// 		// checking for a property to see if its course or room
-			// 		// const course = new Course(jsonObj.id, jsonObj.sections);
-			// 		// rooms.push(room);
-			// 	}
-			// }
 		}).then(() => {
 			// if (kind === "courses") {
 			return Promise.resolve(courses);
