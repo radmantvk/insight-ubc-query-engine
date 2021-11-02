@@ -1,0 +1,14 @@
+{
+  "title": "WHERE misspell",
+  "input":{
+            "WHER": {
+            },
+            "OPTIONS": {
+              "COLUMNS": [
+                "courses_avg"
+              ]
+            }
+          },
+  "errorExpected": true,
+  "with": "InsightError"
+}

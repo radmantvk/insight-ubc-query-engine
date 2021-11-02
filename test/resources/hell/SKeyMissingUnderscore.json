@@ -1,0 +1,16 @@
+{
+
+  "title": "SKEY missing underscore",
+
+  "input": {
+             "WHERE": {},
+             "OPTIONS": {
+               "COLUMNS": [
+                 "coursesdept"
+               ],
+               "ORDER": "coursesdept"
+             }
+           },
+  "errorExpected": true,
+  "with": "InsightError"
+}

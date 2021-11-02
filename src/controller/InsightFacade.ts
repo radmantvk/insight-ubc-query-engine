@@ -71,22 +71,58 @@ export default class InsightFacade implements IInsightFacade {
 			});
 	}
 
+	// public performQuery(query: any): Promise<any[]> {
+	// 	const queryValidator = new QueryValidator();
+	// 	// if (!queryValidator.queryValidate(query)) {
+	// 	// 	return Promise.reject(new InsightError());
+	// 	// }
+	// 	const myQuery = new Query(query);
+	// 	if (!this.idHasBeenAdded(myQuery.datasetID)) {
+	// 		return Promise.reject(new InsightError());
+	// 	}
+	// 	const kind: string = this.getKind(myQuery.datasetID);
+	// 	return this.readAndLoad(myQuery.datasetID, kind)
+	// 		.then((courses: any[]) => {
+	// 			return myQuery.process(courses, kind); // TODO: pass in if courses or not
+	// 			// console.log("yo");
+	// 		});
+	// 	// return Promise.resolve([]);
+	// }
+
 	public performQuery(query: any): Promise<any[]> {
 		const queryValidator = new QueryValidator();
-		// if (!queryValidator.queryValidate(query)) {
-		// 	return Promise.reject(new InsightError());
-		// }
+		if (!queryValidator.queryValidate(query)) {
+			return Promise.reject(new InsightError());
+		}
 		const myQuery = new Query(query);
 		if (!this.idHasBeenAdded(myQuery.datasetID)) {
 			return Promise.reject(new InsightError());
 		}
-		const kind: string = this.getKind(myQuery.datasetID);
-		return this.readAndLoad(myQuery.datasetID, kind)
-			.then((courses: any[]) => {
-				return myQuery.process(courses, kind); // TODO: pass in if courses or not
-				// console.log("yo");
+		return this.readAndLoadCourses(myQuery.datasetID).then((courses) => {
+			return myQuery.process(courses);
+		});
+	}
+
+	private readAndLoadCourses(datasetID: any): Promise<Course[]> {
+		let path = "./data/" + datasetID;
+		let fileNames = fs.readdirSync(path);
+		let listOfFilesToBeLoaded: Array<Promise<any>> = [];
+		for (const fileName of fileNames) {
+			const jsonPath = path + "/" + fileName;
+			const jsonToRead = fs.readJson(jsonPath);
+			listOfFilesToBeLoaded.push(jsonToRead);
+		}
+		let courses: Course[] = [];
+		return Promise.all(listOfFilesToBeLoaded).then((data) => {
+			for (const json of data) {
+				const jsonObj = JSON.parse(json);
+				const course = new Course(jsonObj.id, jsonObj.sections);
+				courses.push(course);
+			}
+		})
+			.then(() => {
+				return Promise.resolve(courses);
 			});
-		// return Promise.resolve([]);
 	}
 
 	public listDatasets(): Promise<InsightDataset[]> {

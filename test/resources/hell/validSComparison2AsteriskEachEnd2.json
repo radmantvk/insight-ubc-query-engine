@@ -1,0 +1,23 @@
+{
+  "title": "valid SCompare with an asterisk at beginning and end 2.0",
+  "input":{
+	  "WHERE": {
+		  "AND": [ {
+			  "IS": {
+				  "courses_dept": "*ps*"
+			  }
+		  }, {
+			  "GT": {
+				  "courses_avg": 95
+			  }
+		  }]},
+	  "OPTIONS": {
+		  "COLUMNS": [
+			  "courses_avg"
+		  ],
+		  "ORDER": "courses_avg"
+	  }
+  },
+  "errorExpected": false,
+  "with": [{"courses_avg":95.05},{"courses_avg":95.11},{"courses_avg":95.13},{"courses_avg":95.13},{"courses_avg":95.13},{"courses_avg":95.14},{"courses_avg":95.15},{"courses_avg":95.15},{"courses_avg":95.16},{"courses_avg":95.17},{"courses_avg":95.17},{"courses_avg":95.22},{"courses_avg":95.22},{"courses_avg":95.25},{"courses_avg":95.25},{"courses_avg":95.27},{"courses_avg":95.27},{"courses_avg":95.3},{"courses_avg":95.31},{"courses_avg":95.31},{"courses_avg":95.33},{"courses_avg":95.36},{"courses_avg":95.36},{"courses_avg":95.36},{"courses_avg":95.41},{"courses_avg":95.44},{"courses_avg":95.47},{"courses_avg":95.47},{"courses_avg":95.47},{"courses_avg":95.5},{"courses_avg":95.5},{"courses_avg":95.67},{"courses_avg":95.67},{"courses_avg":95.72},{"courses_avg":95.75},{"courses_avg":95.75},{"courses_avg":95.78},{"courses_avg":95.78},{"courses_avg":95.83},{"courses_avg":95.83},{"courses_avg":95.86},{"courses_avg":95.86},{"courses_avg":95.9},{"courses_avg":95.94},{"courses_avg":95.95},{"courses_avg":96},{"courses_avg":96},{"courses_avg":96},{"courses_avg":96},{"courses_avg":96},{"courses_avg":96},{"courses_avg":96},{"courses_avg":96},{"courses_avg":96.03},{"courses_avg":96.03},{"courses_avg":96.16},{"courses_avg":96.21},{"courses_avg":96.21},{"courses_avg":96.21},{"courses_avg":96.23},{"courses_avg":96.24},{"courses_avg":96.33},{"courses_avg":96.33},{"courses_avg":96.33},{"courses_avg":96.9},{"courses_avg":96.9},{"courses_avg":97},{"courses_avg":97},{"courses_avg":97.09},{"courses_avg":97.09},{"courses_avg":97.29},{"courses_avg":97.29},{"courses_avg":97.41},{"courses_avg":97.41},{"courses_avg":97.47},{"courses_avg":97.47},{"courses_avg":97.67},{"courses_avg":97.69},{"courses_avg":97.78},{"courses_avg":98.08},{"courses_avg":98.36},{"courses_avg":98.45},{"courses_avg":98.45},{"courses_avg":98.58},{"courses_avg":98.58},{"courses_avg":98.7},{"courses_avg":98.76},{"courses_avg":98.76},{"courses_avg":98.8},{"courses_avg":99.19}]
+}

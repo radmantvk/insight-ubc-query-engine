@@ -42,27 +42,45 @@ export default class Query {
 		return this._datasetID;
 	}
 
-	public process(data: any[], kind: string): Promise<any[]> { // TODO: takes a parameter to know if courses/rooms
+	public process(courses: Course[]) {
 		let id = "";
-		if (!(data.length === 0)) {
-			id = data[0].id.split("-")[0];
+		if (!(courses.length === 0)) {
+			id = courses[0].id.split("-")[0];
 		}
-		if (kind === "courses") {
-			let filter: Filter = new Filter(); // TODO, instantiate and pass if rooms/courses
-			let sections = this.getSections(data); // TODO, depends if rooms/courses
+		let filter: Filter = new Filter();
+		let sections = this.getSections(courses);
 
-			let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE);
-			// handle transformation
-			if (filteredSections.length > 5000) {
-				return Promise.reject(new ResultTooLargeError());
-			}
-			let sortedSection: Section[] = this.sortSections(filteredSections); // TODO
-			let result: any[] = this.filterColumnsAndConvertToObjects(id, sortedSection); // TODO
-			return Promise.resolve(result);
-		} else {
-			return Promise.resolve([]);
+		let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE);
+
+		if (filteredSections.length > 5000) {
+			return Promise.reject(new ResultTooLargeError());
 		}
+		let sortedSection: Section[] = this.sortSections(filteredSections);
+		let result: any[] = this.filterColumnsAndConvertToObjects(id, sortedSection);
+		return result;
 	}
+	// public process(data: any[], kind: string): Promise<any[]> { // TODO: takes a parameter to know if courses/rooms
+	// 	let id = "";
+	// 	if (!(data.length === 0)) {
+	// 		id = data[0].id.split("-")[0];
+	// 	}
+	// 	if (kind === "courses") {
+	// 		let filter: Filter = new Filter(); // TODO, instantiate and pass if rooms/courses
+	// 		let sections = this.getSections(data); // TODO, depends if rooms/courses
+	//
+	// 		let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE);
+	// 		// handle transformation
+	// 		if (filteredSections.length > 5000) {
+	// 			return Promise.reject(new ResultTooLargeError());
+	// 		}
+	// 		let sortedSection: Section[] = this.sortSections(filteredSections); // TODO
+	// 		let result: any[] = this.filterColumnsAndConvertToObjects(id, sortedSection); // TODO
+	// 		return Promise.resolve(result);
+	// 	} else {
+	// 		return Promise.resolve([]);
+	// 	}
+	// }
+
 	// public process(dataset: any[], kind: InsightDatasetKind) {
 	// 	let id = "";
 	// 	if (!(dataset.length === 0)) {
