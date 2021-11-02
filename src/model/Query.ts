@@ -42,22 +42,24 @@ export default class Query {
 		return this._datasetID;
 	}
 
-	public process(courses: Course[]) {
+	public process(data: any[], kind: string): Promise<any[]> { // TODO: takes a parameter to know if courses/rooms
 		let id = "";
-		if (!(courses.length === 0)) {
-			id = courses[0].id.split("-")[0];
+		if (!(data.length === 0)) {
+			id = data[0].id.split("-")[0];
 		}
 		let filter: Filter = new Filter();
-		let sections = this.getSections(courses);
-
-		let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE);
-
-		if (filteredSections.length > 5000) {
-			return Promise.reject(new ResultTooLargeError());
+		if (kind === "courses") {
+			let sections = this.getSections(data); // TODO, depends if rooms/courses
+			let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE);
+			if (filteredSections.length > 5000) {
+				return Promise.reject(new ResultTooLargeError());
+			}
+			let sortedSection: Section[] = this.sortSections(filteredSections); // TODO
+			let result: any[] = this.filterColumnsAndConvertToObjects(id, sortedSection); // TODO
+			return Promise.resolve(result);
+		} else {
+			return Promise.resolve([]);
 		}
-		let sortedSection: Section[] = this.sortSections(filteredSections);
-		let result: any[] = this.filterColumnsAndConvertToObjects(id, sortedSection);
-		return result;
 	}
 	// public process(data: any[], kind: string): Promise<any[]> { // TODO: takes a parameter to know if courses/rooms
 	// 	let id = "";
