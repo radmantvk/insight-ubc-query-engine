@@ -83,7 +83,7 @@ export default class InsightFacade implements IInsightFacade {
 		const kind: string = this.getKind(myQuery.datasetID);
 		return this.readAndLoad(myQuery.datasetID, kind)
 			.then((courses: any[]) => {
-				return myQuery.process(courses, InsightDatasetKind.Rooms); // TODO: pass in if courses or not
+				return myQuery.process(courses, kind); // TODO: pass in if courses or not
 				// console.log("yo");
 			});
 		// return Promise.resolve([]);
