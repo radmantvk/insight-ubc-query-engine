@@ -1,9 +1,0 @@
-{
-	"title": "SELECT dept, avg WHERE avg > 97",
-	"input": {
-		"WHERE": {
-		}
-	},
-	"errorExpected": true,
-	"with": "InsightError"
-}

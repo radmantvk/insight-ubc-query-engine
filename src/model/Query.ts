@@ -1,4 +1,3 @@
-import QueryValidator from "./QueryValidator";
 import Course from "./Course";
 import Filter from "./Filter";
 import Section from "./Section";
@@ -33,8 +32,10 @@ export default class Query {
 	private courses: Course[] = [];
 	private _datasetID: string = "";
 	private _query: any;
+	private _kind: InsightDatasetKind;
 	constructor(query: any) {
 		this._datasetID = query.OPTIONS.COLUMNS[0].split("_")[0];
+		this._kind = this.getKind(query.OPTIONS.COLUMNS[0].split("_")[1]);
 		this._query = query;
 	}
 
@@ -42,13 +43,17 @@ export default class Query {
 		return this._datasetID;
 	}
 
-	public process(data: any[], kind: string): Promise<any[]> { // TODO: takes a parameter to know if courses/rooms
+	public get kind() {
+		return this._kind;
+	}
+
+	public process(data: any[], kind: InsightDatasetKind): Promise<any[]> { // TODO: takes a parameter to know if courses/rooms
 		let id = "";
 		if (!(data.length === 0)) {
 			id = data[0].id.split("-")[0];
 		}
 		let filter: Filter = new Filter();
-		if (kind === "courses") {
+		if (kind === InsightDatasetKind.Courses) {
 			let sections = this.getSections(data); // TODO, depends if rooms/courses
 			let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE);
 			if (filteredSections.length > 5000) {
@@ -61,27 +66,6 @@ export default class Query {
 			return Promise.resolve([]);
 		}
 	}
-	// public process(data: any[], kind: string): Promise<any[]> { // TODO: takes a parameter to know if courses/rooms
-	// 	let id = "";
-	// 	if (!(data.length === 0)) {
-	// 		id = data[0].id.split("-")[0];
-	// 	}
-	// 	if (kind === "courses") {
-	// 		let filter: Filter = new Filter(); // TODO, instantiate and pass if rooms/courses
-	// 		let sections = this.getSections(data); // TODO, depends if rooms/courses
-	//
-	// 		let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE);
-	// 		// handle transformation
-	// 		if (filteredSections.length > 5000) {
-	// 			return Promise.reject(new ResultTooLargeError());
-	// 		}
-	// 		let sortedSection: Section[] = this.sortSections(filteredSections); // TODO
-	// 		let result: any[] = this.filterColumnsAndConvertToObjects(id, sortedSection); // TODO
-	// 		return Promise.resolve(result);
-	// 	} else {
-	// 		return Promise.resolve([]);
-	// 	}
-	// }
 
 	// public process(dataset: any[], kind: InsightDatasetKind) {
 	// 	let id = "";
@@ -203,4 +187,12 @@ export default class Query {
 		return section._uuid;
 	}
 
+	private getKind(f: string) {
+		if (f === "dept" || f === "id" || f === "instructor" || f === "title" || f === "uuid" || f === "avg" ||
+			f === "pass" || f === "fail" || f === "audit" || f === "year") {
+			return InsightDatasetKind.Courses;
+		} else {
+			return InsightDatasetKind.Rooms;
+		}
+	}
 }
