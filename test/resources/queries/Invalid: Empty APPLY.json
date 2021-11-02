@@ -1,0 +1,42 @@
+{
+	"title": "Invalid: Empty APPLY",
+	"input":{
+		"WHERE": {
+			"AND": [
+				{
+					"GT": {
+						"courses_avg": 95
+					}
+				},
+				{
+					"LT": {
+						"courses_avg": 95.3
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"courses_dept",
+				"overallAvg",
+				"maxAvg"
+			],
+			"ORDER": {
+				"dir": "UP",
+				"keys": [
+					"overallAvg",
+					"courses_dept"
+				]
+			}
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"courses_dept"
+			],
+			"APPLY": [
+			]
+		}
+	},
+	"errorExpected": true,
+	"with": "InsightError"
+}

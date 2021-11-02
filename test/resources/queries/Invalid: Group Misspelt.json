@@ -1,0 +1,38 @@
+{
+	"title": "Invalid: Group Misspelt",
+	"input":{
+		"WHERE": {
+			"AND": [
+				{
+					"GT": {
+						"courses_avg": 80
+					}
+				},
+				{
+					"IS": {
+						"courses_dept": "cpsc"
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"courses_dept",
+				"overallAvg"
+			]
+		},
+		"TRANSFORMATIONS": {
+			"APPLY": [
+				{
+					"overallAvg": {
+						"AVG": "courses_avg"
+					}
+				}],
+			"GROUPS": [
+				"courses_dept"
+			]
+		}
+	},
+	"errorExpected": true,
+	"with": "InsightError"
+}
