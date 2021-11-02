@@ -3,7 +3,7 @@ import Course from "./Course";
 import Filter from "./Filter";
 import Section from "./Section";
 import QuerySorter from "./QuerySorter";
-import {ResultTooLargeError} from "../controller/IInsightFacade";
+import {InsightDatasetKind, ResultTooLargeError} from "../controller/IInsightFacade";
 
 export interface QueryOBJ {
 	WHERE?: QueryFilter;
@@ -42,23 +42,49 @@ export default class Query {
 		return this._datasetID;
 	}
 
-	public process(courses: Course[]) {
+	public process(data: any[], kind: string): Promise<any[]> { // TODO: takes a parameter to know if courses/rooms
 		let id = "";
-		if (!(courses.length === 0)) {
-			id = courses[0].id.split("-")[0];
+		if (!(data.length === 0)) {
+			id = data[0].id.split("-")[0];
 		}
-		let filter: Filter = new Filter();
-		let sections = this.getSections(courses);
+		if (kind === "courses") {
+			let filter: Filter = new Filter(); // TODO, instantiate and pass if rooms/courses
+			let sections = this.getSections(data); // TODO, depends if rooms/courses
 
-		let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE);
-
-		if (filteredSections.length > 5000) {
-			return Promise.reject(new ResultTooLargeError());
+			let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE);
+			// handle transformation
+			if (filteredSections.length > 5000) {
+				return Promise.reject(new ResultTooLargeError());
+			}
+			let sortedSection: Section[] = this.sortSections(filteredSections); // TODO
+			let result: any[] = this.filterColumnsAndConvertToObjects(id, sortedSection); // TODO
+			return Promise.resolve(result);
+		} else {
+			return Promise.resolve([]);
 		}
-		let sortedSection: Section[] = this.sortSections(filteredSections);
-		let result: any[] = this.filterColumnsAndConvertToObjects(id, sortedSection);
-		return result;
 	}
+	// public process(dataset: any[], kind: InsightDatasetKind) {
+	// 	let id = "";
+	// 	if (!(dataset.length === 0)) {
+	// 		id = dataset[0].id.split("-")[0];
+	// 	}
+	// 	let filter: Filter = new Filter();
+	// 	// let transform: Transform = new Transform();
+	// 	if (kind === InsightDatasetKind.Courses) {
+	// 		let sections = this.getSections(dataset);
+	// 		let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE, kind);
+	// 		// let transformedSections: Section[] = transform.handleTransform(sections, this.query, kind);
+	// 		let sortedSection: Section[] = this.sortSections(filteredSections);
+	// 		let result: any[] = this.filterColumnsAndConvertToObjects(id, sortedSection);
+	// 		return result;
+	// 	} else if (kind === InsightDatasetKind.Rooms) {
+	// 		let rooms = this.getRooms(dataset);
+	// 		// let filteredRooms: Room[] = filter.handleFilter(rooms, this.query.WHERE, kind);
+	// 		// let transformedRooms: Room[] = transform.handleTransform(rooms, this.query, kind);
+	// 		// let sortedRooms: Room[] = this.sortRooms(filteredRooms);
+	// 		let result: any[] = this.filterColumnsAndConvertToObjects(id, sortedRooms);
+	// 	}
+	// }
 
 	public getSections(courses: Course[]) {
 		let sections: Section[] = [];

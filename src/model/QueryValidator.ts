@@ -63,6 +63,7 @@ export default class QueryValidator {
 		}
 		return true;
 	}
+
 	/**
 	 * must ensure the value of the COLUMNS key is a non-empty array
 	 * must ensure key is valid (can be mkey or skey)
