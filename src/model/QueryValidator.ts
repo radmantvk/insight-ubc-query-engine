@@ -1,18 +1,18 @@
+
+import TransformValidator from "./TransformValidator";
 import {QueryOBJ} from "./Query";
 import FilterValidator from "./FilterValidator";
 
-import TransformValidator from "./TransformValidator";
-
-let datasetID: string;
-
-
-let columnKeys: any = [];								// we want to store the column keys so if there is an order, the order key must be in this array
+// let datasetID: string;
+//
+// let columnKeys: any = [];								// we want to store the column keys so if there is an order, the order key must be in this array
 
 
 export default class QueryValidator {
-	private datasetID: string = "";
-
-
+	private _datasetID: string = "";
+	private columnKeys: any = [];
+	private applyKeys: any = [];
+	private groupKeys: any = [];
 	public queryValidate(query: QueryOBJ) {
 		if (query === "undefined" || query == null || !("WHERE" in query) || !("OPTIONS" in query)) {
 			return false;
@@ -38,26 +38,26 @@ export default class QueryValidator {
 				const transformValidator: TransformValidator = new TransformValidator();
 				if (!transformValidator.validate(TRANSFORMATIONS)) {
 					return false;
+				} else {
+					this.applyKeys = transformValidator.applyKeys;
+					this.groupKeys = transformValidator.groupKeys;
+					this._datasetID = transformValidator.datasetID;
 				}
 			}
 		}
-		let keysOPTION = Object.keys(OPTIONS);
-		if (keysOPTION.length !== 1 && keysOPTION.length !== 2) {
+		if (Object.keys(OPTIONS).length !== 1 && Object.keys(OPTIONS).length !== 2) {
 			return false;
 		}
 		if (!this.optionsValidate(OPTIONS)) {
 			return false;
 		}
-		let keysFILTER = Object.keys(WHERE);
-		if (keysFILTER.length > 1) {
+		if (Object.keys(WHERE).length > 1) {
 			return false;
 		}
 		if (Object.keys(WHERE).length === 0) {
 			return true;
 		}
-		let keyFILTER: string = Object.keys(WHERE)[0];
-		datasetID = OPTIONS["COLUMNS"][0].split("_")[0];
-		let filterValidator: FilterValidator = new FilterValidator(datasetID);
+		let filterValidator: FilterValidator = new FilterValidator(this._datasetID);
 		if(!filterValidator.isValidFilter(WHERE)) {
 			return false;
 		}
@@ -77,13 +77,15 @@ export default class QueryValidator {
 		if (columnVal.length === 0) {
 			return false;
 		}
+
+
 		for (let key in columnVal) {
 			if (typeof columnVal[key] !== "string") {
 				return false;
 			}
-			datasetID = columnVal[key].split("_")[0];
+			this._datasetID = columnVal[key].split("_")[0];
 			let field = columnVal[key].split("_")[1];
-			if (datasetID.includes(" ") || datasetID.length === 0) {
+			if (this._datasetID.includes(" ") || this._datasetID.length === 0) {
 				return false;
 			}
 			if (this.isValidMField(field)) {
@@ -99,7 +101,7 @@ export default class QueryValidator {
 					return false;
 				}
 			}
-			columnKeys.push(columnVal[key]);
+			this.columnKeys.push(columnVal[key]);
 		}
 		return true;
 	}
@@ -113,19 +115,54 @@ export default class QueryValidator {
 	 * @private
 	 */
 	private orderValidate(OPTIONS: any): boolean {
-		let orderVal = OPTIONS["ORDER"];
-		if (typeof orderVal !== "string") {
+		let orderObj = OPTIONS["ORDER"];
+		if (typeof orderObj === "string") {
+			if (!this.columnKeys.includes(orderObj)) {
+				return false;
+			}
+			if (!(this.isValidQueryKey(orderObj, true)) && !(this.isValidQueryKey(orderObj, false))) {
+				return false;
+			}
+			return true;
+		}
+		let orderKeys = Object.keys(orderObj);
+		if (orderKeys.length !== 2) {
 			return false;
 		}
-		if (!columnKeys.includes(orderVal)) {
+		let dir: any;
+		let keys: any;
+		for (let key of orderKeys) {
+			if (key !== "dir" && key !== "keys") {
+				return false;
+			}
+			if (key === "dir") {
+				dir = orderObj[key];
+			} else {
+				keys = orderObj[key];
+			}
+		}
+		if (typeof dir !== "string") {
 			return false;
 		}
-		if (!(this.isValidQueryKey(orderVal, true)) &&
-			!(this.isValidQueryKey(orderVal, false))) {
+		if (dir !== "UP" && dir !== "DOWN") {
 			return false;
+		}
+		if (!(keys instanceof Array)) {
+			return false;
+		}
+		for (let key of keys) {
+			if (!this.columnKeys.includes(key)) {
+				return false;
+			}
+			if (this.isValidApplyKey(key)) {
+				if (!this.applyKeys.includes(key)) {
+					return false;
+				}
+			} else if (!(this.isValidQueryKey(key, true)) && !(this.isValidQueryKey(key, false))) {
+				return false;
+			}
 		}
 		return true;
-
 	}
 
 	/**
@@ -137,7 +174,7 @@ export default class QueryValidator {
 	 */
 	public isValidQueryKey(queryKey: string, isMKey: boolean): boolean {
 		let idString = queryKey.split("_")[0];
-		if (idString !== datasetID) {
+		if (idString !== this._datasetID) {
 			return false;
 		}
 		if (idString.includes("_")){
@@ -154,18 +191,35 @@ export default class QueryValidator {
 	}
 
 	private isValidSField(sField: string) {
+		let coursesField: boolean = false;
+		let roomsField: boolean = false;
 		if (sField === "dept" || sField === "id" || sField === "instructor" || sField === "title" ||
 			sField === "uuid") {
-			return true;
+			coursesField = true;
 		}
-		return false;
+		if (sField === "fullname" || sField === "shortname" || sField === "number" || sField === "name" ||
+			sField === "address" || sField === "type" || sField === "furniture" || sField === "href") {
+			roomsField = true;
+		}
+		if ((roomsField === true && coursesField === true) || (roomsField === false && coursesField === false)) {
+			return false;
+		}
+		return true;
 	}
 
 	private isValidMField(mField: string) {
+		let coursesField: boolean = false;
+		let roomsField: boolean = false;
 		if (mField === "avg" || mField === "pass" || mField === "fail" || mField === "audit" || mField === "year") {
-			return true;
+			coursesField = true;
 		}
-		return false;
+		if (mField === "lat" || mField === "lon" || mField === "seats") {
+			roomsField = true;
+		}
+		if ((roomsField === true && coursesField === true) || (roomsField === false && coursesField === false)) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -200,6 +254,12 @@ export default class QueryValidator {
 		} else if (key.length === 0) {
 			return false;
 		}
+		return true;
+	}
+
+
+	public get datasetID(): string {
+		return this._datasetID;
 	}
 }
 

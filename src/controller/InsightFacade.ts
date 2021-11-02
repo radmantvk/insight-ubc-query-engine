@@ -1,7 +1,6 @@
 import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
 import * as fs from "fs-extra";
 import Course from "../model/Course";
-import Section from "../model/Section";
 // import Room from "../model/Room";
 import JSZip, {JSZipObject} from "jszip";
 import Query from "../model/Query";
@@ -98,9 +97,9 @@ export default class InsightFacade implements IInsightFacade {
 		if (!this.idHasBeenAdded(myQuery.datasetID)) {
 			return Promise.reject(new InsightError());
 		}
-		const kind: string = this.getKind(myQuery.datasetID);
-		return this.readAndLoad(myQuery.datasetID , kind).then((courses) => {
-			return myQuery.process(courses, kind);
+		// const kind: string = this.getKind(myQuery.datasetID);
+		return this.readAndLoad(myQuery.datasetID , myQuery.kind).then((courses) => {
+			return myQuery.process(courses, myQuery.kind);
 		});
 	}
 
@@ -183,7 +182,7 @@ export default class InsightFacade implements IInsightFacade {
 		return false;
 	}
 
-	private readAndLoad(datasetID: any, kind: string): Promise<any[]> {
+	private readAndLoad(datasetID: any, kind: InsightDatasetKind): Promise<any[]> {
 		let path = "./data/" + datasetID;
 		let fileNames = fs.readdirSync(path);
 		let listOfFilesToBeLoaded: Array<Promise<any>> = [];
@@ -195,7 +194,7 @@ export default class InsightFacade implements IInsightFacade {
 		let courses: Course[] = [];
 		let rooms: Room[] = [];
 		return Promise.all(listOfFilesToBeLoaded).then((data) => {
-			if (kind === "courses") {
+			if (kind === InsightDatasetKind.Courses) {
 				for (const json of data) {
 					const jsonObj = JSON.parse(json);
 					// checking for a property to see if its course or room
@@ -247,15 +246,6 @@ export default class InsightFacade implements IInsightFacade {
 			return "rooms";
 
 		}
-	}
-
-	private getKind(id: string): string {
-		for (const insight of this.insightDatasets) {
-			if (insight.id === id) {
-				return this.getKindToString(insight.kind);
-			}
-		}
-		return "";
 	}
 
 	private getBuildingFiles(unzippedData: any, buildings: Building[]): any[] {
