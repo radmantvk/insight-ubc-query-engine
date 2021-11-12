@@ -540,10 +540,12 @@ describe("InsightFacade", function () {
 					expect(actual).to.be.an.instanceof(Array);
 					expect(actual).to.have.length(expected.length);
 					expect(actual).to.have.deep.members(expected);
+					for (let i = 0; i < actual.length; i = i + 1) {
+						expect(actual[i]).to.deep.equal(expected[i]);
+					}
 					if (orderKey !== undefined) {
 						// check the order of the actual array
 						for (let i = 1; i < actual.length; i = i + 1) {
-							// actual[0][orderKey] = 90.02
 							actual[i - 1][orderKey] <= actual[i][orderKey];
 						}
 					}

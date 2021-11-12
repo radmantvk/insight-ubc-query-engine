@@ -1,5 +1,5 @@
 {
-  "title": "Valid sort many Mfields",
+  "title": "Valid sort many orders down",
 
   "input":{
             "WHERE": {
@@ -23,7 +23,7 @@
                 "courses_avg"
               ],
               "ORDER": {
-                "dir": "UP",
+                "dir": "DOWN",
                 "keys": [
                   "courses_dept",
                   "courses_year"
@@ -32,5 +32,5 @@
             }
           },
   "errorExpected": false,
-  "with": [{"courses_dept":"busi","courses_year":1900,"courses_avg":4},{"courses_dept":"busi","courses_year":2016,"courses_avg":4},{"courses_dept":"frst","courses_year":1900,"courses_avg":0},{"courses_dept":"lfs","courses_year":1900,"courses_avg":0},{"courses_dept":"lfs","courses_year":2009,"courses_avg":0},{"courses_dept":"wood","courses_year":1900,"courses_avg":1}]
+  "with": [{"courses_dept":"wood","courses_year":1900,"courses_avg":1},{"courses_dept":"lfs","courses_year":2009,"courses_avg":0},{"courses_dept":"lfs","courses_year":1900,"courses_avg":0},{"courses_dept":"frst","courses_year":1900,"courses_avg":0},{"courses_dept":"busi","courses_year":2016,"courses_avg":4},{"courses_dept":"busi","courses_year":1900,"courses_avg":4}]
 }

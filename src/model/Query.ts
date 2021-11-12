@@ -91,6 +91,7 @@ export default class Query {
 			let transformations = {};
 			let sortedRooms: Room[] = this.sortData(rooms, groups, applies);
 			let result: any[] = this.filterColumnsAndConvertToObjects(sortedRooms);
+
 			return Promise.resolve(result);
 		}
 	}

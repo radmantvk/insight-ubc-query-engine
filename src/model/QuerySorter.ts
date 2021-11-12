@@ -17,42 +17,50 @@ export default class Sorter {
 	}
 
 	public sort(): Section[] {
-		let listToSort: any[] = [];
-		// TODO
+		let finishedOrders = [];
 		for (const order of this.orders) {
-			listToSort = this.normalSort(order);
+			this.sectionsOrRooms = this.normalSort(order, finishedOrders);
+			finishedOrders.push(order);
 		}
-		this.sectionsOrRooms = listToSort;
-		// console.log("j");
-
+		if (this.dir === "DOWN") {
+			this.sectionsOrRooms = this.sectionsOrRooms.reverse();
+		}
 		// this.handleDirection();
 
 		return this.sectionsOrRooms;
 	}
 
-	private normalSort(order: string): any[] {
+	private normalSort(order: string, finishedOrders: string[]): any[] {
 		let secOrRoomList: any[] = this.sectionsOrRooms;
 		if (order === "avg" || order === "pass" || order === "fail" || order === "audit" || order === "year" ||
 			order === "lat" || order === "lon" || order === "seats") {
 			secOrRoomList.sort((a: any, b: any) => {
-				let indexOfA = this.sectionsOrRooms.indexOf(a); // second element
-				let indexOfB = this.sectionsOrRooms.indexOf(b);  // first element
-				if (this.sortable[indexOfA] && this.sortable[indexOfB]) {
-					return this.getMField(order, a) - this.getMField(order, b);
-				} else {
-					return 0;
-				}
-
+				return this.sortFunction(finishedOrders, a, b, order);
 			});
-			// (this.getMField(order, a) - this.getMField(order, b)));
 		} else if (order === "dept" || order === "id" || order === "instructor" || order === "title" ||
 			order === "uuid" ||	order === "fullname" || order === "shortname" || order === "number" ||
 			order === "name" || order === "address" || order === "type" || order === "furniture" ||
 			order === "href"){
-			secOrRoomList.sort((a: Section, b: Section) =>
-				this.getMField(order, a).toString().localeCompare(this.getMField(order, b).toString()));
+			secOrRoomList.sort((a: Section, b: Section) => {
+				return this.sortFunction(finishedOrders, a, b, order);
+			});
 		}
 		return secOrRoomList;
+	}
+
+	private sortFunction(finishedOrders: string[], a: Section, b: Section, order: string) {
+		let isSortable = true;
+		for (const ord of finishedOrders) {
+			if (this.getField(ord, a) !== this.getField(ord, b)) {
+				isSortable = false;
+				break;
+			}
+		}
+		if (isSortable) {
+			return this.getField(order, a) - this.getField(order, b);
+		} else {
+			return 0;
+		}
 	}
 
 	private transformationSort(sectionsOrRooms: any[], order: string, dir: string): any[] {
@@ -61,10 +69,10 @@ export default class Sorter {
 		return secOrRoomList;
 	}
 
-	private getField(sectionOrRoom: any, fieldName: string): any {
+	private getField(fieldName: string, sectionOrRoom: any): any {
 		let field: any;
 		field = this.getMField(fieldName, sectionOrRoom);
-		if (field === undefined) {
+		if (field === "") {
 			field = this.getSField(fieldName, sectionOrRoom);
 		}
 		return field;
@@ -99,7 +107,7 @@ export default class Sorter {
 		return "";
 	}
 
-	private getSField(sField: any, section: any): any {
+	private getSField(sField: string, section: any): any {
 		if (sField === "dept") {
 			return section._dept;
 		}
