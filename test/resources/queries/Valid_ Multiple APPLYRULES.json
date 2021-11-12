@@ -47,5 +47,5 @@
 		}
 	},
 	"errorExpected": false,
-	"with": []
+	"with": [{"courses_dept":"apsc","overallAvg":95.05,"maxAvg":20},{"courses_dept":"phar","overallAvg":95.07,"maxAvg":121},{"courses_dept":"spph","overallAvg":95.1,"maxAvg":11},{"courses_dept":"etec","overallAvg":95.14,"maxAvg":26},{"courses_dept":"bmeg","overallAvg":95.15,"maxAvg":13},{"courses_dept":"educ","overallAvg":95.16,"maxAvg":31},{"courses_dept":"epse","overallAvg":95.17,"maxAvg":37},{"courses_dept":"mine","overallAvg":95.18,"maxAvg":45},{"courses_dept":"thtr","overallAvg":95.2,"maxAvg":15},{"courses_dept":"nurs","overallAvg":95.21,"maxAvg":16},{"courses_dept":"psyc","overallAvg":95.25,"maxAvg":4},{"courses_dept":"hgse","overallAvg":95.28,"maxAvg":21}]
 }

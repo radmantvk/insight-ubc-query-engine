@@ -35,5 +35,5 @@
 		}
 	},
 	"errorExpected": false,
-	"with": []
+	"with": [{"courses_dept":"cpsc","Total":41}]
 }
