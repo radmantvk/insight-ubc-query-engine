@@ -147,6 +147,38 @@ export default class FilterValidator {
 		return true;
 	}
 
+	private isValidMField(mField: string) {
+		let coursesField: boolean = false;
+		let roomsField: boolean = false;
+		if (mField === "avg" || mField === "pass" || mField === "fail" || mField === "audit" || mField === "year") {
+			coursesField = true;
+		}
+		if (mField === "lat" || mField === "lon" || mField === "seats") {
+			roomsField = true;
+		}
+		if ((roomsField === true && coursesField === true) || (roomsField === false && coursesField === false)) {
+			return false;
+		}
+		return true;
+	}
+
+	private isValidSField(sField: string) {
+		let coursesField: boolean = false;
+		let roomsField: boolean = false;
+		if (sField === "dept" || sField === "id" || sField === "instructor" || sField === "title" ||
+			sField === "uuid") {
+			coursesField = true;
+		}
+		if (sField === "fullname" || sField === "shortname" || sField === "number" || sField === "name" ||
+			sField === "address" || sField === "type" || sField === "furniture" || sField === "href") {
+			roomsField = true;
+		}
+		if ((roomsField === true && coursesField === true) || (roomsField === false && coursesField === false)) {
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Check if a query key is valid
 	 * <id>_<key> is correct format, where id is the id of the dataset
@@ -179,38 +211,6 @@ export default class FilterValidator {
 			// }
 			// return false;
 		}
-	}
-
-	private isValidMField(mField: string) {
-		let coursesField: boolean = false;
-		let roomsField: boolean = false;
-		if (mField === "avg" || mField === "pass" || mField === "fail" || mField === "audit" || mField === "year") {
-			coursesField = true;
-		}
-		if (mField === "lat" || mField === "lon" || mField === "seats") {
-			roomsField = true;
-		}
-		if ((roomsField === true && coursesField === true) || (roomsField === false && coursesField === false)) {
-			return false;
-		}
-		return true;
-	}
-
-	private isValidSField(sField: string) {
-		let coursesField: boolean = false;
-		let roomsField: boolean = false;
-		if (sField === "dept" || sField === "id" || sField === "instructor" || sField === "title" ||
-			sField === "uuid") {
-			coursesField = true;
-		}
-		if (sField === "fullname" || sField === "shortname" || sField === "number" || sField === "name" ||
-			sField === "address" || sField === "type" || sField === "furniture" || sField === "href") {
-			roomsField = true;
-		}
-		if ((roomsField === true && coursesField === true) || (roomsField === false && coursesField === false)) {
-			return false;
-		}
-		return true;
 	}
 
 }

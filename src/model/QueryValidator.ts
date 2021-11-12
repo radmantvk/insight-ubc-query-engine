@@ -78,30 +78,42 @@ export default class QueryValidator {
 			return false;
 		}
 
-
 		for (let key in columnVal) {
+			if (this.applyKeys.length !== 0) {
+				if (!this.applyKeys.includes(columnVal[key]) && !this.groupKeys.includes(columnVal[key])) {
+					return false;
+				}
+			}
 			if (typeof columnVal[key] !== "string") {
 				return false;
 			}
-			this._datasetID = columnVal[key].split("_")[0];
-			let field = columnVal[key].split("_")[1];
-			if (this._datasetID.includes(" ") || this._datasetID.length === 0) {
+			let field = "";
+			if (!this.isValidApplyKey(columnVal[key])) {
+				this._datasetID = columnVal[key].split("_")[0];
+				field = columnVal[key].split("_")[1];
+				if (this.isValidMField(field)) {
+					if (!this.isValidQueryKey(columnVal[key], true)) {
+						return false;
+					}
+				} else if (this.isValidSField(field)) {
+					if (!this.isValidQueryKey(columnVal[key], false)) {
+						return false;
+					}
+				}
+				if (this._datasetID.includes(" ") || this._datasetID.length === 0) {
+					return false;
+				}
+			} else if (this.isValidApplyKey(columnVal[key]) && this.applyKeys.length === 0) {
 				return false;
 			}
-			if (this.isValidMField(field)) {
-				if (!this.isValidQueryKey(columnVal[key], true)) {
-					return false;
-				}
-			} else if (this.isValidSField(field)) {
-				if (!this.isValidQueryKey(columnVal[key], false)) {
-					return false;
-				}
-			} else {
-				if (!this.isValidApplyKey(columnVal[key])) {
+			this.columnKeys.push(columnVal[key]);
+		}
+		for (const applyKey of this.applyKeys) {
+			for (const groupKey of this.groupKeys) {
+				if (!this.columnKeys.includes(applyKey) && !this.columnKeys.includes(groupKey)) {
 					return false;
 				}
 			}
-			this.columnKeys.push(columnVal[key]);
 		}
 		return true;
 	}
