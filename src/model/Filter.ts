@@ -2,26 +2,30 @@ import Course from "./Course";
 import Section from "./Section";
 import {query} from "express";
 import exp = require("constants");
+import {InsightDatasetKind} from "../controller/IInsightFacade";
 
 export default class Filter {
-	// private filteredSections: Section[] = []
+	private readonly kind: InsightDatasetKind;
+	constructor(kind: InsightDatasetKind) {
+		this.kind = kind;
+	}
 
-	public handleFilter(sections: Section[], content: any): Section[] {
+	public handleFilter(coursesOrRooms: any[], content: any): any[] {
 		const keys = Object.keys(content);
 		if (!(keys.length === 1)) { // TODO: supposed to give and error?
-			return sections;
+			return coursesOrRooms;
 		}
 		const key = keys[0];
 		if (key === "GT" || key === "LT" || key === "EQ") {
-			return this.applyMathFilter(content, key, sections);
+			return this.applyMathFilter(content, key, coursesOrRooms);
 		} else if (key === "IS") {
-			return this.applyStringComparator(content, sections);
+			return this.applyStringComparator(content, coursesOrRooms);
 		} else if (key === "NOT") {
-			return this.applyNegation(content, sections);
+			return this.applyNegation(content, coursesOrRooms);
 		} else if (key === "AND" || key === "OR") {
-			return this.applyLogic(content, key, sections);
+			return this.applyLogic(content, key, coursesOrRooms);
 		} else {
-			return sections;
+			return coursesOrRooms;
 		}
 
 	}

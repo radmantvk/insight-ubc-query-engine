@@ -90,7 +90,6 @@ describe("InsightFacade", function () {
 	// 		});
 	// 	});
 	//
-	// 	// TODO: reformat the following
 	// 	it("should reject invalid ID: adding empty string", function () {
 	// 		let id: string = "";
 	// 		let content: string = datasetContents.get("courses") ?? "";

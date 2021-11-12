@@ -21,15 +21,18 @@ export default class Room extends Building {
 // toString method looping through the section and creating the json.
 
 	public toJson(): string {
-		// let jsonString = "{";
-		// for (const section of this._sections) {
-		// 	jsonString += section.toJson() + ", ";
-		// }
-		// jsonString += "}";
-		// return jsonString;
 		return JSON.stringify({
-			// id: this._id,
-			// sections: this._sections
+			fullname: this.fullname,
+			shortname: this.shortname,
+			address: this.address,
+			href: this.href,
+			lat: this.lat,
+			lon: this.lon,
+			number: this._number,
+			name: this._name,
+			seats: this._seats,
+			type: this._type,
+			furniture: this._furniture,
 		});
 	}
 

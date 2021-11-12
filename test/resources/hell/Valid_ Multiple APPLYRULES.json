@@ -1,0 +1,51 @@
+{
+	"title": "Valid: Multiple APPLYRules",
+	"input": {
+		"WHERE": {
+			"AND": [
+				{
+					"GT": {
+						"courses_avg": 95
+					}
+				},
+				{
+					"LT": {
+						"courses_avg": 95.3
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"courses_dept",
+				"overallAvg",
+				"maxAvg"
+			],
+			"ORDER": {
+				"dir": "UP",
+				"keys": [
+					"overallAvg",
+					"courses_dept"
+				]
+			}
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"courses_dept"
+			],
+			"APPLY": [
+				{
+					"overallAvg": {
+						"AVG": "courses_avg"
+					}},
+				{
+					"maxAvg": {
+						"MAX": "courses_pass"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": false,
+	"with": []
+}

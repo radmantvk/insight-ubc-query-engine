@@ -1,0 +1,19 @@
+{
+  "title": "Valid Courses Audit 1",
+
+  "input":{
+            "WHERE": {
+              "GT": {
+                "courses_audit": 20
+              }
+            },
+            "OPTIONS": {
+              "COLUMNS": [
+                "courses_dept",
+                "courses_audit"
+              ]
+            }
+          },
+  "errorExpected": false,
+  "with": [{"courses_dept":"cpsc","courses_audit":21},{"courses_dept":"rhsc","courses_audit":23},{"courses_dept":"rhsc","courses_audit":21}]
+}

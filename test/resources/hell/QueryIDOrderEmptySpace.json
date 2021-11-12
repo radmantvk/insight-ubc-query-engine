@@ -1,0 +1,19 @@
+{
+  "title": "Invalid: empty ID in ORDER",
+  "input":{
+    "WHERE": {
+      "GT": {
+        "courses_avg": 99
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "courses_dept",
+        "courses_avg"
+      ],
+      "ORDER": "_avg"
+    }
+  },
+  "errorExpected": true,
+  "with": "InsightError"
+}
