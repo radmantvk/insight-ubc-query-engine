@@ -34,5 +34,5 @@
 		}
 	},
 	"errorExpected": false,
-	"with": []
+	"with": [{"courses_dept":"cpsc","overallAvg":85.31}]
 }

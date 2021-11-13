@@ -8,7 +8,7 @@ export default class Building {
 	private readonly _fullname: string; // "Hugh Dempster Pavilion" -> ACEN.html
 	private readonly _shortname: string; // DMP
 	private readonly _address: string;  // "6245 Agronomy Road V6T 1Z4"
-	public readonly _href: string; // "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-201"
+	public _href: string; // "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-201"
 	private readonly _lat: number;
 	private readonly _lon: number;
 
@@ -24,18 +24,18 @@ export default class Building {
 
 // toString method looping through the section and creating the json.
 
-	public toJson(): string {
-		// let jsonString = "{";
-		// for (const section of this._sections) {
-		// 	jsonString += section.toJson() + ", ";
-		// }
-		// jsonString += "}";
-		// return jsonString;
-		return JSON.stringify({
-			// id: this._id,
-			// sections: this._sections
-		});
-	}
+	// public toJson(): string {
+	// 	// let jsonString = "{";
+	// 	// for (const section of this._sections) {
+	// 	// 	jsonString += section.toJson() + ", ";
+	// 	// }
+	// 	// jsonString += "}";
+	// 	// return jsonString;
+	// 	return JSON.stringify({
+	// 		// id: this._id,
+	// 		// sections: this._sections
+	// 	});
+	// }
 
 	public get href(): string {
 		return this._href;

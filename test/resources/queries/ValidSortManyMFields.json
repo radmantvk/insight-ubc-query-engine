@@ -1,0 +1,36 @@
+{
+  "title": "Valid sort many Mfields",
+
+  "input":{
+            "WHERE": {
+              "OR": [
+                {
+                  "GT": {
+                    "courses_avg": 99.9
+                  }
+                },
+                {
+                  "LT": {
+                    "courses_avg": 4.2
+                  }
+                }
+              ]
+            },
+            "OPTIONS": {
+              "COLUMNS": [
+                "courses_dept",
+                "courses_year",
+                "courses_avg"
+              ],
+              "ORDER": {
+                "dir": "UP",
+                "keys": [
+                  "courses_dept",
+                  "courses_year"
+                ]
+              }
+            }
+          },
+  "errorExpected": false,
+  "with": [{"courses_dept":"busi","courses_year":1900,"courses_avg":4},{"courses_dept":"busi","courses_year":2016,"courses_avg":4},{"courses_dept":"frst","courses_year":1900,"courses_avg":0},{"courses_dept":"lfs","courses_year":1900,"courses_avg":0},{"courses_dept":"lfs","courses_year":2009,"courses_avg":0},{"courses_dept":"wood","courses_year":1900,"courses_avg":1}]
+}

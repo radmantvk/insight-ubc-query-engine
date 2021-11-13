@@ -118,9 +118,10 @@ export default class TransformValidator {
 			}
 		}
 
-		if (!this._applyKeys.includes(keys[0])) {
-			this._applyKeys.push(keys[0]);
+		if (this._applyKeys.includes(keys[0])) {
+			return false;
 		}
+		this._applyKeys.push(keys[0]);
 
 		return true;
 	}

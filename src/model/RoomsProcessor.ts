@@ -25,7 +25,7 @@ export default class RoomsProcessor {
 				try {
 					const document = parse5.parse(data[0]);
 					const tBody = this.findTBody(document);
-					const buildings: Building[] = this.processTBodyAndCreateBuildings(tBody);
+					const buildings: any = this.processTBodyAndCreateBuildings(tBody);
 					return Promise.resolve(buildings);
 				} catch (e) {
 					return Promise.reject(e);
@@ -79,7 +79,7 @@ export default class RoomsProcessor {
 	}
 
 	private static processTBodyAndCreateBuildings(node: any) {
-		let buildings = [];
+		let buildings: Building[] = [];
 		for (const tr of node.childNodes) {
 			if (tr.nodeName === "tr") {
 				let building: Building;
@@ -104,18 +104,27 @@ export default class RoomsProcessor {
 							address = td.childNodes[0].value;
 							address = address.replace("\n", "");
 							address = address.trim();
+							// address = address.replace(/ /g, "%20");
 						}
 					}
 				}
 
-				// http.get("http://cs310.students.cs.ubc.ca:11316/api/v1/project_team147/" + address,
+				// curl "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team109/6245%20Agronomy%20Road%20V6T%201Z4"
+
+				// let yo = http.get("http://cs310.students.cs.ubc.ca:11316/api/v1/project_team147/" + address,
 				// 	(res) => {
-				// 	let buff: Buffer;
+				// 		let buff: any;
 				// 		res.on("data", (d) => {
-				// 			const someData = d;
-				// 			buff.
+				// 			buff += d;
 				// 		});
-				// 		res.
+				// 		res.on("end", () => {
+				// 			const l = JSON.parse(buff);
+				// 			console.log(buff);
+				// 		});
+				// 	});
+				// return Promise.all([yo])
+				// 	.then((res) => {
+				// 		return [new Building("", "shortname", "address", lat, lon, "href")];
 				// 	});
 				building = new Building(fullname, shortname, address, lat, lon, href);
 				buildings.push(building);
@@ -249,18 +258,17 @@ export default class RoomsProcessor {
 		return this.createDirectory(id)
 			.then(() => {
 				for (const room of rooms) {
-					const roomID = "rooms-" + id + "-" + room.shortname + "-" + room.number;
+					const roomID = id + "-" + room.shortname + "-" + room.number;
 					const path = "./data/" + id + "/" +  roomID + ".json";
+					const hel = room.toJson();
 					listOfFilesToBeWritten.push(fs.writeJSON(path, room.toJson()));
 				}
+				return Promise.all(listOfFilesToBeWritten);
+					// .then(() => {
+					// 	return Promise.resolve(rooms.length);
+					// });
 			}).then(() => {
-				return Promise.all(listOfFilesToBeWritten)
-					.then(() => {
-						return Promise.resolve(rooms.length);
-					});
-			})
-			.catch((err) => {
-				console.log("err");
+				return Promise.resolve(rooms.length);
 			});
 	}
 }

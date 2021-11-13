@@ -70,24 +70,6 @@ export default class InsightFacade implements IInsightFacade {
 			});
 	}
 
-	// public performQuery(query: any): Promise<any[]> {
-	// 	const queryValidator = new QueryValidator();
-	// 	// if (!queryValidator.queryValidate(query)) {
-	// 	// 	return Promise.reject(new InsightError());
-	// 	// }
-	// 	const myQuery = new Query(query);
-	// 	if (!this.idHasBeenAdded(myQuery.datasetID)) {
-	// 		return Promise.reject(new InsightError());
-	// 	}
-	// 	const kind: string = this.getKind(myQuery.datasetID);
-	// 	return this.readAndLoad(myQuery.datasetID, kind)
-	// 		.then((courses: any[]) => {
-	// 			return myQuery.process(courses, kind); // TODO: pass in if courses or not
-	// 			// console.log("yo");
-	// 		});
-	// 	// return Promise.resolve([]);
-	// }
-
 	public performQuery(query: any): Promise<any[]> {
 		const queryValidator = new QueryValidator();
 		if (!queryValidator.queryValidate(query)) {
@@ -193,28 +175,28 @@ export default class InsightFacade implements IInsightFacade {
 		}
 		let courses: Course[] = [];
 		let rooms: Room[] = [];
-		return Promise.all(listOfFilesToBeLoaded).then((data) => {
+		return Promise.all(listOfFilesToBeLoaded).then((data: any[]) => {
 			if (kind === InsightDatasetKind.Courses) {
 				for (const json of data) {
 					const jsonObj = JSON.parse(json);
-					// checking for a property to see if its course or room
 					const course = new Course(jsonObj.id, jsonObj.sections);
 					courses.push(course);
 				}
+				return courses;
 			} else {
 				for (const json of data) {
 					const jsonObj = JSON.parse(json);
-					// checking for a property to see if its course or room
-					// const course = new Course(jsonObj.id, jsonObj.sections);
-					// rooms.push(room);
+					const lat = parseInt(jsonObj.lat, 10);
+					const lon = parseInt(jsonObj.lon, 10);
+					const seats = parseInt(jsonObj.seats, 10);
+					const room = new Room(jsonObj.fullname, jsonObj.shortname, jsonObj.number, jsonObj.name,
+						jsonObj.address, lat, lon, seats, jsonObj.type, jsonObj.furniture, jsonObj.href);
+					rooms.push(room);
 				}
+				return rooms;
 			}
-		}).then(() => {
-			// if (kind === "courses") {
-			return Promise.resolve(courses);
-			// } else {
-			// 	return Promise.resolve(rooms);
-			// }
+		}).then((list: any[]) => {
+			return Promise.resolve(list);
 		});
 	}
 

@@ -3,6 +3,7 @@ import Filter from "./Filter";
 import Section from "./Section";
 import QuerySorter from "./QuerySorter";
 import {InsightDatasetKind, ResultTooLargeError} from "../controller/IInsightFacade";
+import Room from "./Room";
 
 export interface QueryOBJ {
 	WHERE?: QueryFilter;
@@ -29,7 +30,7 @@ export interface QueryResult {
 }
 
 export default class Query {
-	private courses: Course[] = [];
+	// private courses: Course[] = [];
 	private _datasetID: string = "";
 	private _query: any;
 	private _kind: InsightDatasetKind;
@@ -48,22 +49,50 @@ export default class Query {
 	}
 
 	public process(data: any[], kind: InsightDatasetKind): Promise<any[]> { // TODO: takes a parameter to know if courses/rooms
-		let id = "";
-		if (!(data.length === 0)) {
-			id = data[0].id.split("-")[0];
-		}
-		let filter: Filter = new Filter();
+		let filter: Filter = new Filter(kind);
 		if (kind === InsightDatasetKind.Courses) {
-			let sections = this.getSections(data); // TODO, depends if rooms/courses
+			let sections: Section[] = this.getSections(data);
 			let filteredSections: Section[] = filter.handleFilter(sections, this.query.WHERE);
 			if (filteredSections.length > 5000) {
 				return Promise.reject(new ResultTooLargeError());
 			}
-			let sortedSection: Section[] = this.sortSections(filteredSections); // TODO
-			let result: any[] = this.filterColumnsAndConvertToObjects(id, sortedSection); // TODO
+			let groups: any[][] = [];
+			let applies: any = {
+				maxAvg: [90, 93, 91, 92]
+			};
+			let sortedSection: Section[] = this.sortData(filteredSections, groups, applies);
+			let result: any[] = this.filterColumnsAndConvertToObjects(sortedSection);
 			return Promise.resolve(result);
 		} else {
-			return Promise.resolve([]);
+			let rooms: Room[] = data;
+			// let filteredRooms: Room[] = filter.handleFilter(rooms, this._query.WHERE);
+			// transformations: TODO: Parham doing handle transformations returning object with keys apply keys and  values list of numbers
+			// if (filteredRooms.length > 5000) {
+			// 	return Promise.reject(new ResultTooLargeError());
+			// }
+			// let sortedRooms: Room[] = this.sortData(filteredRooms);
+		// 	LISTOFGROUPS = [[group 1], [group 2], [group 3], ...]
+		//
+		// 	If grouping based on year and dept:
+		// 		Group 1: all CPSC’s in 2010
+		// 	Group 2: all CPSC’s in 2011
+		// 	Group 3: all DSCI’s in 2010
+		// ....
+		//
+		// 	LISTOFAPPLY = {
+		// 		maxAvg = [90 (group 1’s avg), 98 (group 2’s avg), 80 (group 3’s avg), ….]
+		// 	overallAvg =  [4(group 1’s avg), 6 (group 2’s avg), 5 (group 3’s avg), ...]
+		// ...
+		// }
+			let groups: any[][] = [];
+			let applies: any = {
+				maxAvg: [90, 93, 91, 92]
+			};
+			let transformations = {};
+			let sortedRooms: Room[] = this.sortData(rooms, groups, applies);
+			let result: any[] = this.filterColumnsAndConvertToObjects(sortedRooms);
+
+			return Promise.resolve(result);
 		}
 	}
 
@@ -100,7 +129,7 @@ export default class Query {
 
 	}
 
-	public sortSections(sections: Section[]): Section[] {
+	public sortData(dataset: any[], groups: any[][], applies: any): any[] {
 		let order = "";
 		Object.keys(this.query.OPTIONS).forEach((key) => {
 			if (key === "ORDER") {
@@ -108,17 +137,27 @@ export default class Query {
 			}
 		});
 		if (order === "") { // No need to sort if there is no order
-			return sections;
+			return dataset;
 		}
-		order = order.split("_")[1];
-		let sorter: QuerySorter = new QuerySorter(order, sections);
+		let sorter: QuerySorter;
+		if (typeof order === "string") { // ANYKEY: either key or applykey
+			order = order.split("_")[1];
+			sorter = new QuerySorter( dataset, [order], groups, applies, "UP");
+		} else {
+			let orders = [];
+			const keys: any[] = order["keys"];
+			for (const i of keys) {
+				orders.push(i.split("_")[1]);
+			}
+			sorter = new QuerySorter(dataset, orders, groups, applies, order["dir"]);
+		}
 		return sorter.sort();
 	}
 
-	public filterColumnsAndConvertToObjects(id: string, sections: Section[]): Section[] {
+	public filterColumnsAndConvertToObjects(dataset: any[]): any[] {
 		let columns: string[] = this.query.OPTIONS.COLUMNS; // ["courses_dept", ...]
 		let arrayOfObjs: Section[] = [];
-		for (const section of sections) {
+		for (const section of dataset) {
 			let sectionObj: any = {
 			};
 			for (const inputString of columns) { // column = "courses_avg"
