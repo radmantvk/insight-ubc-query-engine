@@ -133,7 +133,9 @@ export default class QueryValidator {
 				return false;
 			}
 			if (!(this.isValidQueryKey(orderObj, true)) && !(this.isValidQueryKey(orderObj, false))) {
-				return false;
+				if(!this.isValidApplyKey(orderObj)) {
+					return false;
+				}
 			}
 			return true;
 		}

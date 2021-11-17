@@ -3,6 +3,7 @@ import Section from "./Section";
 import {query} from "express";
 import exp = require("constants");
 import {InsightDatasetKind} from "../controller/IInsightFacade";
+import FieldAccessor from "./FieldAccessor";
 
 export default class Filter {
 	private readonly kind: InsightDatasetKind;
@@ -56,7 +57,7 @@ export default class Filter {
 	private applyLTFilter(sections: Section[], mField: any, bound: any): Section[] {
 		let validSections: Section[] = [];
 		for (let section of sections) {
-			let sectField = this.getMField(mField, section);
+			let sectField = FieldAccessor.getField(mField, section);
 			if (sectField < bound) {
 				validSections.push(section);
 			}
@@ -67,7 +68,7 @@ export default class Filter {
 	private applyGTFilter(sections: Section[], mField: any, bound: any): Section[] {
 		let validSections: Section[] = [];
 		for (let section of sections) {
-			let sectField = this.getMField(mField, section);
+			let sectField = FieldAccessor.getField(mField, section);
 			if (sectField > bound) {
 				validSections.push(section);
 			}
@@ -78,7 +79,7 @@ export default class Filter {
 	private applyEQFilter(sections: Section[], mField: any, bound: any): Section[] {
 		let validSections: Section[] = [];
 		for (let section of sections) {
-			let sectField = this.getMField(mField, section);
+			let sectField = FieldAccessor.getField(mField, section);
 			if (sectField === bound) {
 				validSections.push(section);
 			}
@@ -94,7 +95,7 @@ export default class Filter {
 		let sField = sKey.split("_")[1];
 		if (!inputString.includes("*")) { // no asterisk
 			for (let section of sections) {
-				const sectField = this.getSField(sField, section); // "cpsc"
+				const sectField = FieldAccessor.getField(sField, section); // "cpsc"
 				if (sectField === inputString) {
 					validSections.push(section);
 				}
@@ -102,7 +103,7 @@ export default class Filter {
 		} else if (inputString[0] === "*" && inputString[inputString.length - 1] === "*") { // *abc*
 			const expectedString = inputString.replace(/\*/g, "");
 			for (let section of sections) {
-				const sectField = this.getSField(sField, section); // "cpsc"
+				const sectField = FieldAccessor.getField(sField, section); // "cpsc"
 				if (sectField.includes(expectedString)) {
 					validSections.push(section);
 				}
@@ -115,7 +116,7 @@ export default class Filter {
 				}
 			} else {  // "sc"
 				for (const section of sections) {
-					let sectField: string = this.getSField(sField, section);
+					let sectField: string = FieldAccessor.getField(sField, section);
 					let toCompare = sectField.substring(sectField.length - expectedString.length, sectField.length);
 					if (expectedString === toCompare) {
 						validSections.push(section);
@@ -125,7 +126,7 @@ export default class Filter {
 		} else if (inputString[inputString.length - 1] === "*") { // cp*
 			const expectedString = inputString.replace(/\*/g, "");
 			for (const section of sections) {
-				let sectField: string = this.getSField(sField, section);
+				let sectField: string = FieldAccessor.getField(sField, section);
 				let toCompare = sectField.substring(0, inputString.length - 1);
 				if (expectedString === toCompare) {
 					validSections.push(section);
@@ -200,41 +201,5 @@ export default class Filter {
 			}
 		}
 		return validSections;
-	}
-
-	private getMField(mField: any, section: any) {
-		if (mField === "avg") {
-			return section._avg;
-		}
-		if (mField === "pass") {
-			return section._pass;
-		}
-		if (mField === "fail") {
-			return section._fail;
-		}
-		if (mField === "audit") {
-			return section._audit;
-		}
-		if (mField === "year") {
-			return section._year;
-		}
-	}
-
-	private getSField(sField: any, section: any) {
-		if (sField === "dept") {
-			return section._dept;
-		}
-		if (sField === "id") {
-			return section._id;
-		}
-		if (sField === "instructor") {
-			return section._instructor;
-		}
-		if (sField === "title") {
-			return section._title;
-		}
-		if (sField === "uuid") {
-			return section._uuid;
-		}
 	}
 }

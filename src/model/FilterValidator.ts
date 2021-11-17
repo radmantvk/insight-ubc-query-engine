@@ -197,19 +197,8 @@ export default class FilterValidator {
 		let field = queryKey.split("_")[1];
 		if (isMKey) {
 			return this.isValidMField(field);
-			// let mField = field;
-			// if (mField === "avg" || mField === "pass" || mField === "fail" || mField === "audit" || mField === "year") {
-			// 	return true;
-			// }
-			// return false;
 		} else {
 			return this.isValidSField(field);
-			// let sField = field;
-			// if (sField === "dept" || sField === "id" || sField === "instructor" || sField === "title" ||
-			// 	sField === "uuid") {
-			// 	return true;
-			// }
-			// return false;
 		}
 	}
 
