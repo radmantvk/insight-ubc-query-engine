@@ -1,0 +1,26 @@
+{
+  "title": "Rooms simple valid",
+
+  "input":{
+            "WHERE": {
+              "GT": {
+                "rooms_seats": 250
+              }
+            },
+            "OPTIONS": {
+              "COLUMNS": [
+                "rooms_shortname",
+                "rooms_lat",
+                "rooms_lon"
+              ],
+              "ORDER": {
+                "dir": "UP",
+                "keys": [
+                  "rooms_shortname"
+                ]
+              }
+            }
+          },
+  "errorExpected": false,
+  "with": [{"rooms_shortname":"ANGU","rooms_lat":49.26486,"rooms_lon":-123.25364},{"rooms_shortname":"BUCH","rooms_lat":49.26826,"rooms_lon":-123.25468},{"rooms_shortname":"CHEM","rooms_lat":49.2659,"rooms_lon":-123.25308},{"rooms_shortname":"CIRS","rooms_lat":49.26207,"rooms_lon":-123.25314},{"rooms_shortname":"ESB","rooms_lat":49.26274,"rooms_lon":-123.25224},{"rooms_shortname":"HEBB","rooms_lat":49.2661,"rooms_lon":-123.25165},{"rooms_shortname":"HENN","rooms_lat":49.26627,"rooms_lon":-123.25374},{"rooms_shortname":"LSC","rooms_lat":49.26236,"rooms_lon":-123.24494},{"rooms_shortname":"LSC","rooms_lat":49.26236,"rooms_lon":-123.24494},{"rooms_shortname":"OSBO","rooms_lat":49.26047,"rooms_lon":-123.24467},{"rooms_shortname":"SCRF","rooms_lat":49.26398,"rooms_lon":-123.2531},{"rooms_shortname":"SRC","rooms_lat":49.2683,"rooms_lon":-123.24894},{"rooms_shortname":"SRC","rooms_lat":49.2683,"rooms_lon":-123.24894},{"rooms_shortname":"SRC","rooms_lat":49.2683,"rooms_lon":-123.24894},{"rooms_shortname":"WESB","rooms_lat":49.26517,"rooms_lon":-123.24937},{"rooms_shortname":"WOOD","rooms_lat":49.26478,"rooms_lon":-123.24673}]
+}

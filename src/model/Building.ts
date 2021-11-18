@@ -12,8 +12,8 @@ export default class Building {
 	private readonly _lat: number;
 	private readonly _lon: number;
 
-	constructor(fullname: string, shortname: string, address: string, lat: number,
-		lon: number, href: string) {
+	constructor(fullname: any, shortname: any, address: any, lat: any,
+		lon: any, href: any) {
 		this._fullname = fullname;
 		this._shortname = shortname;
 		this._address = address;

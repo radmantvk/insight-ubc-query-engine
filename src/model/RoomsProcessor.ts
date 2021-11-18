@@ -80,27 +80,28 @@ export default class RoomsProcessor {
 
 	private static processTBodyAndCreateBuildings(node: any) {
 		let buildings: Building[] = [];
+		let filesToLoad: any[] = [];
 		for (const tr of node.childNodes) {
 			if (tr.nodeName === "tr") {
 				let building: Building;
-				let fullname;
-				let shortname;
-				let address;
-				let href;
-				let lat = 1;
-				let lon = 2;
+				let fullname: any;
+				let shortname: any;
+				let address: any;
+				let href: any;
+				// let lat = 1;
+				// let lon = 2;
 				let className = "views-field views-field-";
-				for(const td of tr.childNodes) {
+				for (const td of tr.childNodes) {
 					if (td.nodeName === "td") {
 						const tdAttr = td.attrs[0].value;
 						if (tdAttr === className + "field-building-code") {
 							shortname = td.childNodes[0].value;
 							shortname = shortname.replace("\n", "");
 							shortname = shortname.trim();
-						}  else if (tdAttr === className + "title") {
+						} else if (tdAttr === className + "title") {
 							href = td.childNodes[1].attrs[0].value;
 							fullname = td.childNodes[1].childNodes[0].value;
-						}  else if (tdAttr === className + "field-building-address") {
+						} else if (tdAttr === className + "field-building-address") {
 							address = td.childNodes[0].value;
 							address = address.replace("\n", "");
 							address = address.trim();
@@ -108,29 +109,37 @@ export default class RoomsProcessor {
 						}
 					}
 				}
-
-				// curl "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team109/6245%20Agronomy%20Road%20V6T%201Z4"
-
-				// let yo = http.get("http://cs310.students.cs.ubc.ca:11316/api/v1/project_team147/" + address,
-				// 	(res) => {
-				// 		let buff: any;
-				// 		res.on("data", (d) => {
-				// 			buff += d;
-				// 		});
-				// 		res.on("end", () => {
-				// 			const l = JSON.parse(buff);
-				// 			console.log(buff);
-				// 		});
-				// 	});
-				// return Promise.all([yo])
-				// 	.then((res) => {
-				// 		return [new Building("", "shortname", "address", lat, lon, "href")];
-				// 	});
-				building = new Building(fullname, shortname, address, lat, lon, href);
-				buildings.push(building);
+				const latlon =
+					this.getGeoLocation("http://cs310.students.cs.ubc.ca:11316/api/v1/project_team147/" + address)
+						.then((res: GeoResponse) => {
+							if (res.error === undefined) {
+								building = new Building(fullname, shortname, address, res.lat, res.lon, href);
+								buildings.push(building);
+							}
+						});
+				filesToLoad.push(latlon);
 			}
 		}
-		return buildings;
+
+		return Promise.all(filesToLoad)
+			.then((l) => {
+				return buildings;
+			});
+	}
+
+	private static getGeoLocation(s: string): Promise<any> {
+		return new Promise((resolve) => {
+			const request = http.get(s,(res) => {
+				let buff: any = "";
+				res.on("data", (d) => {
+					buff += d;
+				});
+				res.on("end", () => {
+					const response: GeoResponse = JSON.parse(buff);
+					resolve(response);
+				});
+			});
+		});
 	}
 
 	private static processTBodyAndCreateRooms(node: any, building: Building) {
@@ -271,5 +280,6 @@ export default class RoomsProcessor {
 				return Promise.resolve(rooms.length);
 			});
 	}
+
 }
 

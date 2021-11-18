@@ -50,7 +50,7 @@ export default class Query {
 		return this._kind;
 	}
 
-	public process(data: any[], kind: InsightDatasetKind): Promise<any[]> { // TODO: takes a parameter to know if courses/rooms
+	public process(data: any[], kind: InsightDatasetKind): Promise<any[]> {
 		let filter: Filter = new Filter(kind);
 		let result: any[];
 		let sortedData: any[];
@@ -63,16 +63,8 @@ export default class Query {
 			return Promise.reject(new ResultTooLargeError());
 		}
 		let transformation: Transformation = new Transformation(filteredData, this._query);
-		// let groups: any[][] = [];
-		// let applies: any = {
-		// 	maxAvg: [90, 93, 91, 92]
-		// };
-		// let groups: any[][] = [];
-		// let applies: any = {};
 
 		if (transformation.transformExists) {
-			// groups = transformation.groupTransformation();
-			// applies = transformation.applyTransformation(groups);
 			filteredData = transformation.transform();
 		}
 
@@ -102,15 +94,20 @@ export default class Query {
 			return dataset;
 		}
 		let sorter: QuerySorter;
-		if (typeof order === "string") { // ANYKEY: either key or applykey
-			// TODO, can we always split? what if its order on average
-			order = order.split("_")[1];
+		if (typeof order === "string") {
+			if (order.includes("_")) {
+				order = order.split("_")[1];
+			}
 			sorter = new QuerySorter( dataset, [order], "UP");
 		} else {
 			let orders = [];
 			const keys: any[] = order["keys"];
 			for (const i of keys) {
-				orders.push(i.split("_")[1]);
+				if (i.includes("_")) {
+					orders.push(i.split("_")[1]);
+				} else {
+					orders.push(i);
+				}
 			}
 			sorter = new QuerySorter(dataset, orders, order["dir"]);
 		}

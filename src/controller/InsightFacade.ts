@@ -186,8 +186,8 @@ export default class InsightFacade implements IInsightFacade {
 			} else {
 				for (const json of data) {
 					const jsonObj = JSON.parse(json);
-					const lat = parseInt(jsonObj.lat, 10);
-					const lon = parseInt(jsonObj.lon, 10);
+					const lat = parseFloat(jsonObj.lat);
+					const lon = parseFloat(jsonObj.lon);
 					const seats = parseInt(jsonObj.seats, 10);
 					const room = new Room(jsonObj.fullname, jsonObj.shortname, jsonObj.number, jsonObj.name,
 						jsonObj.address, lat, lon, seats, jsonObj.type, jsonObj.furniture, jsonObj.href);

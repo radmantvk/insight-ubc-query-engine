@@ -43,14 +43,27 @@ export default class Sorter {
 			secOrRoomList.sort((a: Section, b: Section) => {
 				return this.sortFunction(finishedOrders, a, b, order, false);
 			});
+		} else { // applykey
+			secOrRoomList.sort((a: any, b: any) => {
+				return this.sortFunction(finishedOrders, a, b, order, undefined);
+			});
 		}
 		return secOrRoomList;
 	}
 
-	private sortFunction(finishedOrders: string[], a: Section, b: Section, order: string, isMField: boolean) {
+	private sortFunction(finishedOrders: string[], a: any, b: any, order: string, isMField: any) {
 		let isSortable = true;
 		for (const ord of finishedOrders) {
-			if (FieldAccessor.getField(ord, a) !== FieldAccessor.getField(ord, b)) {
+			if (ord === "avg" || ord === "pass" || ord === "fail" || ord === "audit" || ord === "year" ||
+				ord === "lat" || ord === "lon" || ord === "seats" || ord === "dept" || ord === "id" ||
+				ord === "instructor" || ord === "title" || ord === "uuid" ||	ord === "fullname" ||
+				ord === "shortname" || ord === "number" || ord === "name" || ord === "address" || ord === "type" ||
+				ord === "furniture" || ord === "href") {
+				if (FieldAccessor.getField(ord, a) !== FieldAccessor.getField(ord, b)) {
+					isSortable = false;
+					break;
+				}
+			} else if (a[ord] !== b[ord]) {
 				isSortable = false;
 				break;
 			}
@@ -58,7 +71,9 @@ export default class Sorter {
 		if (isSortable) {
 			if (isMField) {
 				return FieldAccessor.getField(order, a) - FieldAccessor.getField(order, b).toString();
-			} else {
+			} else if (isMField === undefined){
+				return a[order] - b[order];
+			} else if (!isMField){
 				return FieldAccessor.getField(order, a).toString()
 					.localeCompare(FieldAccessor.getField(order, b).toString());
 			}

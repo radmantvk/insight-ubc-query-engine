@@ -61,69 +61,56 @@ export default class Transformation {
 	}
 
 	public groupTransformation(): any[][] {
-		let listOfGroups: any[][] = this.initialProcessGroup(this.dataset, this.group[0]);
-		for (const key of this.group) { // TODO
-			listOfGroups = this.processGroup(listOfGroups, key);
-		}
-		return listOfGroups;
-	}
-
-	private processGroup(doubleList: any[][], key: any) {
-		// : Crop off to get field
-		let listOfFields: any[] = [];
 		let listOfGroups: any[][] = [];
-		// first
-		for (const group of doubleList) {
-			for (const data of group) {
-				// : get field of the data
-				let field = FieldAccessor.getField(key.split("_")[1], data);
-				// 	= this.getMField(key.split("_")[1], data);
-				// if (field === undefined) {
-				// 	field = this.getSField(key.split("_")[1], data);
-				// }
-				if (listOfFields.includes(field)) {
-					// : check if the value of the field of the data has already been added in the list of fields
-					const index = listOfFields.indexOf(field);
-					listOfGroups[index].push(data);
-				} else {
-					listOfFields.push(field);
-					listOfGroups.push([data]);
-				}
-			}
-		}
-		return listOfGroups;
-	}
-
-	/**
-	 *
-	 * @param dataset
-	 * @param key: saved as "courses_dept" for example.
-	 * @private
-	 */
-	private initialProcessGroup(dataset: any[], key: any): any[][] {
-		// : Crop off to get field
-		let listOfFields: any[] = [];
-		let listOfGroups: any[][] = [];
-		// first
-		for (const data of dataset) {
-			// : get field of the data
-			let field = FieldAccessor.getField(key.split("_")[1], data);
-			// 	this.getMField(key.split("_")[1], data);
-			// if (field === undefined) {
-			// 	field = this.getSField(key.split("_")[1], data);
-			// }
-			if (listOfFields.includes(field)) {
-				// : check if the value of the field of the data has already been added in the list of fields
-				const index = listOfFields.indexOf(field);
-				listOfGroups[index].push(data);
+		let listOfFields: any[] = [];   // [{"courses_year": 1900, "courses_dept": atsc},   ]
+		for (const data of this.dataset) {
+			if (this.doesGroupExists(data, listOfFields)) {
+				const fieldIndex: number = this.findFieldIndex(data, listOfFields);
+				listOfGroups[fieldIndex].push(data);
 			} else {
-				// const index = listOfFields.length;
-				listOfFields.push(field);
+				let obj: any = {};
+				for (const item of this.group) {
+					obj[item] = FieldAccessor.getField(item.split("_")[1], data);
+				}
+				listOfFields.push(obj);
 				listOfGroups.push([data]);
 			}
 		}
-
 		return listOfGroups;
+	}
+
+	private doesGroupExists(data: any, listOfFields: any[]) {
+		for (const obj of listOfFields) {
+			let allFieldsMatch = true;
+			Object.keys(obj).forEach((field: any) => {
+				if (obj[field] === FieldAccessor.getField(field.split("_")[1],data) && allFieldsMatch) {
+					allFieldsMatch = true;
+				} else {
+					allFieldsMatch = false;
+				}
+			});
+			if (allFieldsMatch) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private findFieldIndex(data: any, listOfFields: any[]): number {
+		for (const obj of listOfFields) {
+			let allFieldsMatch = true;
+			Object.keys(obj).forEach((field: any) => {
+				if (obj[field] === FieldAccessor.getField(field.split("_")[1],data) && allFieldsMatch) {
+					allFieldsMatch = true;
+				} else {
+					allFieldsMatch = false;
+				}
+			});
+			if (allFieldsMatch) {
+				return listOfFields.indexOf(obj);
+			}
+		}
+		return 0;
 	}
 
 	public applyTransformation(groups: any[]): any {
@@ -230,14 +217,21 @@ export default class Transformation {
 
 	private applyCount(groups: any[], key: any) {
 		let counts = [];
+		let field: string = key.split("_")[1];
 		for (let group of groups) {
 			let count = 0;
+			let uniqueVals: any[] = [];
 			for (let data of group) {
-				Object.keys(data).forEach((groupKey) => {
-					if (groupKey.split("_")[1] === key.split("_")[1]) {
-						count++;
-					}
-				});
+				// Object.keys(data).forEach((groupKey) => {
+				// 	if (groupKey.split("_")[1] === key.split("_")[1]) {
+				// 		count++;
+				// 	}
+				// });
+				const fieldVal = FieldAccessor.getField(field, data);
+				if(!uniqueVals.includes(fieldVal)) {
+					count++;
+					uniqueVals.push(fieldVal);
+				}
 			}
 			counts.push(count);
 		}
@@ -259,10 +253,6 @@ export default class Transformation {
 			sums.push(sum);
 		}
 		return sums;
-	}
-
-	private handleDirection() {
-		return "YOUOUO";
 	}
 }
 
