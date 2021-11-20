@@ -1,45 +1,48 @@
 {
 	"title": "Valid: Simple query with SORT dir UP, multiple key sort",
 	"input":{
-		"WHERE": {
-			"AND": [
-				{
-					"GT": {
-						"courses_avg": 95
-					}
-				},
-				{
-					"LT": {
-						"courses_avg": 95.3
-					}
-				}
-			]
-		},
-		"OPTIONS": {
-			"COLUMNS": [
-				"courses_dept",
-				"overallAvg"
-			],
-			"ORDER": {
-				"dir": "UP",
-				"keys": [
-					"overallAvg"
-				]
-			}
-		},
-		"TRANSFORMATIONS": {
-			"GROUP": [
-				"courses_dept"
-			],
-			"APPLY": [
-				{
-					"overallAvg": {
-						"AVG": "courses_avg"
-					}
-				}
-			]
-		}
-	},
+              "WHERE": {
+                "AND": [
+                  {
+                    "GT": {
+                      "courses_avg": 90
+                    }
+                  },
+                  {
+                    "LT": {
+                      "courses_avg": 90.5
+                    }
+                  }
+                ]
+              },
+              "OPTIONS": {
+                "COLUMNS": [
+                  "courses_dept",
+                  "overallAvg",
+                  "courses_year"
+                ],
+                "ORDER": {
+                  "dir": "UP",
+                  "keys": [
+                    "overallAvg",
+                    "courses_year"
+                  ]
+                }
+              },
+              "TRANSFORMATIONS": {
+                "GROUP": [
+                  "courses_dept",
+                  "courses_year"
+                ],
+                "APPLY": [
+                  {
+                    "overallAvg": {
+                      "AVG": "courses_avg"
+                    }
+                  }
+                ]
+              }
+            },
 	"errorExpected": false,
-	"with": [{"courses_dept":"apsc","overallAvg":95.05},{"courses_dept":"phar","overallAvg":95.07},{"courses_dept":"spph","overallAvg":95.1},{"courses_dept":"etec","overallAvg":95.14},{"courses_dept":"bmeg","overallAvg":95.15},{"courses_dept":"educ","overallAvg":95.16},{"courses_dept":"epse","overallAvg":95.17},{"courses_dept":"mine","overallAvg":95.18},{"courses_dept":"thtr","overallAvg":95.2},{"courses_dept":"nurs","overallAvg":95.21},{"courses_dept":"psyc","overallAvg":95.25},{"courses_dept":"hgse","overallAvg":95.28}]
+	"with": [{"courses_dept":"adhe","overallAvg":90.02,"courses_year":1900},{"courses_dept":"phth","overallAvg":90.03,"courses_year":2015},{"courses_dept":"dhyg","overallAvg":90.06,"courses_year":1900},{"courses_dept":"nurs","overallAvg":90.06,"courses_year":2009},{"courses_dept":"edst","overallAvg":90.06,"courses_year":2011},{"courses_dept":"psyc","overallAvg":90.06,"courses_year":2011},{"courses_dept":"sowk","overallAvg":90.06,"courses_year":2011},{"courses_dept":"edst","overallAvg":90.06,"courses_year":2013},{"courses_dept":"educ","overallAvg":90.07,"courses_year":2008},{"courses_dept":"econ","overallAvg":90.07,"courses_year":2009},{"courses_dept":"pcth","overallAvg":90.07,"courses_year":2009},{"courses_dept":"cnps","overallAvg":90.07,"courses_year":2010},{"courses_dept":"nurs","overallAvg":90.07,"courses_year":2011},{"courses_dept":"eece","overallAvg":90.07,"courses_year":2014},{"courses_dept":"plan","overallAvg":90.08,"courses_year":2009},{"courses_dept":"dhyg","overallAvg":90.08,"courses_year":2013},{"courses_dept":"musc","overallAvg":90.08,"courses_year":2015},{"courses_dept":"medg","overallAvg":90.1,"courses_year":2008},{"courses_dept":"cons","overallAvg":90.1,"courses_year":2009},{"courses_dept":"phar","overallAvg":90.1,"courses_year":2009},{"courses_dept":"lled","overallAvg":90.1,"courses_year":2010},{"courses_dept":"bioc","overallAvg":90.1,"courses_year":2012},{"courses_dept":"cpsc","overallAvg":90.11,"courses_year":2007},{"courses_dept":"educ","overallAvg":90.11,"courses_year":2012},{"courses_dept":"audi","overallAvg":90.11,"courses_year":2013},{"courses_dept":"cnps","overallAvg":90.12,"courses_year":2012},{"courses_dept":"audi","overallAvg":90.12,"courses_year":2014},{"courses_dept":"surg","overallAvg":90.13,"courses_year":1900},{"courses_dept":"epse","overallAvg":90.13,"courses_year":2009},{"courses_dept":"sowk","overallAvg":90.13,"courses_year":2010},{"courses_dept":"surg","overallAvg":90.13,"courses_year":2010},{"courses_dept":"civl","overallAvg":90.13,"courses_year":2011},{"courses_dept":"econ","overallAvg":90.13,"courses_year":2012},{"courses_dept":"edcp","overallAvg":90.13,"courses_year":2012},{"courses_dept":"mtrl","overallAvg":90.14,"courses_year":1900},{"courses_dept":"mtrl","overallAvg":90.14,"courses_year":2013},{"courses_dept":"thtr","overallAvg":90.14,"courses_year":2013},{"courses_dept":"phar","overallAvg":90.15,"courses_year":2013},{"courses_dept":"eosc","overallAvg":90.15,"courses_year":2014},{"courses_dept":"kin","overallAvg":90.15,"courses_year":2014},{"courses_dept":"eosc","overallAvg":90.15,"courses_year":2016},{"courses_dept":"adhe","overallAvg":90.16,"courses_year":2015},{"courses_dept":"cpsc","overallAvg":90.17,"courses_year":1900},{"courses_dept":"kin","overallAvg":90.17,"courses_year":1900},{"courses_dept":"mech","overallAvg":90.17,"courses_year":1900},{"courses_dept":"etec","overallAvg":90.17,"courses_year":2008},{"courses_dept":"biol","overallAvg":90.17,"courses_year":2010},{"courses_dept":"mech","overallAvg":90.17,"courses_year":2010},{"courses_dept":"adhe","overallAvg":90.17,"courses_year":2011},{"courses_dept":"russ","overallAvg":90.17,"courses_year":2013},{"courses_dept":"econ","overallAvg":90.17,"courses_year":2014},{"courses_dept":"sowk","overallAvg":90.17,"courses_year":2014},{"courses_dept":"kin","overallAvg":90.17,"courses_year":2015},{"courses_dept":"etec","overallAvg":90.18,"courses_year":1900},{"courses_dept":"adhe","overallAvg":90.18,"courses_year":2007},{"courses_dept":"econ","overallAvg":90.19,"courses_year":1900},{"courses_dept":"phth","overallAvg":90.19,"courses_year":1900},{"courses_dept":"edcp","overallAvg":90.19,"courses_year":2014},{"courses_dept":"edst","overallAvg":90.2,"courses_year":1900},{"courses_dept":"frst","overallAvg":90.2,"courses_year":1900},{"courses_dept":"eosc","overallAvg":90.2,"courses_year":2007},{"courses_dept":"eosc","overallAvg":90.2,"courses_year":2009},{"courses_dept":"fish","overallAvg":90.2,"courses_year":2009},{"courses_dept":"zool","overallAvg":90.2,"courses_year":2009},{"courses_dept":"eosc","overallAvg":90.2,"courses_year":2010},{"courses_dept":"apsc","overallAvg":90.2,"courses_year":2011},{"courses_dept":"sowk","overallAvg":90.2,"courses_year":2012},{"courses_dept":"epse","overallAvg":90.2,"courses_year":2013},{"courses_dept":"phys","overallAvg":90.2,"courses_year":2015},{"courses_dept":"eosc","overallAvg":90.21,"courses_year":1900},{"courses_dept":"cons","overallAvg":90.21,"courses_year":2010},{"courses_dept":"econ","overallAvg":90.21,"courses_year":2015},{"courses_dept":"etec","overallAvg":90.21,"courses_year":2015},{"courses_dept":"plan","overallAvg":90.22,"courses_year":1900},{"courses_dept":"phar","overallAvg":90.22,"courses_year":2007},{"courses_dept":"etec","overallAvg":90.22,"courses_year":2009},{"courses_dept":"musc","overallAvg":90.22,"courses_year":2011},{"courses_dept":"apsc","overallAvg":90.22,"courses_year":2013},{"courses_dept":"civl","overallAvg":90.22,"courses_year":2014},{"courses_dept":"libe","overallAvg":90.22,"courses_year":2015},{"courses_dept":"bams","overallAvg":90.23,"courses_year":1900},{"courses_dept":"bioc","overallAvg":90.23,"courses_year":1900},{"courses_dept":"cons","overallAvg":90.23,"courses_year":1900},{"courses_dept":"libe","overallAvg":90.23,"courses_year":1900},{"courses_dept":"plan","overallAvg":90.23,"courses_year":2007},{"courses_dept":"epse","overallAvg":90.23,"courses_year":2014},{"courses_dept":"bams","overallAvg":90.23,"courses_year":2015},{"courses_dept":"edst","overallAvg":90.23,"courses_year":2015},{"courses_dept":"frst","overallAvg":90.23,"courses_year":2015},{"courses_dept":"pcth","overallAvg":90.24,"courses_year":1900},{"courses_dept":"cnps","overallAvg":90.24,"courses_year":2014},{"courses_dept":"cnps","overallAvg":90.24,"courses_year":2015},{"courses_dept":"phar","overallAvg":90.24,"courses_year":2015},{"courses_dept":"cell","overallAvg":90.25,"courses_year":1900},{"courses_dept":"civl","overallAvg":90.25,"courses_year":1900},{"courses_dept":"cnps","overallAvg":90.25,"courses_year":1900},{"courses_dept":"epse","overallAvg":90.25,"courses_year":1900},{"courses_dept":"musc","overallAvg":90.25,"courses_year":1900},{"courses_dept":"nurs","overallAvg":90.25,"courses_year":1900},{"courses_dept":"sowk","overallAvg":90.25,"courses_year":1900},{"courses_dept":"math","overallAvg":90.25,"courses_year":2008},{"courses_dept":"path","overallAvg":90.25,"courses_year":2008},{"courses_dept":"phys","overallAvg":90.25,"courses_year":2010},{"courses_dept":"bioc","overallAvg":90.25,"courses_year":2011},{"courses_dept":"etec","overallAvg":90.25,"courses_year":2012},{"courses_dept":"sowk","overallAvg":90.25,"courses_year":2013},{"courses_dept":"cell","overallAvg":90.25,"courses_year":2014},{"courses_dept":"dent","overallAvg":90.25,"courses_year":2014},{"courses_dept":"civl","overallAvg":90.25,"courses_year":2015},{"courses_dept":"cpsc","overallAvg":90.25,"courses_year":2015},{"courses_dept":"pcth","overallAvg":90.25,"courses_year":2015},{"courses_dept":"sowk","overallAvg":90.25,"courses_year":2015},{"courses_dept":"edcp","overallAvg":90.26,"courses_year":1900},{"courses_dept":"phar","overallAvg":90.26,"courses_year":2008},{"courses_dept":"phar","overallAvg":90.26,"courses_year":2012},{"courses_dept":"arst","overallAvg":90.27,"courses_year":1900},{"courses_dept":"medg","overallAvg":90.27,"courses_year":1900},{"courses_dept":"phar","overallAvg":90.27,"courses_year":1900},{"courses_dept":"psyc","overallAvg":90.27,"courses_year":1900},{"courses_dept":"mine","overallAvg":90.27,"courses_year":2007},{"courses_dept":"psyc","overallAvg":90.27,"courses_year":2007},{"courses_dept":"cpsc","overallAvg":90.27,"courses_year":2008},{"courses_dept":"eece","overallAvg":90.27,"courses_year":2009},{"courses_dept":"chbe","overallAvg":90.27,"courses_year":2010},{"courses_dept":"eece","overallAvg":90.27,"courses_year":2012},{"courses_dept":"cnps","overallAvg":90.27,"courses_year":2013},{"courses_dept":"medg","overallAvg":90.27,"courses_year":2014},{"courses_dept":"math","overallAvg":90.27,"courses_year":2015},{"courses_dept":"eece","overallAvg":90.28,"courses_year":1900},{"courses_dept":"edcp","overallAvg":90.28,"courses_year":2010},{"courses_dept":"civl","overallAvg":90.28,"courses_year":2012},{"courses_dept":"epse","overallAvg":90.28,"courses_year":2012},{"courses_dept":"gsat","overallAvg":90.29,"courses_year":1900},{"courses_dept":"sans","overallAvg":90.29,"courses_year":1900},{"courses_dept":"stat","overallAvg":90.29,"courses_year":1900},{"courses_dept":"eece","overallAvg":90.29,"courses_year":2008},{"courses_dept":"spph","overallAvg":90.29,"courses_year":2008},{"courses_dept":"libe","overallAvg":90.29,"courses_year":2010},{"courses_dept":"gsat","overallAvg":90.29,"courses_year":2011},{"courses_dept":"kin","overallAvg":90.29,"courses_year":2012},{"courses_dept":"nurs","overallAvg":90.29,"courses_year":2012},{"courses_dept":"hgse","overallAvg":90.29,"courses_year":2014},{"courses_dept":"sans","overallAvg":90.29,"courses_year":2014},{"courses_dept":"stat","overallAvg":90.29,"courses_year":2014},{"courses_dept":"fish","overallAvg":90.3,"courses_year":1900},{"courses_dept":"math","overallAvg":90.3,"courses_year":1900},{"courses_dept":"epse","overallAvg":90.3,"courses_year":2010},{"courses_dept":"psyc","overallAvg":90.3,"courses_year":2010},{"courses_dept":"medg","overallAvg":90.3,"courses_year":2013},{"courses_dept":"etec","overallAvg":90.3,"courses_year":2014},{"courses_dept":"lled","overallAvg":90.3,"courses_year":2014},{"courses_dept":"lled","overallAvg":90.31,"courses_year":1900},{"courses_dept":"path","overallAvg":90.31,"courses_year":1900},{"courses_dept":"spph","overallAvg":90.31,"courses_year":1900},{"courses_dept":"apsc","overallAvg":90.31,"courses_year":2009},{"courses_dept":"eece","overallAvg":90.31,"courses_year":2010},{"courses_dept":"etec","overallAvg":90.31,"courses_year":2011},{"courses_dept":"spph","overallAvg":90.31,"courses_year":2014},{"courses_dept":"audi","overallAvg":90.32,"courses_year":1900},{"courses_dept":"phys","overallAvg":90.32,"courses_year":1900},{"courses_dept":"chbe","overallAvg":90.33,"courses_year":1900},{"courses_dept":"dent","overallAvg":90.33,"courses_year":1900},{"courses_dept":"mine","overallAvg":90.33,"courses_year":1900},{"courses_dept":"obst","overallAvg":90.33,"courses_year":1900},{"courses_dept":"phil","overallAvg":90.33,"courses_year":1900},{"courses_dept":"epse","overallAvg":90.33,"courses_year":2007},{"courses_dept":"mech","overallAvg":90.33,"courses_year":2008},{"courses_dept":"arth","overallAvg":90.33,"courses_year":2009},{"courses_dept":"etec","overallAvg":90.33,"courses_year":2010},{"courses_dept":"thtr","overallAvg":90.33,"courses_year":2010},{"courses_dept":"eosc","overallAvg":90.33,"courses_year":2011},{"courses_dept":"micb","overallAvg":90.33,"courses_year":2011},{"courses_dept":"phys","overallAvg":90.33,"courses_year":2012},{"courses_dept":"etec","overallAvg":90.33,"courses_year":2013},{"courses_dept":"lled","overallAvg":90.33,"courses_year":2013},{"courses_dept":"phil","overallAvg":90.33,"courses_year":2013},{"courses_dept":"obst","overallAvg":90.33,"courses_year":2014},{"courses_dept":"bioc","overallAvg":90.33,"courses_year":2015},{"courses_dept":"epse","overallAvg":90.33,"courses_year":2015},{"courses_dept":"thtr","overallAvg":90.35,"courses_year":1900},{"courses_dept":"phth","overallAvg":90.35,"courses_year":2013},{"courses_dept":"plan","overallAvg":90.35,"courses_year":2014},{"courses_dept":"educ","overallAvg":90.36,"courses_year":1900},{"courses_dept":"micb","overallAvg":90.36,"courses_year":1900},{"courses_dept":"nurs","overallAvg":90.36,"courses_year":2007},{"courses_dept":"nurs","overallAvg":90.36,"courses_year":2010},{"courses_dept":"eosc","overallAvg":90.36,"courses_year":2013},{"courses_dept":"biol","overallAvg":90.37,"courses_year":1900},{"courses_dept":"hgse","overallAvg":90.37,"courses_year":1900},{"courses_dept":"audi","overallAvg":90.37,"courses_year":2009},{"courses_dept":"spph","overallAvg":90.38,"courses_year":2015},{"courses_dept":"rsot","overallAvg":90.39,"courses_year":1900},{"courses_dept":"civl","overallAvg":90.39,"courses_year":2007},{"courses_dept":"cons","overallAvg":90.39,"courses_year":2008},{"courses_dept":"thtr","overallAvg":90.39,"courses_year":2008},{"courses_dept":"medg","overallAvg":90.39,"courses_year":2011},{"courses_dept":"rsot","overallAvg":90.39,"courses_year":2012},{"courses_dept":"micb","overallAvg":90.39,"courses_year":2015},{"courses_dept":"ceen","overallAvg":90.4,"courses_year":1900},{"courses_dept":"fish","overallAvg":90.4,"courses_year":2007},{"courses_dept":"pcth","overallAvg":90.4,"courses_year":2007},{"courses_dept":"edst","overallAvg":90.4,"courses_year":2012},{"courses_dept":"eece","overallAvg":90.41,"courses_year":2011},{"courses_dept":"hgse","overallAvg":90.41,"courses_year":2015},{"courses_dept":"biol","overallAvg":90.42,"courses_year":2009},{"courses_dept":"cnps","overallAvg":90.42,"courses_year":2009},{"courses_dept":"phys","overallAvg":90.42,"courses_year":2009},{"courses_dept":"spph","overallAvg":90.42,"courses_year":2009},{"courses_dept":"edst","overallAvg":90.42,"courses_year":2010},{"courses_dept":"dent","overallAvg":90.42,"courses_year":2013},{"courses_dept":"path","overallAvg":90.42,"courses_year":2013},{"courses_dept":"chem","overallAvg":90.43,"courses_year":1900},{"courses_dept":"chem","overallAvg":90.43,"courses_year":2011},{"courses_dept":"mine","overallAvg":90.43,"courses_year":2011},{"courses_dept":"math","overallAvg":90.43,"courses_year":2012},{"courses_dept":"musc","overallAvg":90.43,"courses_year":2014},{"courses_dept":"eced","overallAvg":90.43,"courses_year":2015},{"courses_dept":"thtr","overallAvg":90.43,"courses_year":2015},{"courses_dept":"fopr","overallAvg":90.44,"courses_year":1900},{"courses_dept":"isci","overallAvg":90.44,"courses_year":1900},{"courses_dept":"fopr","overallAvg":90.44,"courses_year":2010},{"courses_dept":"epse","overallAvg":90.44,"courses_year":2011},{"courses_dept":"audi","overallAvg":90.44,"courses_year":2015},{"courses_dept":"isci","overallAvg":90.44,"courses_year":2015},{"courses_dept":"zool","overallAvg":90.45,"courses_year":1900},{"courses_dept":"phar","overallAvg":90.45,"courses_year":2011},{"courses_dept":"biol","overallAvg":90.45,"courses_year":2013},{"courses_dept":"fnh","overallAvg":90.45,"courses_year":2014},{"courses_dept":"chbe","overallAvg":90.45,"courses_year":2015},{"courses_dept":"zool","overallAvg":90.45,"courses_year":2015},{"courses_dept":"cohr","overallAvg":90.46,"courses_year":1900},{"courses_dept":"cohr","overallAvg":90.46,"courses_year":2011},{"courses_dept":"thtr","overallAvg":90.46,"courses_year":2011},{"courses_dept":"apsc","overallAvg":90.47,"courses_year":2012}]
 }

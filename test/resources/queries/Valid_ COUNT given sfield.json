@@ -5,7 +5,7 @@
 			"AND": [
 				{
 					"GT": {
-						"courses_avg": 80
+						"courses_avg": 90
 					}
 				},
 				{
@@ -35,5 +35,5 @@
 		}
 	},
 	"errorExpected": false,
-	"with": [{"courses_dept":"cpsc","Total":41}]
+	"with": [{"courses_dept":"cpsc","Total":10}]
 }

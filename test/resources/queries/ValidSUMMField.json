@@ -1,0 +1,45 @@
+{
+	"title": "Valid: MIN",
+	"input": {
+               "WHERE": {
+                 "AND": [
+                   {
+                     "GT": {
+                       "courses_avg": 95
+                     }
+                   },
+                   {
+                     "LT": {
+                       "courses_avg": 95.3
+                     }
+                   }
+                 ]
+               },
+               "OPTIONS": {
+                 "COLUMNS": [
+                   "courses_dept",
+                   "sum"
+                 ],
+                 "ORDER": {
+                   "dir": "UP",
+                   "keys": [
+                     "courses_dept"
+                   ]
+                 }
+               },
+               "TRANSFORMATIONS": {
+                 "GROUP": [
+                   "courses_dept"
+                 ],
+                 "APPLY": [
+                   {
+                     "sum": {
+                       "MIN": "courses_avg"
+                     }
+                   }
+                 ]
+               }
+             },
+	"errorExpected": false,
+	"with": [{"courses_dept":"apsc","sum":95.05},{"courses_dept":"bmeg","sum":95.15},{"courses_dept":"educ","sum":95.16},{"courses_dept":"epse","sum":95.11},{"courses_dept":"etec","sum":95.1},{"courses_dept":"hgse","sum":95.26},{"courses_dept":"mine","sum":95.18},{"courses_dept":"nurs","sum":95.13},{"courses_dept":"phar","sum":95.07},{"courses_dept":"psyc","sum":95.25},{"courses_dept":"spph","sum":95.09},{"courses_dept":"thtr","sum":95.2}]
+}

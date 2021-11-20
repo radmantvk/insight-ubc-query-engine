@@ -26,7 +26,7 @@ export default class Section {
 		} else {
 			this._uuid = uuid;
 		}
-		this._year = year;
+		this._year = parseInt(year.toString(), 10);
 
 	}
 

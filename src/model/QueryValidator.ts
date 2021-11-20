@@ -118,7 +118,6 @@ export default class QueryValidator {
 		return true;
 	}
 
-
 	/**
 	 * Called when the key "ORDER" is found within OPTIONS
 	 * must ensure the value of the "ORDER" key is a string
@@ -133,7 +132,9 @@ export default class QueryValidator {
 				return false;
 			}
 			if (!(this.isValidQueryKey(orderObj, true)) && !(this.isValidQueryKey(orderObj, false))) {
-				return false;
+				if(!this.isValidApplyKey(orderObj)) {
+					return false;
+				}
 			}
 			return true;
 		}
@@ -141,40 +142,7 @@ export default class QueryValidator {
 		if (orderKeys.length !== 2) {
 			return false;
 		}
-		let dir: any;
-		let keys: any;
-		for (let key of orderKeys) {
-			if (key !== "dir" && key !== "keys") {
-				return false;
-			}
-			if (key === "dir") {
-				dir = orderObj[key];
-			} else {
-				keys = orderObj[key];
-			}
-		}
-		if (typeof dir !== "string") {
-			return false;
-		}
-		if (dir !== "UP" && dir !== "DOWN") {
-			return false;
-		}
-		if (!(keys instanceof Array)) {
-			return false;
-		}
-		for (let key of keys) {
-			if (!this.columnKeys.includes(key)) {
-				return false;
-			}
-			if (this.isValidApplyKey(key)) {
-				if (!this.applyKeys.includes(key)) {
-					return false;
-				}
-			} else if (!(this.isValidQueryKey(key, true)) && !(this.isValidQueryKey(key, false))) {
-				return false;
-			}
-		}
-		return true;
+		return this.directionValidate(orderKeys, orderObj);
 	}
 
 	/**
@@ -272,6 +240,42 @@ export default class QueryValidator {
 
 	public get datasetID(): string {
 		return this._datasetID;
+	}
+
+	private directionValidate(orderKeys: string[], orderObj: any): boolean {
+		let dir: any, keys: any;
+		for (let key of orderKeys) {
+			if (key !== "dir" && key !== "keys") {
+				return false;
+			}
+			if (key === "dir") {
+				dir = orderObj[key];
+			} else {
+				keys = orderObj[key];
+			}
+		}
+		if (typeof dir !== "string") {
+			return false;
+		}
+		if (dir !== "UP" && dir !== "DOWN") {
+			return false;
+		}
+		if (!(keys instanceof Array)) {
+			return false;
+		}
+		for (let key of keys) {
+			if (!this.columnKeys.includes(key)) {
+				return false;
+			}
+			if (this.isValidApplyKey(key)) {
+				if (!this.applyKeys.includes(key)) {
+					return false;
+				}
+			} else if (!(this.isValidQueryKey(key, true)) && !(this.isValidQueryKey(key, false))) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
 
