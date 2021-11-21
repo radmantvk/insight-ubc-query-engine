@@ -1,11 +1,16 @@
 import express, {Application, Request, Response} from "express";
 import * as http from "http";
 import cors from "cors";
+import * as Path from "path";
+import * as fs from "fs";
+import InsightFacade from "../controller/InsightFacade";
+import {InsightDatasetKind, InsightError, NotFoundError} from "../controller/IInsightFacade";
 
 export default class Server {
 	private readonly port: number;
 	private express: Application;
 	private server: http.Server | undefined;
+	private static insightFacade: InsightFacade = new InsightFacade();
 
 	constructor(port: number) {
 		console.info(`Server::<init>( ${port} )`);
@@ -18,7 +23,7 @@ export default class Server {
 		// NOTE: you can serve static frontend files in from your express server
 		// by uncommenting the line below. This makes files in ./frontend/public
 		// accessible at http://localhost:<port>/
-		// this.express.use(express.static("./frontend/public"));
+		this.express.use(express.static("./frontend/public"));
 	}
 
 	/**
@@ -85,6 +90,11 @@ export default class Server {
 		this.express.get("/echo/:msg", Server.echo);
 
 		// TODO: your other endpoints should go here
+		this.express.put("/dataset/:id/:kind", Server.putDataset);
+		this.express.delete("/dataset/:id", Server.deleteDataset);
+		this.express.post("/query", Server.postQuery);
+		this.express.get("/datasets", Server.getDatasets);
+
 
 	}
 
@@ -108,4 +118,63 @@ export default class Server {
 			return "Message not provided";
 		}
 	}
+
+
+	// TODO: Do i need try catch blocks for all these methods? not sure
+	private static putDataset(req: Request, res: Response) {
+		let reqKind: string = req.params.kind;
+		let reqID: string = req.params.id;
+
+		let kind: InsightDatasetKind;
+		if (reqKind === "courses") {
+			kind = InsightDatasetKind.Courses;
+		} else {
+			kind = InsightDatasetKind.Rooms;
+		}
+		console.log(reqKind);
+		console.log(reqID);
+		console.log(req.body);
+		let content: string = new Buffer(req.body).toString("base64");
+		// let content = Buffer.from(req.body).toString("base64");
+		// let content = fs.readFileSync(req.body).toString("base64");
+		Server.insightFacade.addDataset(reqID, content, kind).then(function (r) {
+			res.status(200).json( {result: r});
+		}).catch(function (e) {
+			console.log(e);
+			res.status(400).json( {error: e});
+		});
+	}
+
+	private static deleteDataset(req: Request, res: Response) {
+		let reqID: string = req.params.id;
+		Server.insightFacade.removeDataset(reqID).then(function (r) {
+
+			res.status(200).json();
+		}).catch(function (e) {
+			if (e instanceof NotFoundError) {
+				res.status(404).json( {error: e.message});
+			} else if (e instanceof InsightError) {
+				res.status(400).json( {error: e.message});
+			}
+		});
+	}
+
+	private static postQuery(req: Request, res: Response) {
+		// TODO: not sure if this is req.params.Query or req.params.body
+		const q = req.body;
+		Server.insightFacade.performQuery(q).then(function (r) {
+			res.status(200).json( {result: r});
+			return res;
+		}).catch(function (e) {
+			res.status(400).json( {error: e.message});
+		});
+	}
+
+	private static getDatasets(res: Response) {
+		Server.insightFacade.listDatasets().then(function (r) {
+			res.status(200).json(r);
+		});
+	}
 }
+
+
