@@ -1,5 +1,13 @@
-document.getElementById("click-me-button").addEventListener("click", handleClickMe);
+//document.getElementById("click-me-button").addEventListener("click", handleClickMe);
 
 function handleClickMe() {
-	alert("Button Clicked!");
+	let courseDept = document.getElementById('dept');
+	let courseId = document.getElementById('id');
+	if (document.getElementById('average').checked) {
+		// process average for query
+		alert('getting average');
+	} else if (document.getElementById('maximumFail').checked) {
+		// process max number of failed students
+		alert('getting maxFail');
+	}
 }

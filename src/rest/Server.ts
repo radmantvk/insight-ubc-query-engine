@@ -94,8 +94,6 @@ export default class Server {
 		this.express.delete("/dataset/:id", Server.deleteDataset);
 		this.express.post("/query", Server.postQuery);
 		this.express.get("/datasets", Server.getDatasets);
-
-
 	}
 
 	// The next two methods handle the echo service.
@@ -131,12 +129,7 @@ export default class Server {
 		} else {
 			kind = InsightDatasetKind.Rooms;
 		}
-		console.log(reqKind);
-		console.log(reqID);
-		console.log(req.body);
 		let content: string = new Buffer(req.body).toString("base64");
-		// let content = Buffer.from(req.body).toString("base64");
-		// let content = fs.readFileSync(req.body).toString("base64");
 		Server.insightFacade.addDataset(reqID, content, kind).then(function (r) {
 			res.status(200).json( {result: r});
 		}).catch(function (e) {
