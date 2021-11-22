@@ -267,6 +267,20 @@ describe("InsightFacade", function () {
 				});
 		});
 
+		it("Rooms: should add a proper id (new id), proper content, and proper InsightDatasetKind", function () {
+			// check id is unique or concat "1" to the id until it is unique
+			let id: string = "rooms";
+			const validContent: string = datasetContents.get("rooms") ?? "";
+			return facade.addDataset(id, validContent, InsightDatasetKind.Rooms)
+				.then((result) => {
+					expect(result).to.deep.equal([id]);
+					expect(facade.listDatasets().then((list) => list.toString().includes(id)));
+				})
+				.catch(() => {
+					expect.fail("valid add dataset failed");
+				});
+		});
+
 		it("reject add: content with no valid course section", function () {
 			let id: string = "courses";
 			const validContent: string = datasetContents.get("noValidSection") ?? "";
@@ -302,6 +316,28 @@ describe("InsightFacade", function () {
 				});
 		});
 
+		it("Rooms: should add multiple valid datasets", function () {
+			let id1 = "rooms1";
+			let id2 = "rooms2";
+			let id3 = "rooms3";
+			const content: string = datasetContents.get("rooms") ?? "";
+			return facade.addDataset(id1, content, InsightDatasetKind.Rooms)
+				.then(() => {
+					return facade.addDataset(id2, content, InsightDatasetKind.Rooms);
+				})
+				.then(() => {
+					return facade.addDataset(id3, content, InsightDatasetKind.Rooms);
+				})
+				.then((res) => {
+					expect(res).to.have.length(3);
+					expect(res).to.deep.include(id1);
+					expect(res).to.deep.include(id2);
+					expect(res).to.deep.include(id3);
+				})
+				.catch(() => {
+					expect.fail("valid add datasets failed");
+				});
+		});
 		it("should reject if dataset was never added with NotFoundError", function () {
 			let id: string = "courses";
 			return facade.removeDataset(id)
