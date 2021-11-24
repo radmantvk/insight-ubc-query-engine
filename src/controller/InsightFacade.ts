@@ -20,6 +20,8 @@ export default class InsightFacade implements IInsightFacade {
 	private insightDatasets: InsightDataset[] = [];
 	constructor() {
 		// console.trace("InsightFacadeImpl::init()");
+		// const content = fs.readFileSync("./test/resources/archives/courses.zip").toString("base64");
+		// this.addDataset("courses", content, InsightDatasetKind.Courses);
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {

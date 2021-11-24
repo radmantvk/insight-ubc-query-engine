@@ -3,11 +3,31 @@
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
 		<title>310 Frontend</title>
-		<link href="/style.css" rel="stylesheet" />
+		<link href="./style.css" rel="stylesheet" />
+		<script src="frontend.js" type="text/javascript">
+			init();
+		</script>
 	</head>
 	<body>
-		<button id="click-me-button" class="button" >Click Me!</button>
+		<h1 style="background-color: aqua">Insight Facade</h1>
+		<div id="root">
+			<form>
+				<input id="dept" type="text" placeholder="Course Department" required>
+				<input id="id" type="text" placeholder="Course ID" required>
+				<br/>
+				<label for="average">
+					Course Average
+					<input id="average" value="s1" type="radio" name="courses" checked>
+				</label>
+				<label for="maximumFail">
+					Max Number of Failed Students
+					<input id="maximumFail" value="s2" type="radio" name="courses">
+				</label>
+				<br>
+				<!-- <button id="click-me-button" class="button" >Get Result!</button> -->
+				<button type="submit" onclick="handleClickMe()">Submit</button>
+			</form>
+		</div>
 
-		<script type="text/javascript" src="/frontend.js"></script>
 	</body>
 </html>

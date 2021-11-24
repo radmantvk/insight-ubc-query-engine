@@ -37,8 +37,15 @@ export default class Query {
 	private _query: any;
 	private _kind: InsightDatasetKind;
 	constructor(query: any) {
-		this._datasetID = query.OPTIONS.COLUMNS[0].split("_")[0];
-		this._kind = this.getKind(query.OPTIONS.COLUMNS[0].split("_")[1]);
+		// this._datasetID = query.OPTIONS.COLUMNS[0].split("_")[0];
+		// this._kind = this.getKind(query.OPTIONS.COLUMNS[0].split("_")[1]);
+		if (query.OPTIONS.COLUMNS[0].includes("_")) {
+			this._datasetID = query.OPTIONS.COLUMNS[0].split("_")[0];
+			this._kind = this.getKind(query.OPTIONS.COLUMNS[0].split("_")[1]);
+		} else {
+			this._datasetID = query.TRANSFORMATIONS.GROUP[0].split("_")[0];
+			this._kind = this.getKind(query.TRANSFORMATIONS.GROUP[0].split("_")[1]);
+		}
 		this._query = query;
 	}
 

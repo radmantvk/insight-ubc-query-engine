@@ -1,0 +1,41 @@
+{
+	"title": "user Story 1 query",
+	"input": {
+             		"WHERE": {
+             			"AND": [
+             				{
+             					"IS": {
+             						"courses_dept": "cpsc"
+             					}
+             				},
+             				{
+             					"IS": {
+             						"courses_id": "210"
+             					}
+             				}
+             			]
+             		},
+             		"OPTIONS": {
+             			"COLUMNS": [
+             				"overallAvg"
+
+             			]
+             		},
+             		"TRANSFORMATIONS": {
+
+             			"GROUP": ["courses_dept"],
+
+             			"APPLY": [{
+
+             				"overallAvg": {
+
+             					"AVG": "courses_avg"
+
+             				}
+
+             			}]
+
+             		}
+             	},
+	"with": [{"overallAvg":73.99}]
+}
