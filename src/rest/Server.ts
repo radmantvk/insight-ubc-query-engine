@@ -1,8 +1,6 @@
 import express, {Application, Request, Response} from "express";
 import * as http from "http";
 import cors from "cors";
-import * as Path from "path";
-import * as fs from "fs";
 import InsightFacade from "../controller/InsightFacade";
 import {InsightDatasetKind, InsightError, NotFoundError} from "../controller/IInsightFacade";
 
@@ -94,6 +92,8 @@ export default class Server {
 		this.express.delete("/dataset/:id", Server.deleteDataset);
 		this.express.post("/query", Server.postQuery);
 		this.express.get("/datasets", Server.getDatasets);
+
+
 	}
 
 	// The next two methods handle the echo service.
@@ -123,18 +123,20 @@ export default class Server {
 		let reqKind: string = req.params.kind;
 		let reqID: string = req.params.id;
 
-		let kind: InsightDatasetKind;
+		let kind: InsightDatasetKind = InsightDatasetKind.Courses;
 		if (reqKind === "courses") {
 			kind = InsightDatasetKind.Courses;
-		} else {
+		} else if (reqKind === "rooms") {
 			kind = InsightDatasetKind.Rooms;
+		} else {
+			res.status(400).json( {error: "InsightError"});
 		}
 		let content: string = new Buffer(req.body).toString("base64");
 		Server.insightFacade.addDataset(reqID, content, kind).then(function (r) {
 			res.status(200).json( {result: r});
 		}).catch(function (e) {
 			console.log(e);
-			res.status(400).json( {error: e});
+			res.status(400).json( {error: e.message});
 		});
 	}
 
@@ -142,7 +144,7 @@ export default class Server {
 		let reqID: string = req.params.id;
 		Server.insightFacade.removeDataset(reqID).then(function (r) {
 
-			res.status(200).json();
+			res.status(200).json( {result: r});
 		}).catch(function (e) {
 			if (e instanceof NotFoundError) {
 				res.status(404).json( {error: e.message});
@@ -157,8 +159,12 @@ export default class Server {
 		const q = req.body;
 		Server.insightFacade.performQuery(q).then(function (r) {
 			res.status(200).json( {result: r});
+			console.log("pass");
 			return res;
 		}).catch(function (e) {
+			console.log("rej");
+			console.log(e.message);
+			console.log("reject2");
 			res.status(400).json( {error: e.message});
 		});
 	}
