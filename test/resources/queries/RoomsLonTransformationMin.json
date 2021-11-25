@@ -1,0 +1,37 @@
+{
+  "title": "Rooms max Lon Transformations",
+
+  "input":{
+	  "WHERE": {
+		  "LT": {
+			  "rooms_lon": -123.25583
+		  }
+	  },
+	  "OPTIONS": {
+		  "COLUMNS": [
+			  "rooms_shortname",
+			  "minLon"
+		  ],
+		  "ORDER": {
+			  "dir": "DOWN",
+			  "keys": [
+				  "minLon"
+			  ]
+		  }
+	  },
+	  "TRANSFORMATIONS": {
+		  "APPLY": [
+			  {
+				  "minLon": {
+					  "MIN": "rooms_lon"
+				  }
+			  }
+		  ],
+		  "GROUP": [
+			  "rooms_shortname"
+		  ]
+	  }
+  },
+  "errorExpected": false,
+  "with": [{"rooms_shortname":"PCOH","minLon":-123.2559},{"rooms_shortname":"GEOG","minLon":-123.25623},{"rooms_shortname":"AUDX","minLon":-123.25655},{"rooms_shortname":"UCLL","minLon":-123.25692},{"rooms_shortname":"ANSO","minLon":-123.25741}]
+}

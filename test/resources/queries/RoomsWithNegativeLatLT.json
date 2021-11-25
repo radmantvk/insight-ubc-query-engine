@@ -1,0 +1,25 @@
+{
+  "title": "Rooms Query on Lat (NEGATIVE LT)",
+  "input":{
+	  "WHERE": {
+		  "LT": {
+			  "rooms_lat": 0
+		  }
+	  },
+	  "OPTIONS": {
+		  "COLUMNS": [
+			  "rooms_shortname",
+			  "rooms_lat",
+			  "rooms_lon"
+		  ],
+		  "ORDER": {
+			  "dir": "UP",
+			  "keys": [
+				  "rooms_shortname"
+			  ]
+		  }
+	  }
+  },
+  "errorExpected": false,
+  "with": []
+}

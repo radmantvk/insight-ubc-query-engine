@@ -1,0 +1,37 @@
+{
+  "title": "Rooms max Lon Transformations",
+
+  "input":{
+	  "WHERE": {
+		  "LT": {
+			  "rooms_lon": -123.25583
+		  }
+	  },
+	  "OPTIONS": {
+		  "COLUMNS": [
+			  "rooms_shortname",
+			  "avgLon"
+		  ],
+		  "ORDER": {
+			  "dir": "DOWN",
+			  "keys": [
+				  "avgLon", "rooms_shortname"
+			  ]
+		  }
+	  },
+	  "TRANSFORMATIONS": {
+		  "APPLY": [
+			  {
+				  "avgLon": {
+					  "AVG": "rooms_lon"
+				  }
+			  }
+		  ],
+		  "GROUP": [
+			  "rooms_shortname"
+		  ]
+	  }
+  },
+  "errorExpected": false,
+  "with": [{"rooms_shortname":"UCLL","avgLon":-123.26},{"rooms_shortname":"PCOH","avgLon":-123.26},{"rooms_shortname":"GEOG","avgLon":-123.26},{"rooms_shortname":"AUDX","avgLon":-123.26},{"rooms_shortname":"ANSO","avgLon":-123.26}]
+}

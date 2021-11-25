@@ -1,0 +1,35 @@
+{
+  "title": "Rooms Negative Lon Positive Lat (LT and GT)",
+
+  "input":{
+	  "WHERE": {
+		  "AND": [
+			  {
+				  "LT": {
+					  "rooms_lon": -123.25692
+				  }
+			  },
+			  {
+				  "GT": {
+					  "rooms_lat": 49.26486
+				  }
+			  }
+		  ]
+	  },
+	  "OPTIONS": {
+		  "COLUMNS": [
+			  "rooms_shortname",
+			  "rooms_lat",
+			  "rooms_lon"
+		  ],
+		  "ORDER": {
+			  "dir": "UP",
+			  "keys": [
+				  "rooms_shortname"
+			  ]
+		  }
+	  }
+  },
+  "errorExpected": false,
+  "with": [{"rooms_shortname":"ANSO","rooms_lat":49.26958,"rooms_lon":-123.25741},{"rooms_shortname":"ANSO","rooms_lat":49.26958,"rooms_lon":-123.25741},{"rooms_shortname":"ANSO","rooms_lat":49.26958,"rooms_lon":-123.25741},{"rooms_shortname":"ANSO","rooms_lat":49.26958,"rooms_lon":-123.25741}]
+}
