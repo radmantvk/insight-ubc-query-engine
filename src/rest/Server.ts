@@ -159,7 +159,7 @@ export default class Server {
 		const q = req.body;
 		Server.insightFacade.performQuery(q).then(function (r) {
 			res.status(200).json( {result: r});
-			console.log("pass");
+			console.log("pas");
 			return res;
 		}).catch(function (e) {
 			console.log("rej");
