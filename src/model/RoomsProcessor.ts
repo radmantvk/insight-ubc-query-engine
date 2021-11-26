@@ -105,7 +105,7 @@ export default class RoomsProcessor {
 							address = td.childNodes[0].value;
 							address = address.replace("\n", "");
 							address = address.trim();
-							// address = address.replace(/ /g, "%20");
+							address = address.replace(/ /g, "%20");
 						}
 					}
 				}
@@ -142,6 +142,19 @@ export default class RoomsProcessor {
 		});
 	}
 
+	private static getGeo(address: string): Promise<any> {
+		const urlAddress = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team147/" +
+			address.replace(/ /g, "%20");
+		return new Promise((resolve, reject) => {
+			try {
+				const response: any = http.request(urlAddress); // .get(urlAddress);
+				return resolve(response);
+			} catch (err) {
+				return reject(err);
+			}
+		});
+	}
+
 	private static processTBodyAndCreateRooms(node: any, building: Building) {
 		let rooms: Room[] = [];
 		for (const tr of node.childNodes) {
@@ -162,7 +175,11 @@ export default class RoomsProcessor {
 						} else if (tdAttr === className + "field-room-capacity") {
 							let seatsString = td.childNodes[0].value;
 							seatsString = seatsString.replace("\n", "");
-							seats = parseInt(seatsString.trim(), 10);
+							let foundSeats: any = seatsString.trim();
+							if (foundSeats !== "" || foundSeats !== undefined) {
+								const seatsAsInt: any = parseInt(foundSeats, 10);
+								seats = seatsAsInt; // TODO: try empty seats
+							}
 						} else if (tdAttr === className + "field-room-furniture") {
 							furniture = td.childNodes[0].value;
 							furniture = furniture.replace("\n", "");
@@ -175,6 +192,10 @@ export default class RoomsProcessor {
 					}
 				}
 				name = building.shortname + "-" + number;
+				if (seats === undefined) {
+					seats = 0;
+					console.log("seat was undefined");
+				}
 				const room = new Room(building.fullname, building.shortname, number, name,
 					building.address, building.lat, building.lon, seats, type, furniture, href);
 				rooms.push(room);
@@ -183,18 +204,6 @@ export default class RoomsProcessor {
 		return rooms;
 	}
 
-	private static getGeo(address: string): Promise<any> {
-		const urlAddress = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team147/" +
-			address.replace(/ /g, "%20");
-		return new Promise((resolve, reject) => {
-			try {
-				const response: any = http.request(urlAddress); // .get(urlAddress);
-				return resolve(response);
-			} catch (err) {
-				return reject(err);
-			}
-		});
-	}
 
 	/**
 	 * let sections = list of Sections
@@ -227,14 +236,12 @@ export default class RoomsProcessor {
 		return listOfSections;
 	}
 
-	private static createDirectory(id: string): Promise<any> {
+	private static createDirectory(id: string) {
 		if (fs.pathExistsSync("./data/")) {
-			return fs.mkdir("./data/" + id);
+			fs.mkdirSync("./data/" + id);
 		} else {
-			return fs.mkdir("./data/")
-				.then(() => {
-					return fs.mkdir("./data/" + id);
-				});
+			fs.mkdirSync("./data/");
+			fs.mkdirSync("./data/" + id);
 		}
 	}
 
@@ -264,19 +271,15 @@ export default class RoomsProcessor {
 
 	public static process(id: string, rooms: Room[]) {
 		let listOfFilesToBeWritten: any[] = [];
-		return this.createDirectory(id)
+		this.createDirectory(id);
+		for (const room of rooms) {
+			const roomID = id + "-" + room.shortname + "-" + room.number;
+			const path = "./data/" + id + "/" +  roomID + ".json";
+			const hel = room.toJson();
+			listOfFilesToBeWritten.push(fs.writeJSON(path, room.toJson()));
+		}
+		return Promise.all(listOfFilesToBeWritten)
 			.then(() => {
-				for (const room of rooms) {
-					const roomID = id + "-" + room.shortname + "-" + room.number;
-					const path = "./data/" + id + "/" +  roomID + ".json";
-					const hel = room.toJson();
-					listOfFilesToBeWritten.push(fs.writeJSON(path, room.toJson()));
-				}
-				return Promise.all(listOfFilesToBeWritten);
-					// .then(() => {
-					// 	return Promise.resolve(rooms.length);
-					// });
-			}).then(() => {
 				return Promise.resolve(rooms.length);
 			});
 	}

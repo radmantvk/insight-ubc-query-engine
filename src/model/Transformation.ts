@@ -128,7 +128,7 @@ export default class Transformation {
 					transformationObj[applyKey] = this.applyMin(groups, key);
 					break;
 				case "AVG":
-					transformationObj[applyKey] = this.applyAvg(groups);
+					transformationObj[applyKey] = this.applyAvg(groups,	key);
 					break;
 				case "SUM":
 					transformationObj[applyKey] = this.applySum(groups, key);
@@ -144,7 +144,7 @@ export default class Transformation {
 	private applyMax(groups: any[], key: any) {
 		let maxes = [];
 		for (let group of groups) {
-			let max = 0;
+			let max = Number.MIN_SAFE_INTEGER;
 			for (let section of group) {
 				Object.keys(section).forEach((groupKey) => {
 					if (groupKey.split("_")[1] === key.split("_")[1]) {
@@ -196,13 +196,13 @@ export default class Transformation {
 	// 	return averages;
 	// }
 
-	private applyAvg(groups: any[]) {
+	private applyAvg(groups: any[], key: any) {
 		let averages = [];
 		for (let group of groups) {
 			let total = new Decimal(0);
 			for (let section of group) {
 				Object.keys(section).forEach((groupKey: string) => {
-					if (groupKey === "_avg") {
+					if (groupKey.split("_")[1] === key.split("_")[1]) {
 						let sectionAvg = new Decimal(section[groupKey]);
 						total = total.add(sectionAvg);
 					}
@@ -214,6 +214,24 @@ export default class Transformation {
 		}
 		return averages;
 	}
+	// private applyAvg(groups: any[]) {
+	// 	let averages = [];
+	// 	for (let group of groups) {
+	// 		let total = new Decimal(0);
+	// 		for (let section of group) {
+	// 			Object.keys(section).forEach((groupKey: string) => {
+	// 				if (groupKey === "_avg") {
+	// 					let sectionAvg = new Decimal(section[groupKey]);
+	// 					total = total.add(sectionAvg);
+	// 				}
+	// 			});
+	// 		}
+	// 		let avg = total.toNumber() / group.length;
+	// 		let res = Number(avg.toFixed(2));
+	// 		averages.push(res);
+	// 	}
+	// 	return averages;
+	// }
 
 	private applyCount(groups: any[], key: any) {
 		let counts = [];

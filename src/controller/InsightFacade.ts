@@ -122,15 +122,14 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	private processData(id: string, kind: InsightDatasetKind, unzippedData: any): Promise<any> {
-		// return numRows
 		const kindToString = this.getKindToString(kind);
 		if (!this.directoryExists(kindToString, unzippedData)) {
 			return Promise.reject(new InsightError());
 		}
-		if (!fs.pathExistsSync("./data/")) {
-			fs.mkdirSync("./data/");
-		}
 		if (kind === InsightDatasetKind.Courses) {
+			if (!fs.pathExistsSync("./data/")) {
+				fs.mkdirSync("./data/");
+			}
 			let listOfFilesToBeLoaded: Array<Promise<any>> = [];
 			unzippedData.folder(kindToString).forEach(function (relativePath: any, file: JSZipObject) {
 				listOfFilesToBeLoaded.push(file.async("text"));
@@ -140,15 +139,21 @@ export default class InsightFacade implements IInsightFacade {
 			let indexFileLoading: Array<Promise<any>> = [];
 			unzippedData.folder(kindToString).forEach(function (relativePath: any, file: JSZipObject) {
 				const buildingFolder = "rooms/campus/discover/buildings-and-classrooms/";
-				if (file.name === "rooms/index.htm"){
+				if (file.name.includes("index")){ // file.name === "rooms/index.htm"
 					indexFileLoading.push(file.async("text"));
 				}
 			});
+			if (indexFileLoading.length < 1) {
+				return Promise.reject(new InsightError());
+			}
 			return RoomsProcessor.getBuildings(indexFileLoading)
 				.then((buildings) => {
 					const buildingFilesToBeLoaded: any[] = this.getBuildingFiles(unzippedData, buildings);
 					return RoomsProcessor.getRooms(buildings, buildingFilesToBeLoaded)
 						.then((rooms) => {
+							if (rooms.length === 0) {
+								return Promise.reject(new InsightError());
+							}
 							return Promise.resolve(RoomsProcessor.process(id, rooms));
 						});
 				}).catch((error) => {

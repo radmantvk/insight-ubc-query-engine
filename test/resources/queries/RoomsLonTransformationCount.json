@@ -1,0 +1,37 @@
+{
+  "title": "Rooms max Lon Transformations",
+
+  "input":{
+            "WHERE": {
+              "LT": {
+                "rooms_lon": -123.25583
+              }
+            },
+            "OPTIONS": {
+              "COLUMNS": [
+                "rooms_shortname",
+                "countLon"
+              ],
+              "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                  "countLon", "rooms_shortname"
+                ]
+              }
+            },
+            "TRANSFORMATIONS": {
+              "APPLY": [
+                {
+                  "countLon": {
+                    "COUNT": "rooms_lon"
+                  }
+                }
+              ],
+              "GROUP": [
+                "rooms_shortname"
+              ]
+            }
+          },
+  "errorExpected": false,
+  "with": [{"rooms_shortname":"UCLL","countLon":1},{"rooms_shortname":"PCOH","countLon":1},{"rooms_shortname":"GEOG","countLon":1},{"rooms_shortname":"AUDX","countLon":1},{"rooms_shortname":"ANSO","countLon":1}]
+}
