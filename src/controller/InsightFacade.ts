@@ -44,7 +44,6 @@ export default class InsightFacade implements IInsightFacade {
 				}
 				return Promise.resolve(listOfAddedIDs);
 			}).catch((err) => {
-				// console.log(err.toString()); // testing
 				return Promise.reject(new InsightError(err));
 			});
 	}

@@ -88,8 +88,6 @@ export default class RoomsProcessor {
 				let shortname: any;
 				let address: any;
 				let href: any;
-				// let lat = 1;
-				// let lon = 2;
 				let className = "views-field views-field-";
 				for (const td of tr.childNodes) {
 					if (td.nodeName === "td") {
