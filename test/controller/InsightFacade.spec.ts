@@ -92,6 +92,46 @@ describe("InsightFacade", function () {
 					expect.fail("valid datasetfailed");
 				});
 		});
+		it("should list an added courses dataset followed by rooms dataset", function () {
+			let coursesContent: string = datasetContents.get("courses") ?? "";
+			let roomsContent: string = datasetContents.get("rooms") ?? "";
+			return facade.addDataset("courses", coursesContent, InsightDatasetKind.Courses)
+				.then(() => {
+					return facade.addDataset("rooms", roomsContent, InsightDatasetKind.Rooms);
+				})
+				.then(() => {
+					return facade.listDatasets();
+				})
+				.then((insightDatasets) => {
+					const expectedDatasets: InsightDataset[] = [
+						{
+							id: "courses",
+							kind: InsightDatasetKind.Courses,
+							numRows: 64612
+						},
+						{
+							id: "rooms",
+							kind: InsightDatasetKind.Rooms,
+							numRows: 364
+						}
+					];
+					expect(insightDatasets).is.instanceof(Array);
+					expect(insightDatasets).to.have.length(2);
+					expect(insightDatasets).to.have.deep.members(expectedDatasets);
+					// alternative solution, but have to repeat twice for courses2
+					// const insightDatasetCourses = insightDatasets.find((dataset) => dataset.id === "courses");
+					// expect(insightDatasetCourses).to.exist;
+					// expect(insightDatasetCourses).to.deep.equal({
+					//             id: "courses",
+					//             kind: InsightDatasetKind.Courses,
+					//             numRows: 64612
+					//         });
+
+				})
+				.catch((error) => {
+					expect.fail("unexpected error caught ${error}" + error);
+				});
+		});
 		// This is a unit test. You should create more like this!
 		it("Should add a valid dataset", function () {
 			const id: string = "courses";
