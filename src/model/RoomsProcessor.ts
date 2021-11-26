@@ -116,6 +116,8 @@ export default class RoomsProcessor {
 								building = new Building(fullname, shortname, address, res.lat, res.lon, href);
 								buildings.push(building);
 							}
+						}).catch(() => {
+							// do nothing
 						});
 				filesToLoad.push(latlon);
 			}
@@ -128,13 +130,19 @@ export default class RoomsProcessor {
 	}
 
 	private static getGeoLocation(s: string): Promise<any> {
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 			const request = http.get(s,(res) => {
+				if (res.statusCode !== 200) {
+					reject();
+				}
 				let buff: any = "";
 				res.on("data", (d) => {
 					buff += d;
 				});
 				res.on("end", () => {
+					if (res.statusCode !== 200) {
+						reject();
+					}
 					const response: GeoResponse = JSON.parse(buff);
 					resolve(response);
 				});
