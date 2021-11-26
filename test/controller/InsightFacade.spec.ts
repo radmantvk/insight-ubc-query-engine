@@ -129,155 +129,155 @@ describe("InsightFacade", function () {
 					expect.fail("valid dataset failed");
 				});
 		});
-		// it("Should pass invalid Geolocations", function () {
-		// 	const id: string = "rooms";
-		// 	const content: string = datasetContents.get("roomsInvalidGeoLocation") ?? "";
-		// 	const expected: string[] = [id];
-		// 	return facade.addDataset(id, content, InsightDatasetKind.Rooms)
-		// 		.then((result: string[]) => {
-		// 			expect(result).to.deep.equal(expected);
-		// 			expect(facade.listDatasets().then((list) => list[0].id === id));
-		// 			expect(facade.listDatasets().then((list) => list[0].numRows === 359));
-		// 			expect(facade.listDatasets().then((list) => list[0].kind === "rooms"));
-		// 		}).catch((err) => {
-		// 			expect.fail("valid datasetfailed");
-		// 		});
-		// });
-		// it("Should pass invalid par", function () {
-		// 	const id: string = "rooms";
-		// 	const content: string = datasetContents.get("rooms") ?? "";
-		// 	const expected: string[] = [id];
-		// 	return facade.addDataset(id, content, InsightDatasetKind.Rooms)
-		// 		.then((result: string[]) => {
-		// 			expect(result).to.deep.equal(expected);
-		// 			return facade.listDatasets()
-		// 				.then((insightDatasets) => {
-		// 					const expectedDatasets: InsightDataset[] = [
-		// 						{
-		// 							id: "rooms",
-		// 							kind: InsightDatasetKind.Rooms,
-		// 							numRows: 364
-		// 						}
-		// 					];
-		// 				});
-		// 		}).catch((err) => {
-		// 			expect.fail("valid datasetfailed");
-		// 		});
-		// });
-		// it("Should add dataset rooms with empty tbody", function () {
-		// 	const id: string = "testRoom";
-		// 	const content: string = datasetContents.get("empty_tbody") ?? "";
-		// 	const expected: string[] = [id];
-		// 	return facade.addDataset(id, content, InsightDatasetKind.Rooms)
-		// 		.then((result: string[]) => {
-		// 			expect(result).to.deep.equal(expected);
-		// 			expect(facade.listDatasets().then((list) => list[0].id === id));
-		// 			expect(facade.listDatasets().then((list) => list[0].numRows === 359));
-		// 			expect(facade.listDatasets().then((list) => list[0].kind === "rooms"));
-		// 		}).catch((err) => {
-		// 			expect.fail("valid dataset failed");
-		// 		});
-		// });
-		// it("Should add dataset rooms named courses", function () {
-		// 	const id: string = "courses";
-		// 	const content: string = datasetContents.get("rooms") ?? "";
-		// 	const expected: string[] = [id];
-		// 	return facade.addDataset(id, content, InsightDatasetKind.Rooms)
-		// 		.then((result: string[]) => {
-		// 			expect(result).to.deep.equal(expected);
-		// 			expect(facade.listDatasets().then((list) => list.toString().includes(id)));
-		// 		}).catch((err) => {
-		// 			expect.fail("valid datasetfailed");
-		// 		});
-		// });
-		// it("should list an added courses dataset followed by rooms dataset", function () {
-		// 	let coursesContent: string = datasetContents.get("courses") ?? "";
-		// 	let roomsContent: string = datasetContents.get("rooms") ?? "";
-		// 	return facade.addDataset("courses", coursesContent, InsightDatasetKind.Courses)
-		// 		.then(() => {
-		// 			return facade.addDataset("rooms", roomsContent, InsightDatasetKind.Rooms);
-		// 		})
-		// 		.then(() => {
-		// 			return facade.listDatasets();
-		// 		})
-		// 		.then((insightDatasets) => {
-		// 			const expectedDatasets: InsightDataset[] = [
-		// 				{
-		// 					id: "courses",
-		// 					kind: InsightDatasetKind.Courses,
-		// 					numRows: 64612
-		// 				},
-		// 				{
-		// 					id: "rooms",
-		// 					kind: InsightDatasetKind.Rooms,
-		// 					numRows: 364
-		// 				}
-		// 			];
-		// 			expect(insightDatasets).is.instanceof(Array);
-		// 			expect(insightDatasets).to.have.length(2);
-		// 			expect(insightDatasets).to.have.deep.members(expectedDatasets);
-		// 			// alternative solution, but have to repeat twice for courses2
-		// 			// const insightDatasetCourses = insightDatasets.find((dataset) => dataset.id === "courses");
-		// 			// expect(insightDatasetCourses).to.exist;
-		// 			// expect(insightDatasetCourses).to.deep.equal({
-		// 			//             id: "courses",
-		// 			//             kind: InsightDatasetKind.Courses,
-		// 			//             numRows: 64612
-		// 			//         });
-		//
-		// 		})
-		// 		.catch((error) => {
-		// 			expect.fail("unexpected error caught ${error}" + error);
-		// 		});
-		// });
-		// // This is a unit test. You should create more like this!
-		// it("Should add a valid dataset", function () {
-		// 	const id: string = "courses";
-		// 	const content: string = datasetContents.get("courses") ?? "";
-		// 	const expected: string[] = [id];
-		// 	return facade.addDataset(id, content, InsightDatasetKind.Courses).then((result: string[]) => {
-		// 		expect(result).to.deep.equal(expected);
-		// 	});
-		// });
-		//
-		// it("should reject invalid ID: adding empty string", function () {
-		// 	let id: string = "";
-		// 	let content: string = datasetContents.get("courses") ?? "";
-		// 	return facade.addDataset(id, content, InsightDatasetKind.Courses)
-		// 		.then(() => expect.fail("Resolved with ${res}"))
-		// 		.catch((error) => {
-		// 			expect(error).to.be.instanceof(InsightError);
-		// 			return facade.listDatasets()
-		// 				.then((insightDatasets) => {
-		// 					expect(insightDatasets).to.have.length(0);
-		// 				});
-		// 		});
-		// });
-		// it('should reject invalid ID: string = " "', function () {
-		// 	let id: string = " ";
-		// 	let content: string = datasetContents.get("courses") ?? "";
-		// 	return facade.addDataset(id, content, InsightDatasetKind.Courses)
-		// 		.then(() =>  {
-		// 			expect.fail("Resolved with ${res}");
-		// 		})
-		// 		.catch((error) => {
-		// 			expect(error).to.be.instanceof(InsightError);
-		// 			return facade.listDatasets()
-		// 				.then((insightDatasets) => {
-		// 					expect(insightDatasets).to.have.length(0);
-		// 				});
-		// 		});
-		// });
-		// it("should reject invalid ID: string with only multiple spaces", function () {
-		// 	let id: string = "       ";
-		// 	let content: string = datasetContents.get("courses") ?? "";
-		// 	return facade.addDataset(id, content, InsightDatasetKind.Courses)
-		// 		.then(() => expect.fail("Resolved with ${res}"))
-		// 		.catch((error) => {
-		// 			expect(error).to.be.instanceof(InsightError);
-		// 			return facade.listDatasets().then((list) => expect(list).to.have.length(0));
-		// 		});
-		// });
+		it("Should pass invalid Geolocations", function () {
+			const id: string = "rooms";
+			const content: string = datasetContents.get("roomsInvalidGeoLocation") ?? "";
+			const expected: string[] = [id];
+			return facade.addDataset(id, content, InsightDatasetKind.Rooms)
+				.then((result: string[]) => {
+					expect(result).to.deep.equal(expected);
+					expect(facade.listDatasets().then((list) => list[0].id === id));
+					expect(facade.listDatasets().then((list) => list[0].numRows === 359));
+					expect(facade.listDatasets().then((list) => list[0].kind === "rooms"));
+				}).catch((err) => {
+					expect.fail("valid datasetfailed");
+				});
+		});
+		it("Should pass invalid par", function () {
+			const id: string = "rooms";
+			const content: string = datasetContents.get("rooms") ?? "";
+			const expected: string[] = [id];
+			return facade.addDataset(id, content, InsightDatasetKind.Rooms)
+				.then((result: string[]) => {
+					expect(result).to.deep.equal(expected);
+					return facade.listDatasets()
+						.then((insightDatasets) => {
+							const expectedDatasets: InsightDataset[] = [
+								{
+									id: "rooms",
+									kind: InsightDatasetKind.Rooms,
+									numRows: 364
+								}
+							];
+						});
+				}).catch((err) => {
+					expect.fail("valid datasetfailed");
+				});
+		});
+		it("Should add dataset rooms with empty tbody", function () {
+			const id: string = "testRoom";
+			const content: string = datasetContents.get("empty_tbody") ?? "";
+			const expected: string[] = [id];
+			return facade.addDataset(id, content, InsightDatasetKind.Rooms)
+				.then((result: string[]) => {
+					expect(result).to.deep.equal(expected);
+					expect(facade.listDatasets().then((list) => list[0].id === id));
+					expect(facade.listDatasets().then((list) => list[0].numRows === 359));
+					expect(facade.listDatasets().then((list) => list[0].kind === "rooms"));
+				}).catch((err) => {
+					expect.fail("valid dataset failed");
+				});
+		});
+		it("Should add dataset rooms named courses", function () {
+			const id: string = "courses";
+			const content: string = datasetContents.get("rooms") ?? "";
+			const expected: string[] = [id];
+			return facade.addDataset(id, content, InsightDatasetKind.Rooms)
+				.then((result: string[]) => {
+					expect(result).to.deep.equal(expected);
+					expect(facade.listDatasets().then((list) => list.toString().includes(id)));
+				}).catch((err) => {
+					expect.fail("valid datasetfailed");
+				});
+		});
+		it("should list an added courses dataset followed by rooms dataset", function () {
+			let coursesContent: string = datasetContents.get("courses") ?? "";
+			let roomsContent: string = datasetContents.get("rooms") ?? "";
+			return facade.addDataset("courses", coursesContent, InsightDatasetKind.Courses)
+				.then(() => {
+					return facade.addDataset("rooms", roomsContent, InsightDatasetKind.Rooms);
+				})
+				.then(() => {
+					return facade.listDatasets();
+				})
+				.then((insightDatasets) => {
+					const expectedDatasets: InsightDataset[] = [
+						{
+							id: "courses",
+							kind: InsightDatasetKind.Courses,
+							numRows: 64612
+						},
+						{
+							id: "rooms",
+							kind: InsightDatasetKind.Rooms,
+							numRows: 364
+						}
+					];
+					expect(insightDatasets).is.instanceof(Array);
+					expect(insightDatasets).to.have.length(2);
+					expect(insightDatasets).to.have.deep.members(expectedDatasets);
+					// alternative solution, but have to repeat twice for courses2
+					// const insightDatasetCourses = insightDatasets.find((dataset) => dataset.id === "courses");
+					// expect(insightDatasetCourses).to.exist;
+					// expect(insightDatasetCourses).to.deep.equal({
+					//             id: "courses",
+					//             kind: InsightDatasetKind.Courses,
+					//             numRows: 64612
+					//         });
+
+				})
+				.catch((error) => {
+					expect.fail("unexpected error caught ${error}" + error);
+				});
+		});
+		// This is a unit test. You should create more like this!
+		it("Should add a valid dataset", function () {
+			const id: string = "courses";
+			const content: string = datasetContents.get("courses") ?? "";
+			const expected: string[] = [id];
+			return facade.addDataset(id, content, InsightDatasetKind.Courses).then((result: string[]) => {
+				expect(result).to.deep.equal(expected);
+			});
+		});
+
+		it("should reject invalid ID: adding empty string", function () {
+			let id: string = "";
+			let content: string = datasetContents.get("courses") ?? "";
+			return facade.addDataset(id, content, InsightDatasetKind.Courses)
+				.then(() => expect.fail("Resolved with ${res}"))
+				.catch((error) => {
+					expect(error).to.be.instanceof(InsightError);
+					return facade.listDatasets()
+						.then((insightDatasets) => {
+							expect(insightDatasets).to.have.length(0);
+						});
+				});
+		});
+		it('should reject invalid ID: string = " "', function () {
+			let id: string = " ";
+			let content: string = datasetContents.get("courses") ?? "";
+			return facade.addDataset(id, content, InsightDatasetKind.Courses)
+				.then(() =>  {
+					expect.fail("Resolved with ${res}");
+				})
+				.catch((error) => {
+					expect(error).to.be.instanceof(InsightError);
+					return facade.listDatasets()
+						.then((insightDatasets) => {
+							expect(insightDatasets).to.have.length(0);
+						});
+				});
+		});
+		it("should reject invalid ID: string with only multiple spaces", function () {
+			let id: string = "       ";
+			let content: string = datasetContents.get("courses") ?? "";
+			return facade.addDataset(id, content, InsightDatasetKind.Courses)
+				.then(() => expect.fail("Resolved with ${res}"))
+				.catch((error) => {
+					expect(error).to.be.instanceof(InsightError);
+					return facade.listDatasets().then((list) => expect(list).to.have.length(0));
+				});
+		});
 		// it("should reject invalid ID: string containing underscore at front", function () {
 		// 	let id: string = "_1234";
 		// 	let content: string = datasetContents.get("courses") ?? "";
