@@ -10,20 +10,20 @@
 	  "OPTIONS": {
 		  "COLUMNS": [
 			  "rooms_shortname",
-			  "countLon"
+			  "minLon"
 		  ],
 		  "ORDER": {
 			  "dir": "DOWN",
 			  "keys": [
-				  "countLon", "rooms_shortname"
+				  "minLon"
 			  ]
 		  }
 	  },
 	  "TRANSFORMATIONS": {
 		  "APPLY": [
 			  {
-				  "countLon": {
-					  "COUNT": "rooms_lon"
+				  "minLon": {
+					  "MIN": "rooms_lon"
 				  }
 			  }
 		  ],
@@ -33,5 +33,5 @@
 	  }
   },
   "errorExpected": false,
-  "with": [{"rooms_shortname":"UCLL","countLon":1},{"rooms_shortname":"PCOH","countLon":1},{"rooms_shortname":"GEOG","countLon":1},{"rooms_shortname":"AUDX","countLon":1},{"rooms_shortname":"ANSO","countLon":1}]
+  "with": [{"rooms_shortname":"PCOH","minLon":-123.2559},{"rooms_shortname":"GEOG","minLon":-123.25623},{"rooms_shortname":"AUDX","minLon":-123.25655},{"rooms_shortname":"UCLL","minLon":-123.25692},{"rooms_shortname":"ANSO","minLon":-123.25741}]
 }

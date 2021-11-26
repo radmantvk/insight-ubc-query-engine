@@ -10,20 +10,20 @@
 	  "OPTIONS": {
 		  "COLUMNS": [
 			  "rooms_shortname",
-			  "countLon"
+			  "avgLon"
 		  ],
 		  "ORDER": {
 			  "dir": "DOWN",
 			  "keys": [
-				  "countLon", "rooms_shortname"
+				  "avgLon", "rooms_shortname"
 			  ]
 		  }
 	  },
 	  "TRANSFORMATIONS": {
 		  "APPLY": [
 			  {
-				  "countLon": {
-					  "COUNT": "rooms_lon"
+				  "avgLon": {
+					  "AVG": "rooms_lon"
 				  }
 			  }
 		  ],
@@ -33,5 +33,5 @@
 	  }
   },
   "errorExpected": false,
-  "with": [{"rooms_shortname":"UCLL","countLon":1},{"rooms_shortname":"PCOH","countLon":1},{"rooms_shortname":"GEOG","countLon":1},{"rooms_shortname":"AUDX","countLon":1},{"rooms_shortname":"ANSO","countLon":1}]
+  "with": [{"rooms_shortname":"UCLL","avgLon":-123.26},{"rooms_shortname":"PCOH","avgLon":-123.26},{"rooms_shortname":"GEOG","avgLon":-123.26},{"rooms_shortname":"AUDX","avgLon":-123.26},{"rooms_shortname":"ANSO","avgLon":-123.26}]
 }

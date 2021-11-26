@@ -1,0 +1,26 @@
+{
+  "title": "Rooms Query on Lon (POSITIVE GT)",
+
+  "input":{
+	  "WHERE": {
+		  "GT": {
+			  "rooms_lon": 0
+		  }
+	  },
+	  "OPTIONS": {
+		  "COLUMNS": [
+			  "rooms_shortname",
+			  "rooms_lat",
+			  "rooms_lon"
+		  ],
+		  "ORDER": {
+			  "dir": "UP",
+			  "keys": [
+				  "rooms_shortname"
+			  ]
+		  }
+	  }
+  },
+  "errorExpected": false,
+  "with": []
+}

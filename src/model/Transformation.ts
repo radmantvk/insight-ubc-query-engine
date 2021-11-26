@@ -128,7 +128,7 @@ export default class Transformation {
 					transformationObj[applyKey] = this.applyMin(groups, key);
 					break;
 				case "AVG":
-					transformationObj[applyKey] = this.applyAvg(groups,	key);
+					transformationObj[applyKey] = this.applyAvg(groups, key);=
 					break;
 				case "SUM":
 					transformationObj[applyKey] = this.applySum(groups, key);
