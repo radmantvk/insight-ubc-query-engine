@@ -103,19 +103,23 @@ export default class RoomsProcessor {
 							address = td.childNodes[0].value;
 							address = address.replace("\n", "");
 							address = address.trim();
-							address = address.replace(/ /g, "%20");
+							// address = address.replace(/ /g, "%20");
 						}
 					}
 				}
-				const latlon =
+				const latlon: Promise<any> =
 					this.getGeoLocation("http://cs310.students.cs.ubc.ca:11316/api/v1/project_team147/" + address)
 						.then((res: GeoResponse) => {
 							if (res.error === undefined) {
 								building = new Building(fullname, shortname, address, res.lat, res.lon, href);
 								buildings.push(building);
+								// return Promise.resolve(new
+								// Building(fullname, shortname, address, res.lat, res.lon, href));
 							}
+							// return Promise.resolve(false);
 						}).catch(() => {
 							// do nothing
+							// return Promise.resolve(false);
 						});
 				filesToLoad.push(latlon);
 			}
@@ -197,7 +201,7 @@ export default class RoomsProcessor {
 						}
 					}
 				}
-				name = building.shortname + "-" + number;
+				name = building.shortname + "_" + number;
 				if (seats === undefined) {
 					seats = 0;
 					console.log("seat was undefined");
