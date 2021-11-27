@@ -12,7 +12,8 @@ function handleClickMe() {
 				// console.log(jsonObj.stringify());
 				alert("The average of all sections with the given department and ID is " + res.result[0].overallAvg);
 			}).catch((err) => {
-				alert(err);
+				// alert(err);
+			alert("No results found for the given dept and course id! make sure the dataset has been previously added!");
 		})
 		// const addquery = fetch("localhost:4321/datasets/").then((response) => response.json())
 		// 	.then(data => console.log(data));
@@ -23,9 +24,12 @@ function handleClickMe() {
 				// console.log(res.result[0].courses_fail);
 				alert("The max number of failed students in a section with the given department and ID is "
 					+ res.result[0].courses_fail);
-			})
+			}).catch(() => {
+			alert("No results found for the given dept and course id! make sure the dataset has been previously added!");
+		})
 	}
 }
+// fs.readFileSync("./test/resources/archives/courses.zip").toString("base64");
 
 async function postData(url = 'http://localhost:4321/query', data = {}) {
 	// Default options are marked with *
