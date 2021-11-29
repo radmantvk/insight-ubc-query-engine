@@ -1,0 +1,39 @@
+{
+	"title": "Invalid: SUM given an skey in APPLY",
+	"input":{
+		"WHERE": {
+			"AND": [
+				{
+					"GT": {
+						"courses_avg": 80
+					}
+				},
+				{
+					"IS": {
+						"courses_dept": "cpsc"
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"courses_dept",
+				"Sum"
+			]
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"courses_dept"
+			],
+			"APPLY": [
+				{
+					"Sum": {
+						"SUM": "courses_title"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": true,
+	"with": "InsightError"
+}

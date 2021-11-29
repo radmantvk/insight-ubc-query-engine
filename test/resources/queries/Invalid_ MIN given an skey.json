@@ -1,0 +1,39 @@
+{
+	"title": "Invalid: MIN given an skey in APPLY",
+	"input":{
+		"WHERE": {
+			"AND": [
+				{
+					"GT": {
+						"courses_avg": 80
+					}
+				},
+				{
+					"IS": {
+						"courses_dept": "cpsc"
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"courses_dept",
+				"overallMin"
+			]
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"courses_dept"
+			],
+			"APPLY": [
+				{
+					"overallMin": {
+						"MIN": "courses_title"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": true,
+	"with": "InsightError"
+}

@@ -1,0 +1,46 @@
+{
+  "title": "Apply rule target key is invalid",
+
+  "input":{
+	  "WHERE": {
+		  "AND": [
+			  {
+				  "GT": {
+					  "courses_avg": 95
+				  }
+			  },
+			  {
+				  "LT": {
+					  "courses_avg": 95.3
+				  }
+			  }
+		  ]
+	  },
+	  "OPTIONS": {
+		  "COLUMNS": [
+			  "courses_dept",
+			  "overall_Avg"
+		  ],
+		  "ORDER": {
+			  "dir": "UP",
+			  "keys": [
+				  "courses_dept"
+			  ]
+		  }
+	  },
+	  "TRANSFORMATIONS": {
+		  "GROUP": [
+			  "courses_dept"
+		  ],
+		  "APPLY": [
+			  {
+				  "overall_Avg": {
+					  "AVG": "courses_avg"
+				  }
+			  }
+		  ]
+	  }
+  },
+  "errorExpected": true,
+  "with": "InsightError"
+}

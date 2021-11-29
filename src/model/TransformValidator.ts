@@ -79,7 +79,6 @@ export default class TransformValidator {
 		return true;
 	}
 
-
 	private applyRuleValidate(applyRule: any) {
 		let keys = Object.keys(applyRule);
 		if (keys.length !== 1) {
@@ -97,6 +96,9 @@ export default class TransformValidator {
 		}
 		if (applyToken === "MAX" || applyToken === "MIN" || applyToken === "AVG" || applyToken === "SUM") {
 			let key = applyBody[applyToken];
+			if (!key.includes("_")) {
+				return false;
+			}
 			let field = applyBody[applyToken].split("_")[1];
 			if (this.isValidSField(field)) {
 				return false;
@@ -120,7 +122,6 @@ export default class TransformValidator {
 				}
 			}
 		}
-
 		if (this._applyKeys.includes(keys[0])) {
 			return false;
 		}
@@ -130,13 +131,6 @@ export default class TransformValidator {
 	}
 
 
-	/**
-	 * Check if a query key is valid
-	 * <id>_<key> is correct format, where id is the id of the dataset
-	 * an id_string can contain any character except for underscore
-	 * @param queryKey: consists of idString and mField/sField in the form <idString>_<m/sField>
-	 * @param isMKey: true means MKey, false means SKey
-	 */
 	public isValidQueryKey(queryKey: string, isMKey: boolean): boolean {
 		let idString = queryKey.split("_")[0];
 		if (idString !== this._datasetID) {

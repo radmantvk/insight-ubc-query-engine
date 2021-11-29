@@ -1,0 +1,44 @@
+{
+	"title": "Invalid: one of the SORT keys not in COLUMNS",
+	"input":{
+		"WHERE": {
+			"AND": [
+				{
+					"GT": {
+						"courses_avg": 95
+					}
+				},
+				{
+					"LT": {
+						"courses_avg": 95.3
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"courses_dept",
+				"overallAvg"
+			],
+			"ORDER": {
+				"dir": "UP",
+				"keys": [
+				]
+			}
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"courses_dept"
+			],
+			"APPLY": [
+				{
+					"overallAvg": {
+						"AVG": "courses_avg"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": true,
+	"with": "InsightError"
+}

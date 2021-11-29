@@ -263,6 +263,9 @@ export default class QueryValidator {
 		if (!(keys instanceof Array)) {
 			return false;
 		}
+		if (keys.length === 0) {
+			return false;
+		}
 		for (let key of keys) {
 			if (!this.columnKeys.includes(key)) {
 				return false;

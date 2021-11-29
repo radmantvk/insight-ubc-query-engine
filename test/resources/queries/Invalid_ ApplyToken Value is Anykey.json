@@ -1,0 +1,40 @@
+{
+  "title": "Apply rule target key is invalid",
+
+  "input":{
+	  "WHERE": {
+		  "AND": [
+			  {
+				  "GT": {
+					  "courses_avg": 80
+				  }
+			  },
+			  {
+				  "IS": {
+					  "courses_dept": "cpsc"
+				  }
+			  }
+		  ]
+	  },
+	  "OPTIONS": {
+		  "COLUMNS": [
+			  "courses_avg",
+			  "overallAvg"
+		  ]
+	  },
+	  "TRANSFORMATIONS": {
+		  "GROUP": [
+			  "courses_avg"
+		  ],
+		  "APPLY": [
+			  {
+				  "overallAvg": {
+					  "AVG": "overallAvg"
+				  }
+			  }
+		  ]
+	  }
+  },
+  "errorExpected": true,
+  "with": "InsightError"
+}
