@@ -41,8 +41,8 @@ export default class TransformValidator {
 
 		this._datasetID = group[0].split("_")[0];
 		for (let key of group) {
-			if (!this._groupKeys.includes(key)) {
-				this._groupKeys.push(key);
+			if (!key.includes("_")) {
+				return false;
 			}
 			let field = key.split("_")[1];
 			if (this.isValidMField(field)) {
@@ -54,6 +54,9 @@ export default class TransformValidator {
 				if (!this.isValidQueryKey(key,false)) {
 					return false;
 				}
+			}
+			if (!this._groupKeys.includes(key)) {
+				this._groupKeys.push(key);
 			}
 		}
 		return true;

@@ -1,0 +1,37 @@
+{
+	"title": "Rooms Simple Transformation",
+	"input": {
+		"WHERE": {
+			"IS": {
+				"rooms_address": "6*"
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"rooms_address",
+				"Furniture"
+			],
+			"ORDER": {
+				"dir": "DOWN",
+				"keys": [
+					"Furniture",
+					"rooms_address"
+				]
+			}
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"rooms_address"
+			],
+			"APPLY": [
+				{
+					"Furniture": {
+						"COUNT": "rooms_furniture"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": false,
+	"with": [{"rooms_address":"6363 Agronomy Road","Furniture":5},{"rooms_address":"6333 Memorial Road","Furniture":4},{"rooms_address":"6445 University Boulevard","Furniture":3},{"rooms_address":"6331 Crescent Road V6T 1Z1","Furniture":3},{"rooms_address":"6303 North West Marine Drive","Furniture":3},{"rooms_address":"6270 University Boulevard","Furniture":3},{"rooms_address":"6250 Applied Science Lane","Furniture":3},{"rooms_address":"6356 Agricultural Road","Furniture":2},{"rooms_address":"6350 Stores Road","Furniture":2},{"rooms_address":"6245 Agronomy Road V6T 1Z4","Furniture":2},{"rooms_address":"6224 Agricultural Road","Furniture":2},{"rooms_address":"6108 Thunderbird Boulevard","Furniture":2},{"rooms_address":"6000 Iona Drive","Furniture":2},{"rooms_address":"6339 Stores Road","Furniture":1},{"rooms_address":"6174 University Boulevard","Furniture":1},{"rooms_address":"6081 University Blvd","Furniture":1},{"rooms_address":"6000 Student Union Blvd","Furniture":1}]
+}

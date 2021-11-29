@@ -1,0 +1,39 @@
+{
+	"title": "Rooms Simple Transformation",
+	"input": {
+		"WHERE": {
+			"IS": {
+				"rooms_fullname": "*A"
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"rooms_shortname",
+				"maxSeats"
+			],
+			"ORDER": {
+				"dir": "UP",
+				"keys": [
+					"maxSeats",
+					"rooms_shortname"
+				]
+			}
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"rooms_shortname",
+				"rooms_number",
+				"rooms_fullname"
+			],
+			"APPLY": [
+				{
+					"maxSeats": {
+						"MAX": "rooms_seats"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": false,
+	"with": []
+}

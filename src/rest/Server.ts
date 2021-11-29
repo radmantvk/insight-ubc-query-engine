@@ -155,16 +155,11 @@ export default class Server {
 	}
 
 	private static postQuery(req: Request, res: Response) {
-		// TODO: not sure if this is req.params.Query or req.body
 		const q = req.body;
 		Server.insightFacade.performQuery(q).then(function (r) {
 			res.status(200).json( {result: r});
-			console.log("pas");
 			return res;
 		}).catch(function (e) {
-			console.log("rej");
-			console.log(e.message);
-			console.log("reject2");
 			res.status(400).json( {error: e.message});
 		});
 	}
