@@ -21,7 +21,7 @@ export default class Section {
 		this._pass = pass;
 		this._fail = fail;
 		this._audit = audit;
-		if (typeof uuid === "number") {
+		if (typeof uuid !== "string") {
 			this._uuid = uuid.toString();
 		} else {
 			this._uuid = uuid;

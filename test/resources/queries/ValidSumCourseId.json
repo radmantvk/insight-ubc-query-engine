@@ -1,0 +1,39 @@
+{
+	"title": "Valid: Sum Course id",
+	"input": {
+               "WHERE": {
+                 "AND": [
+                   {
+                     "GT": {
+                       "courses_avg": 80
+                     }
+                   },
+                   {
+                     "IS": {
+                       "courses_dept": "cpsc"
+                     }
+                   }
+                 ]
+               },
+               "OPTIONS": {
+                 "COLUMNS": [
+                   "courses_id",
+                   "Sum"
+                 ]
+               },
+               "TRANSFORMATIONS": {
+                 "GROUP": [
+                   "courses_id"
+                 ],
+                 "APPLY": [
+                   {
+                     "Sum": {
+                       "SUM": "courses_year"
+                     }
+                   }
+                 ]
+               }
+             },
+	"errorExpected": false,
+	"with": [{"courses_id":"110","Sum":14086},{"courses_id":"121","Sum":13980},{"courses_id":"210","Sum":6038},{"courses_id":"213","Sum":2013},{"courses_id":"221","Sum":9841},{"courses_id":"301","Sum":23475},{"courses_id":"304","Sum":11739},{"courses_id":"310","Sum":23698},{"courses_id":"311","Sum":7829},{"courses_id":"312","Sum":23466},{"courses_id":"313","Sum":3912},{"courses_id":"314","Sum":5920},{"courses_id":"319","Sum":31290},{"courses_id":"340","Sum":7831},{"courses_id":"344","Sum":17659},{"courses_id":"404","Sum":5930},{"courses_id":"410","Sum":3909},{"courses_id":"411","Sum":15644},{"courses_id":"416","Sum":3915},{"courses_id":"418","Sum":3915},{"courses_id":"430","Sum":3910},{"courses_id":"444","Sum":3910},{"courses_id":"445","Sum":19560},{"courses_id":"449","Sum":31285},{"courses_id":"490","Sum":29388},{"courses_id":"500","Sum":31285},{"courses_id":"501","Sum":23464},{"courses_id":"502","Sum":27375},{"courses_id":"503","Sum":19553},{"courses_id":"507","Sum":19557},{"courses_id":"509","Sum":19565},{"courses_id":"513","Sum":23464},{"courses_id":"515","Sum":7827},{"courses_id":"521","Sum":27378},{"courses_id":"522","Sum":15648},{"courses_id":"527","Sum":15639},{"courses_id":"540","Sum":31286},{"courses_id":"543","Sum":23466},{"courses_id":"544","Sum":35199},{"courses_id":"547","Sum":7829},{"courses_id":"589","Sum":27278}]
+}

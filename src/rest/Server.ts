@@ -131,11 +131,15 @@ export default class Server {
 		} else {
 			res.status(400).json( {error: "InsightError"});
 		}
-		let content: string = new Buffer(req.body).toString("base64");
+		let content: string = "";
+		try {
+			content = new Buffer(req.body).toString("base64");
+		} catch (err: any) {
+			res.status(400).json({error: "InsightError"});
+		}
 		Server.insightFacade.addDataset(reqID, content, kind).then(function (r) {
 			res.status(200).json( {result: r});
 		}).catch(function (e) {
-			console.log(e);
 			res.status(400).json( {error: e.message});
 		});
 	}
@@ -166,7 +170,7 @@ export default class Server {
 
 	private static getDatasets(req: Request, res: Response) {
 		Server.insightFacade.listDatasets().then(function (r) {
-			res.status(200).json(r);
+			res.status(200).json({result: r});
 		});
 	}
 }

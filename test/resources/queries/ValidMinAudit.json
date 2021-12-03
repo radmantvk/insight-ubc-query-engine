@@ -1,0 +1,46 @@
+{
+	"title": "Valid: MIN Audit",
+	"input": {
+               "WHERE": {
+                 "AND": [
+                   {
+                     "GT": {
+                       "courses_avg": 91
+                     }
+                   },
+                   {
+                     "LT": {
+                       "courses_avg": 93
+                     }
+                   }
+                 ]
+               },
+               "OPTIONS": {
+                 "COLUMNS": [
+                   "courses_dept",
+                   "minToken"
+                 ],
+                 "ORDER": {
+                   "dir": "DOWN",
+                   "keys": [
+                     "minToken",
+                     "courses_dept"
+                   ]
+                 }
+               },
+               "TRANSFORMATIONS": {
+                 "GROUP": [
+                   "courses_dept"
+                 ],
+                 "APPLY": [
+                   {
+                     "minToken": {
+                       "MIN": "courses_audit"
+                     }
+                   }
+                 ]
+               }
+             },
+	"errorExpected": false,
+	"with": [{"courses_dept":"russ","minToken":1},{"courses_dept":"bota","minToken":1},{"courses_dept":"zool","minToken":0},{"courses_dept":"thtr","minToken":0},{"courses_dept":"surg","minToken":0},{"courses_dept":"stat","minToken":0},{"courses_dept":"spph","minToken":0},{"courses_dept":"span","minToken":0},{"courses_dept":"sowk","minToken":0},{"courses_dept":"soil","minToken":0},{"courses_dept":"sans","minToken":0},{"courses_dept":"rsot","minToken":0},{"courses_dept":"rhsc","minToken":0},{"courses_dept":"psyc","minToken":0},{"courses_dept":"plan","minToken":0},{"courses_dept":"phys","minToken":0},{"courses_dept":"phth","minToken":0},{"courses_dept":"phrm","minToken":0},{"courses_dept":"phil","minToken":0},{"courses_dept":"phar","minToken":0},{"courses_dept":"pcth","minToken":0},{"courses_dept":"path","minToken":0},{"courses_dept":"onco","minToken":0},{"courses_dept":"nurs","minToken":0},{"courses_dept":"name","minToken":0},{"courses_dept":"musc","minToken":0},{"courses_dept":"mtrl","minToken":0},{"courses_dept":"mine","minToken":0},{"courses_dept":"midw","minToken":0},{"courses_dept":"micb","minToken":0},{"courses_dept":"medi","minToken":0},{"courses_dept":"medg","minToken":0},{"courses_dept":"mech","minToken":0},{"courses_dept":"math","minToken":0},{"courses_dept":"lled","minToken":0},{"courses_dept":"ling","minToken":0},{"courses_dept":"libr","minToken":0},{"courses_dept":"libe","minToken":0},{"courses_dept":"larc","minToken":0},{"courses_dept":"kin","minToken":0},{"courses_dept":"itst","minToken":0},{"courses_dept":"ital","minToken":0},{"courses_dept":"hunu","minToken":0},{"courses_dept":"hgse","minToken":0},{"courses_dept":"germ","minToken":0},{"courses_dept":"frst","minToken":0},{"courses_dept":"fnh","minToken":0},{"courses_dept":"fish","minToken":0},{"courses_dept":"etec","minToken":0},{"courses_dept":"epse","minToken":0},{"courses_dept":"eosc","minToken":0},{"courses_dept":"elec","minToken":0},{"courses_dept":"eece","minToken":0},{"courses_dept":"educ","minToken":0},{"courses_dept":"edst","minToken":0},{"courses_dept":"edcp","minToken":0},{"courses_dept":"econ","minToken":0},{"courses_dept":"eced","minToken":0},{"courses_dept":"dhyg","minToken":0},{"courses_dept":"dent","minToken":0},{"courses_dept":"crwr","minToken":0},{"courses_dept":"cpsc","minToken":0},{"courses_dept":"comm","minToken":0},{"courses_dept":"cnps","minToken":0},{"courses_dept":"civl","minToken":0},{"courses_dept":"chil","minToken":0},{"courses_dept":"chem","minToken":0},{"courses_dept":"chbe","minToken":0},{"courses_dept":"cell","minToken":0},{"courses_dept":"ceen","minToken":0},{"courses_dept":"biol","minToken":0},{"courses_dept":"biof","minToken":0},{"courses_dept":"bams","minToken":0},{"courses_dept":"babs","minToken":0},{"courses_dept":"audi","minToken":0},{"courses_dept":"atsc","minToken":0},{"courses_dept":"astr","minToken":0},{"courses_dept":"arth","minToken":0},{"courses_dept":"arst","minToken":0},{"courses_dept":"apsc","minToken":0},{"courses_dept":"apbi","minToken":0},{"courses_dept":"anth","minToken":0},{"courses_dept":"anat","minToken":0},{"courses_dept":"adhe","minToken":0}]
+}
