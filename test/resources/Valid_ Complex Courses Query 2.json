@@ -1,0 +1,67 @@
+{
+	"title": "Valid: Complex courses Query",
+	"input":{
+              "WHERE": {
+                "AND": [
+                  {
+                    "GT": {
+                      "courses_avg": 95
+                    }
+                  },
+                  {
+                    "LT": {
+                      "courses_avg": 95.3
+                    }
+                  }
+                ]
+              },
+              "OPTIONS": {
+                "COLUMNS": [
+                  "countID",
+                  "courses_dept",
+                  "sum",
+                  "courses_uuid",
+                  "courses_title",
+                  "courses_instructor",
+                  "overallAvg"
+                ],
+                "ORDER": {
+                  "dir": "DOWN",
+                  "keys": [
+                    "sum",
+                    "courses_dept",
+                    "overallAvg",
+                    "courses_instructor",
+                    "courses_uuid"
+                  ]
+                }
+              },
+              "TRANSFORMATIONS": {
+                "GROUP": [
+                  "courses_dept",
+                  "courses_uuid",
+                  "courses_title",
+                  "courses_instructor"
+                ],
+                "APPLY": [
+                  {
+                    "overallAvg": {
+                      "AVG": "courses_avg"
+                    }
+                  },
+                  {
+                    "sum": {
+                      "SUM": "courses_pass"
+                    }
+                  },
+                  {
+                    "countID": {
+                      "COUNT": "courses_uuid"
+                    }
+                  }
+                ]
+              }
+            },
+	"errorExpected": false,
+	"with": [{"countID":1,"courses_dept":"phar","sum":121,"courses_uuid":"83047","courses_title":"admn of injectns","courses_instructor":"lalji, fawziah;seto, katherine","overallAvg":95.07},{"countID":1,"courses_dept":"mine","sum":45,"courses_uuid":"67762","courses_title":"seminar","courses_instructor":"","overallAvg":95.18},{"countID":1,"courses_dept":"epse","sum":37,"courses_uuid":"13142","courses_title":"exp des anl ed","courses_instructor":"","overallAvg":95.16},{"countID":1,"courses_dept":"epse","sum":32,"courses_uuid":"61390","courses_title":"classroom mgmt","courses_instructor":"smith, gillian","overallAvg":95.13},{"countID":1,"courses_dept":"epse","sum":32,"courses_uuid":"61391","courses_title":"classroom mgmt","courses_instructor":"","overallAvg":95.13},{"countID":1,"courses_dept":"educ","sum":31,"courses_uuid":"87253","courses_title":"res mthd in educ","courses_instructor":"adler, james douglas;scott, sandra","overallAvg":95.16},{"countID":1,"courses_dept":"etec","sum":26,"courses_uuid":"76476","courses_title":"tech math sci","courses_instructor":"milner-bolotin, marina","overallAvg":95.19},{"countID":1,"courses_dept":"etec","sum":26,"courses_uuid":"76477","courses_title":"tech math sci","courses_instructor":"","overallAvg":95.19},{"countID":1,"courses_dept":"hgse","sum":21,"courses_uuid":"32071","courses_title":"islnd wild mgmt","courses_instructor":"","overallAvg":95.29},{"countID":1,"courses_dept":"hgse","sum":21,"courses_uuid":"32070","courses_title":"islnd wild mgmt","courses_instructor":"","overallAvg":95.29},{"countID":1,"courses_dept":"etec","sum":21,"courses_uuid":"67367","courses_title":"indig, tech&ed","courses_instructor":"marker, michael","overallAvg":95.1},{"countID":1,"courses_dept":"etec","sum":21,"courses_uuid":"67368","courses_title":"indig, tech&ed","courses_instructor":"","overallAvg":95.1},{"countID":1,"courses_dept":"epse","sum":20,"courses_uuid":"49634","courses_title":"intro excp child","courses_instructor":"romero, amber","overallAvg":95.15},{"countID":1,"courses_dept":"epse","sum":20,"courses_uuid":"49635","courses_title":"intro excp child","courses_instructor":"","overallAvg":95.15},{"countID":1,"courses_dept":"apsc","sum":20,"courses_uuid":"19859","courses_title":"eng mtls lab","courses_instructor":"wassink, berend","overallAvg":95.05},{"countID":1,"courses_dept":"hgse","sum":19,"courses_uuid":"52200","courses_title":"islnd wild mgmt","courses_instructor":"","overallAvg":95.26},{"countID":1,"courses_dept":"hgse","sum":19,"courses_uuid":"52199","courses_title":"islnd wild mgmt","courses_instructor":"","overallAvg":95.26},{"countID":1,"courses_dept":"epse","sum":19,"courses_uuid":"86901","courses_title":"intr stat rs edu","courses_instructor":"kishor, nand","overallAvg":95.11},{"countID":1,"courses_dept":"epse","sum":18,"courses_uuid":"33773","courses_title":"ed prg hghly abl","courses_instructor":"porath, marion","overallAvg":95.22},{"countID":1,"courses_dept":"epse","sum":18,"courses_uuid":"33774","courses_title":"ed prg hghly abl","courses_instructor":"","overallAvg":95.22},{"countID":1,"courses_dept":"nurs","sum":16,"courses_uuid":"78717","courses_title":"cl pro prim care","courses_instructor":"harding, jillian","overallAvg":95.13},{"countID":1,"courses_dept":"nurs","sum":16,"courses_uuid":"78718","courses_title":"cl pro prim care","courses_instructor":"","overallAvg":95.13},{"countID":1,"courses_dept":"thtr","sum":15,"courses_uuid":"63432","courses_title":"scenery prod i","courses_instructor":"mclean, jayson","overallAvg":95.2},{"countID":1,"courses_dept":"thtr","sum":15,"courses_uuid":"63433","courses_title":"scenery prod i","courses_instructor":"","overallAvg":95.2},{"countID":1,"courses_dept":"epse","sum":15,"courses_uuid":"35951","courses_title":"tchg st visl imp","courses_instructor":"","overallAvg":95.27},{"countID":1,"courses_dept":"epse","sum":15,"courses_uuid":"35950","courses_title":"tchg st visl imp","courses_instructor":"","overallAvg":95.27},{"countID":1,"courses_dept":"epse","sum":15,"courses_uuid":"29327","courses_title":"exp des anl ed","courses_instructor":"kishor, nand","overallAvg":95.13},{"countID":1,"courses_dept":"nurs","sum":14,"courses_uuid":"88117","courses_title":"cl pro prim care","courses_instructor":"krist, jennifer;mccuaig, fairleth","overallAvg":95.29},{"countID":1,"courses_dept":"nurs","sum":14,"courses_uuid":"88118","courses_title":"cl pro prim care","courses_instructor":"","overallAvg":95.29},{"countID":1,"courses_dept":"epse","sum":14,"courses_uuid":"28972","courses_title":"basic princ meas","courses_instructor":"kishor, nand","overallAvg":95.14},{"countID":1,"courses_dept":"bmeg","sum":13,"courses_uuid":"73457","courses_title":"med tech project","courses_instructor":"hodgson, antony","overallAvg":95.15},{"countID":1,"courses_dept":"bmeg","sum":13,"courses_uuid":"73458","courses_title":"med tech project","courses_instructor":"","overallAvg":95.15},{"countID":1,"courses_dept":"spph","sum":11,"courses_uuid":"47781","courses_title":"com hlth prom","courses_instructor":"frankish, charles james","overallAvg":95.09},{"countID":1,"courses_dept":"spph","sum":11,"courses_uuid":"47782","courses_title":"com hlth prom","courses_instructor":"","overallAvg":95.09},{"countID":1,"courses_dept":"spph","sum":9,"courses_uuid":"47727","courses_title":"an meth epid res","courses_instructor":"sobolev, boris","overallAvg":95.11},{"countID":1,"courses_dept":"epse","sum":6,"courses_uuid":"3245","courses_title":"dev neuropsych","courses_instructor":"weber, rachel","overallAvg":95.17},{"countID":1,"courses_dept":"epse","sum":6,"courses_uuid":"3246","courses_title":"dev neuropsych","courses_instructor":"","overallAvg":95.17},{"countID":1,"courses_dept":"psyc","sum":4,"courses_uuid":"25740","courses_title":"intro psychthrpy","courses_instructor":"wagner, john","overallAvg":95.25},{"countID":1,"courses_dept":"psyc","sum":4,"courses_uuid":"25741","courses_title":"intro psychthrpy","courses_instructor":"","overallAvg":95.25}]
+}

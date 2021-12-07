@@ -66,15 +66,14 @@ export default class Query {
 			data = this.getSections(data);
 		}
 		filteredData = filter.handleFilter(data, this.query.WHERE);
-		if (filteredData.length > 5000) {
-			return Promise.reject(new ResultTooLargeError());
-		}
 		let transformation: Transformation = new Transformation(filteredData, this._query);
 
 		if (transformation.transformExists) {
 			filteredData = transformation.transform();
 		}
-
+		if (filteredData.length > 5000) {
+			return Promise.reject(new ResultTooLargeError());
+		}
 		sortedData = this.sortData(filteredData);
 		result = this.filterColumnsAndConvertToObjects(sortedData);
 		return Promise.resolve(result);
