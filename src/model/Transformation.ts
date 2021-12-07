@@ -36,23 +36,47 @@ export default class Transformation {
 	}
 
 	public transform(): any[] {
-		let groups: any[][] = this.groupTransformation();
+		let groups: Map<string, any[]> = this.groupTransformation();
 		let applies: any = this.applyTransformation(groups);
 		let newList: any[] = [];
-		for (const i in groups) {
+		let index = 0;
+		for (let [gKey, value] of groups) {
 			let obj: any = {};
+			let counter = 0;
 			for (const g of this.group) {
 				const fieldName = g.split("_")[1];
-				obj["_" + fieldName] = FieldAccessor.getField(fieldName, groups[i][0]);
+				let val = gKey.split("~")[counter];
+				if (val.includes("$")) {
+					val = val.split("$")[1];
+					obj["_" + fieldName] = parseFloat(val);
+				} else {
+					obj["_" + fieldName] = val;
+				}
+				counter++;
 			}
+			Object.keys(applies).forEach((apply) => {
+				obj[apply] = applies[apply][index];
+			});
+			// counter2++;
+			index++;
 			newList.push(obj);
 		}
-		Object.keys(applies).forEach((apply) => {
-			for (const i in newList) {
-				const index: number = parseInt(i, 10);
-				newList[index][apply] = applies[apply][index];
-			}
-		});
+		// for (let i = ) {
+		// 	let obj: any = {};
+		// 	for (const g of this.group) {
+		// 		const fieldName = g.split("_")[1];
+		// 		// obj["_" + fieldName] = FieldAccessor.getField(fieldName, groups[i][0]);
+		// 	}
+		// 	newList.push(obj);
+		// 	index++;
+		// }
+		// Object.keys(applies).forEach((apply) => {
+		// 	for (const i in newList) {
+		// 		const index: number = parseInt(i, 10);
+		// 		newList[index][apply] = applies[apply][index];
+		// 	}
+		// });
+		// newList = [{_dept:"apcs", sum 2010},{_dept:"bmeg", sum:2012}]
 		return newList;
 	}
 
@@ -60,23 +84,52 @@ export default class Transformation {
 		return this._transformExists;
 	}
 
-	public groupTransformation(): any[][] {
-		let listOfGroups: any[][] = [];
-		let listOfFields: any[] = [];   // [{"courses_year": 1900, "courses_dept": atsc},   ]
+	public groupTransformation() {
+		let map = new Map();
+		// map.set()
+		// dept, id
+		// "cpsc-110": []
+		// for (const data of this.dataset) {
+		// 	if (map.has(key)) {
+		// 	} else {
+		// 	}
+		// }
+		// "cpsc-210"
+		// let listOfGroups: any[][] = [];
+		// let listOfFields: any[] = [];   // [{"courses_year": 1900, "courses_dept": atsc},   ]
 		for (const data of this.dataset) {
-			if (this.doesGroupExists(data, listOfFields)) {
-				const fieldIndex: number = this.findFieldIndex(data, listOfFields);
-				listOfGroups[fieldIndex].push(data);
-			} else {
-				let obj: any = {};
-				for (const item of this.group) {
-					obj[item] = FieldAccessor.getField(item.split("_")[1], data);
+			let stringToCompare = "";
+			for (const key of this.group) {
+				let keyToSearch = key.split("_")[1];
+				let newKeyVal = FieldAccessor.getMField(keyToSearch, data);
+				if (newKeyVal === "") {
+					newKeyVal = FieldAccessor.getSField(keyToSearch, data);
+				} else {
+					stringToCompare += "$";
 				}
-				listOfFields.push(obj);
-				listOfGroups.push([data]);
+				stringToCompare += newKeyVal + "~";
 			}
+			if(map.has(stringToCompare)) {
+				let arrOfCoursesOrRooms = map.get(stringToCompare);
+				arrOfCoursesOrRooms.push(data);
+				map.set(stringToCompare, arrOfCoursesOrRooms);
+			} else {
+				map.set(stringToCompare, [data]);
+			}
+			// if (this.doesGroupExists(data, listOfFields)) {
+			// 	const fieldIndex: number = this.findFieldIndex(data, listOfFields);
+			// 	listOfGroups[fieldIndex].push(data);
+			// } else {
+			// 	let obj: any = {};
+			// 	for (const item of this.group) {
+			// 		obj[item] = FieldAccessor.getField(item.split("_")[1], data);
+			// 	}
+			// 	listOfFields.push(obj);
+			// 	listOfGroups.push([data]);
+			// }
 		}
-		return listOfGroups;
+		// return listOfGroups;
+		return map;
 	}
 
 	private doesGroupExists(data: any, listOfFields: any[]) {
@@ -113,7 +166,7 @@ export default class Transformation {
 		return 0;
 	}
 
-	public applyTransformation(groups: any[]): any {
+	public applyTransformation(groups: any): any {
 		let transformationObj: any = {};
 		for (let obj of this.apply) {
 			let applyKey = Object.keys(obj)[0]; // the name of the apply action
@@ -141,11 +194,11 @@ export default class Transformation {
 		return transformationObj;
 	}
 
-	private applyMax(groups: any[], key: any) {
+	private applyMax(groups: any, key: any) {
 		let maxes = [];
-		for (let group of groups) {
+		for (let [gKey, value] of groups) {
 			let max = Number.MIN_SAFE_INTEGER;
-			for (let section of group) {
+			for (let section of value) {
 				Object.keys(section).forEach((groupKey) => {
 					if (groupKey.split("_")[1] === key.split("_")[1]) {
 						if (section[groupKey] > max) {
@@ -161,9 +214,9 @@ export default class Transformation {
 
 	private applyMin(groups: any[], key: any) {
 		let minimums = [];
-		for (let group of groups) {
+		for (let [gKey, value] of groups) {
 			let min = Number.MAX_SAFE_INTEGER;
-			for (let section of group) {
+			for (let section of value) {
 				Object.keys(section).forEach((groupKey) => {
 					if (groupKey.split("_")[1] === key.split("_")[1]) {
 						if (section[groupKey] < min) {
@@ -177,30 +230,11 @@ export default class Transformation {
 		return minimums;
 	}
 
-	// private applyAvg(groups: any[], key: any) {
-	// 	let averages = [];
-	// 	for (let group of groups) {
-	// 		let total = new Decimal(0);
-	// 		for (let section of group) {
-	// 			Object.keys(section).forEach((groupKey: string) => {
-	// 				if (groupKey.split("_")[1] === key.split("_")[1]) {
-	// 					let sectionAvg = new Decimal(section[groupKey]);
-	// 					total = total.add(sectionAvg);
-	// 				}
-	// 			});
-	// 		}
-	// 		let avg = total.toNumber() / group.length;
-	// 		let res = Number(avg.toFixed(2));
-	// 		averages.push(res);
-	// 	}
-	// 	return averages;
-	// }
-
 	private applyAvg(groups: any[], key: any) {
 		let averages = [];
-		for (let group of groups) {
+		for (let [gKey, value] of groups) {
 			let total = new Decimal(0);
-			for (let section of group) {
+			for (let section of value) {
 				Object.keys(section).forEach((groupKey: string) => {
 					if (groupKey.split("_")[1] === key.split("_")[1]) {
 						let sectionAvg = new Decimal(section[groupKey]);
@@ -208,43 +242,20 @@ export default class Transformation {
 					}
 				});
 			}
-			let avg = total.toNumber() / group.length;
+			let avg = total.toNumber() / value.length;
 			let res = Number(avg.toFixed(2));
 			averages.push(res);
 		}
 		return averages;
 	}
-	// private applyAvg(groups: any[]) {
-	// 	let averages = [];
-	// 	for (let group of groups) {
-	// 		let total = new Decimal(0);
-	// 		for (let section of group) {
-	// 			Object.keys(section).forEach((groupKey: string) => {
-	// 				if (groupKey === "_avg") {
-	// 					let sectionAvg = new Decimal(section[groupKey]);
-	// 					total = total.add(sectionAvg);
-	// 				}
-	// 			});
-	// 		}
-	// 		let avg = total.toNumber() / group.length;
-	// 		let res = Number(avg.toFixed(2));
-	// 		averages.push(res);
-	// 	}
-	// 	return averages;
-	// }
 
 	private applyCount(groups: any[], key: any) {
 		let counts = [];
 		let field: string = key.split("_")[1];
-		for (let group of groups) {
+		for (let [gKey, value] of groups) {
 			let count = 0;
 			let uniqueVals: any[] = [];
-			for (let data of group) {
-				// Object.keys(data).forEach((groupKey) => {
-				// 	if (groupKey.split("_")[1] === key.split("_")[1]) {
-				// 		count++;
-				// 	}
-				// });
+			for (let data of value) {
 				const fieldVal = FieldAccessor.getField(field, data);
 				if(!uniqueVals.includes(fieldVal)) {
 					count++;
@@ -258,9 +269,9 @@ export default class Transformation {
 
 	private applySum(groups: any[], key: any) {
 		let sums = [];
-		for (let group of groups) {
+		for (let [gKey, value] of groups) {
 			let sum = 0;
-			for (let data of group) {
+			for (let data of value) {
 				Object.keys(data).forEach((groupKey) => {
 					if (groupKey.split("_")[1] === key.split("_")[1]) {
 						sum += data[groupKey];

@@ -14,7 +14,7 @@ export default class FieldAccessor {
 		return field;
 	}
 
-	private static getMField(mField: any, sectionOrRoom: any): any {
+	public static getMField(mField: any, sectionOrRoom: any): any {
 		if (mField === "avg") {
 			return sectionOrRoom._avg;
 		}
@@ -42,7 +42,7 @@ export default class FieldAccessor {
 		return "";
 	}
 
-	private static getSField(sField: string, section: any): any {
+	public static getSField(sField: string, section: any): any {
 		if (sField === "dept") {
 			return section._dept;
 		}
