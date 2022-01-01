@@ -9,20 +9,34 @@
 	font-size: 16px;
 }
 
-/*.button:hover {*/
-/*	cursor: pointer;*/
-/*}*/
+body {
+	text-align: center;
+	border-radius: 10px;
+	border-style: ridge;
+	border-width: 5px;
+	padding: 5px;
+	width: 400px;
+	margin: 20px;
+}
 
-/*body {*/
-/*	min-height: 100vh;*/
-/*	color: darkslategrey;*/
-/*}*/
-/*.form-item {*/
-/*	min-height: 100vh;*/
-/*	color: darkslategrey;*/
-/*}*/
+.main {
+	align-content: center;
+	background-image: url("moroccan-flower.png");
+}
 
-/*.h1 {*/
-/*	background-color: #1594A6;*/
-/*	padding: 10px;*/
-/*}*/
+#root {
+	padding: 25px 0px 10px 0px;
+}
+
+h1 {
+	background-color: darkseagreen;
+	margin: auto;
+	padding: 20px 40px;
+	text-align: center;
+	border: #066867;
+	border-style: solid;
+	border-radius: 20px;
+	border-width: 10px;
+	width: available;
+	font-family: TimesNewRoman, "Times New Roman", Times, Baskerville, Georgia, serif;
+}
