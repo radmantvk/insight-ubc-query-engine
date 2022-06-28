@@ -4,7 +4,6 @@ import Section from "./Section";
 export default class Building {
 	// each row is a building
 	// ACU shorName
-	// addre
 	private readonly _fullname: string; // "Hugh Dempster Pavilion" -> ACEN.html
 	private readonly _shortname: string; // DMP
 	private readonly _address: string;  // "6245 Agronomy Road V6T 1Z4"
@@ -21,21 +20,6 @@ export default class Building {
 		this._lon = lon;
 		this._href = href;
 	}
-
-// toString method looping through the section and creating the json.
-
-	// public toJson(): string {
-	// 	// let jsonString = "{";
-	// 	// for (const section of this._sections) {
-	// 	// 	jsonString += section.toJson() + ", ";
-	// 	// }
-	// 	// jsonString += "}";
-	// 	// return jsonString;
-	// 	return JSON.stringify({
-	// 		// id: this._id,
-	// 		// sections: this._sections
-	// 	});
-	// }
 
 	public get href(): string {
 		return this._href;

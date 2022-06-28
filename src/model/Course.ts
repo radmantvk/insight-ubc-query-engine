@@ -11,7 +11,6 @@ export default class Course {
 	}
 
 // toString method looping through the section and creating the json.
-
 	public toJson(): string {
 		// let jsonString = "{";
 		// for (const section of this._sections) {

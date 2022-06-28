@@ -3,11 +3,6 @@ import TransformValidator from "./TransformValidator";
 import {QueryOBJ} from "./Query";
 import FilterValidator from "./FilterValidator";
 
-// let datasetID: string;
-//
-// let columnKeys: any = [];								// we want to store the column keys so if there is an order, the order key must be in this array
-
-
 export default class QueryValidator {
 	private _datasetID: string = "";
 	private columnKeys: any = [];

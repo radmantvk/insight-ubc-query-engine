@@ -133,13 +133,6 @@ export default class Query {
 				} else {
 					sectionObj[inputString] = section[inputString];
 				}
-				// const columnKey: string = inputString.split("_")[1];
-				// if (columnKey === "avg" || columnKey === "pass" || columnKey === "fail" || columnKey === "audit" ||
-				// 	columnKey === "year" || columnKey === "lat" || columnKey === "lon" || columnKey === "seats") {
-				// 	sectionObj[inputString] = FieldAccessor.getField(columnKey, section);
-				// } else {
-				// 	sectionObj[inputString] = FieldAccessor.getField(columnKey, section);
-				// }
 			}
 			arrayOfObjs.push(sectionObj);
 		}

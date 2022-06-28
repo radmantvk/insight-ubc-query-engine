@@ -13,7 +13,7 @@ export default class Filter {
 
 	public handleFilter(coursesOrRooms: any[], content: any): any[] {
 		const keys = Object.keys(content);
-		if (!(keys.length === 1)) { // TODO: supposed to give and error?
+		if (!(keys.length === 1)) {
 			return coursesOrRooms;
 		}
 		const key = keys[0];
@@ -138,35 +138,6 @@ export default class Filter {
 		return validSections;
 	}
 
-	// } else if (inputString[0] === "*" && inputString[inputString.length - 1] === "*") { // *abc*
-	// 	const newString = inputString.replace("*", "");
-	// 	if (sectField.contains) {
-	//
-	// 	}
-	// } else if (inputString[0] === "*") { // *sc or *
-	// 	const newString = inputString.replace("*", ""); // "" or "sc"
-	// 	//splice off the sectField's strong from index (sectField.length - newString.length) to the end of sectField.length) and store it.
-	// 	// If the stored value === newString, then push to valid sections
-	// 	const toCompareWith: string = sectField.substring(sectField.length-newString.length, sectField.length-1);
-	// 	if (newString.length === 0) { // "*"
-	// 		validSections.push(sectField);
-	// 	} else if (newString === toCompareWith) {
-	// 		validSections.push(section);
-	// 	}
-	// for (let section of sections) {
-	// 	const sectField = this.getSField(sField, section); // "cpsc"
-	// 		newString.length -1
-	// 		sectField.length
-	// 		if (sectField.contains(newString)) {
-	// 		} else {
-	//
-	// 		} // check just star
-	// 	}
-	// 	// if ab*, check that starts with as
-	// 	// if *ab*, check that includes ab back to back
-	// 	// if *ab, check that the last index minus length and after equals ab (hardest case)
-	// 	return validSections;
-	// }
 	private applyLogic(content: any, key: any, sections: Section[]): Section[] {
 		let results: Section[] = [];
 		let logicArray = content[key];

@@ -4,8 +4,6 @@ export default class Sorter {
 	private readonly orders: string[];
 	private readonly dir: string;
 	private sectionsOrRooms: any[];
-	// private groups: any[][];
-	// private applies: any;
 	private sortable: any[];
 
 	constructor(sectionsOrRooms: any[], orders: string[], dir: string) {

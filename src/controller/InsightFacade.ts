@@ -66,7 +66,6 @@ export default class InsightFacade implements IInsightFacade {
 				return Promise.resolve(id);
 			})
 			.catch((err) => {
-				// console.log(err.toString());
 				return Promise.reject(err);
 			});
 	}
@@ -80,33 +79,10 @@ export default class InsightFacade implements IInsightFacade {
 		if (!this.idHasBeenAdded(myQuery.datasetID)) {
 			return Promise.reject(new InsightError());
 		}
-		// const kind: string = this.getKind(myQuery.datasetID);
 		return this.readAndLoad(myQuery.datasetID , myQuery.kind).then((courses) => {
 			return myQuery.process(courses, myQuery.kind);
 		});
 	}
-
-	// private readAndLoadCourses(datasetID: any): Promise<Course[]> {
-	// 	let path = "./data/" + datasetID;
-	// 	let fileNames = fs.readdirSync(path);
-	// 	let listOfFilesToBeLoaded: Array<Promise<any>> = [];
-	// 	for (const fileName of fileNames) {
-	// 		const jsonPath = path + "/" + fileName;
-	// 		const jsonToRead = fs.readJson(jsonPath);
-	// 		listOfFilesToBeLoaded.push(jsonToRead);
-	// 	}
-	// 	let courses: Course[] = [];
-	// 	return Promise.all(listOfFilesToBeLoaded).then((data) => {
-	// 		for (const json of data) {
-	// 			const jsonObj = JSON.parse(json);
-	// 			const course = new Course(jsonObj.id, jsonObj.sections);
-	// 			courses.push(course);
-	// 		}
-	// 	})
-	// 		.then(() => {
-	// 			return Promise.resolve(courses);
-	// 		});
-	// }
 
 	public listDatasets(): Promise<InsightDataset[]> {
 		return Promise.resolve(this.insightDatasets);
